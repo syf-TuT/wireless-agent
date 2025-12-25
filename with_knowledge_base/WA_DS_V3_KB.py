@@ -22,6 +22,128 @@ llm = ChatOpenAI(
     temperature=0
 )
 
+# ====================== Knowledge Base Access Functions ======================
+
+def load_knowledge_base(file_path):
+    """Load knowledge base from local file"""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            content = file.read()
+        return content
+    except Exception as e:
+        print(f"Failed to read knowledge base file: {e}")
+        # Provide a simple backup knowledge base content in case the file doesn't exist
+        return content
+
+# Knowledge base file path
+KNOWLEDGE_BASE_PATH = r"F:\code\WirelessAgent_R1\Knowledge_Base\Intent_Understand.txt"
+# Preload knowledge base
+KNOWLEDGE_BASE_CONTENT = load_knowledge_base(KNOWLEDGE_BASE_PATH)
+
+# Extract specific application type slice suggestions from knowledge base
+def get_application_slice_type(application_type):
+    """Determine the slice type that the application should use from the knowledge base based on the application type"""
+    # Convert to lowercase for matching
+    app_lower = application_type.lower()
+
+    # Divide knowledge base content into paragraphs
+    kb_sections = KNOWLEDGE_BASE_CONTENT.lower().split('\n\n')
+
+    # Store matching results
+    embb_matches = []
+    urllc_matches = []
+    mmtc_matches = []
+
+    # Whether an exact match is found
+    exact_match_found = False
+
+    # Find matches of application type in the knowledge base
+    for section in kb_sections:
+        if "embb" in section and app_lower in section:
+            # Extract matched lines
+            for line in section.split('\n'):
+                if app_lower in line:
+                    embb_matches.append(line.strip())
+                    exact_match_found = True
+
+        if "urllc" in section and app_lower in section:
+            # Extract matched lines
+            for line in section.split('\n'):
+                if app_lower in line:
+                    urllc_matches.append(line.strip())
+                    exact_match_found = True
+
+        if "mmtc" in section and app_lower in section:
+            # Extract matched lines
+            for line in section.split('\n'):
+                if app_lower in line:
+                    mmtc_matches.append(line.strip())
+                    exact_match_found = True
+
+    # If exact match is found, decide slice type based on match count
+    if exact_match_found:
+        # Find the slice type with the most matches
+        match_counts = {
+            "eMBB": len(embb_matches),
+            "URLLC": len(urllc_matches),
+            "mMTC": len(mmtc_matches)
+        }
+        # Return the slice type with the highest match count
+        max_slice_type = max(match_counts, key=match_counts.get)
+        if max_slice_type == "eMBB":
+            return "eMBB", [f"Knowledge base match: {', '.join(embb_matches)}"]
+        elif max_slice_type == "URLLC":
+            return "URLLC", [f"Knowledge base match: {', '.join(urllc_matches)}"]
+        else:  # mMTC
+            return "mMTC", [f"Knowledge base match: {', '.join(mmtc_matches)}"]
+
+    # If no exact match, try to apply matching rules
+    # Find the matching rules section
+    rules_section = ""
+    for section in kb_sections:
+        if "matching rules" in section:
+            rules_section = section
+            break
+
+    # Apply matching rules
+    if rules_section:
+        # Check if there are rules about high bandwidth
+        if ("high bandwidth" in rules_section and
+                ("video" in app_lower or "download" in app_lower or "streaming" in app_lower)):
+            return "eMBB", ["Based on knowledge base rules: High bandwidth applications use eMBB"]
+
+        # Check if there are rules about low latency
+        if ("low latency" in rules_section and
+                ("control" in app_lower or "medical" in app_lower or "surgery" in app_lower)):
+            return "URLLC", ["Based on knowledge base rules: Low latency applications use URLLC"]
+
+        # Check if there are rules about massive connectivity
+        if ("massive connectivity" in rules_section or "iot" in rules_section or "sensor" in rules_section):
+            if ("sensor" in app_lower or "iot" in app_lower or "smart meter" in app_lower or
+                    "tracking" in app_lower or "monitoring" in app_lower):
+                return "mMTC", ["Based on knowledge base rules: Massive connectivity applications use mMTC"]
+
+    # If all methods fail to find a match, check if general rules can be used to judge
+    if "video" in app_lower or "download" in app_lower or "file" in app_lower:
+        # Knowledge base typically suggests high bandwidth applications use eMBB
+        return "eMBB", [
+            "Based on knowledge base general principles: Video/download applications typically need high bandwidth"]
+
+    if "control" in app_lower or "real-time" in app_lower or "surgery" in app_lower:
+        # Knowledge base typically suggests low latency applications use URLLC
+        return "URLLC", [
+            "Based on knowledge base general principles: Control/real-time applications typically need low latency"]
+
+    if ("sensor" in app_lower or "iot" in app_lower or "smart meter" in app_lower or
+            "tracking" in app_lower or "monitoring" in app_lower or "device" in app_lower):
+        # Knowledge base typically suggests massive connectivity applications use mMTC
+        return "mMTC", [
+            "Based on knowledge base general principles: IoT/massive connectivity applications typically need mMTC"]
+
+    # Default to eMBB (generally a safer choice)
+    return "eMBB", ["No clear match in knowledge base, defaulting to eMBB"]
+
+
 # ====================== CSV Data Loading Function ======================
 
 def load_user_data_from_csv(file_path, num_users=None):
@@ -107,7 +229,7 @@ def load_user_data_from_csv(file_path, num_users=None):
 
 def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileName.csv"):
     """Export test results to a CSV file with enhanced analytics
-
+    
     Parameters:
     - results: List of result dictionaries
     - slice_stats: Dictionary containing slice utilization statistics
@@ -117,32 +239,32 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileNam
     try:
         # Define CSV headers
         headers = [
-            "User ID", "Allocation Status", "Slice", "Ground Truth", "Intent Correct", "CQI",
-            "Bandwidth (MHz)", "Rate (Mbps)", "Latency (ms)", "Adjustments Made",
+            "User ID", "Allocation Status", "Slice", "Ground Truth", "Intent Correct", "CQI", 
+            "Bandwidth (MHz)", "Rate (Mbps)", "Latency (ms)", "Adjustments Made", 
             "eMBB Total Rate Before (Mbps)", "eMBB Total Rate After (Mbps)",
             "URLLC Total Rate Before (Mbps)", "URLLC Total Rate After (Mbps)",
             "mMTC Total Rate Before (Mbps)", "mMTC Total Rate After (Mbps)",
             "Avg Resource Util Before (%)", "Avg Resource Util After (%)",
             "Request"
         ]
-
+        
         # Open file for writing
         with open(file_path, 'w', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
-
+            
             # Write headers
             writer.writerow(headers)
-
+            
             # Write data rows
             for result in results:
                 allocation_status = "Failed" if result.get("allocation_failed", True) else "Success"
-
+                
                 row = [
                     result["user_id"],
                     allocation_status,
                     result["slice_type"],
                     result.get("ground_truth", "Unknown"),
-                    "Yes" if result.get("intent_correct", None) is True else
+                    "Yes" if result.get("intent_correct", None) is True else 
                     "No" if result.get("intent_correct", None) is False else "N/A",
                     result["cqi"],
                     result.get("bandwidth", "N/A"),
@@ -160,10 +282,10 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileNam
                     result["request"]
                 ]
                 writer.writerow(row)
-
+            
             # Add empty row as separator
             writer.writerow([])
-
+            
             # Add summary statistics
             writer.writerow(["SUMMARY STATISTICS"])
             writer.writerow(["Average Resource Utilization (%)", slice_stats["avg_resource_util"]])
@@ -171,20 +293,19 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileNam
             writer.writerow(["Final eMBB Total Rate (Mbps)", slice_stats["final_embb_total_rate"]])
             writer.writerow(["Final URLLC Total Rate (Mbps)", slice_stats["final_urllc_total_rate"]])
             writer.writerow(["Final mMTC Total Rate (Mbps)", slice_stats["final_mmtc_total_rate"]])  # 添加mMTC行
-
+            
             # Add intent understanding rate
             writer.writerow([])
             writer.writerow(["INTENT UNDERSTANDING EVALUATION"])
             writer.writerow(["Total Evaluated Requests", intent_stats["total"]])
             writer.writerow(["Correctly Identified Intents", intent_stats["correct"]])
             writer.writerow(["Intent Understanding Rate (%)", intent_stats["rate"]])
-
+        
         print(f"\nResults exported to {file_path}")
         return True
     except Exception as e:
         print(f"Error exporting results to CSV: {e}")
         return False
-
 
 # ====================== State Definition ======================
 
@@ -288,16 +409,17 @@ def calculate_utilization_rate(usage, capacity):
     """Calculate utilization rate percentage"""
     return f"{(usage / capacity * 100):.2f}%"
 
+
 def calculate_total_transmission_rates():
     """Calculate total transmission rate for each slice"""
     current_state = get_current_network_state()
-    
+
     # Calculate total rates
     embb_total_rate = sum(user["rate"] for user in current_state["embb_slice"]["users"])
     urllc_total_rate = sum(user["rate"] for user in current_state["urllc_slice"]["users"])
     mmtc_total_rate = sum(user["rate"] for user in current_state["mmtc_slice"]["users"])
 
-    return round(embb_total_rate,2), round(urllc_total_rate,2), round(mmtc_total_rate,2)
+    return round(embb_total_rate, 2), round(urllc_total_rate, 2), round(mmtc_total_rate, 2)
 
 def calculate_average_resource_utilization():
     """Calculate weighted average resource utilization across all slices"""
@@ -320,6 +442,7 @@ def calculate_average_resource_utilization():
     return round(avg_util, 2)
 
 # ====================== Network State Reporting Functions ======================
+
 def generate_concise_report(current_state, new_user_id=None, adjustment_result=None):
     """Generate a concise network status report"""
     # Get slice information
@@ -395,7 +518,6 @@ def generate_concise_report(current_state, new_user_id=None, adjustment_result=N
             report.append("  " + ", ".join(adj_summary))
 
     return "\n".join(report)
-
 
 def generate_user_allocation_table(current_state, new_user_id=None, adjusted_user_ids=None):
     """Generate a table showing all user allocations"""
@@ -487,17 +609,17 @@ def generate_user_allocation_table(current_state, new_user_id=None, adjusted_use
 
 def check_slice_capacity(slice_type, required_bandwidth):
     """Check if the slice has enough capacity for a new allocation
-    
+
     Parameters:
     - slice_type: "eMBB" or "URLLC"
     - required_bandwidth: Bandwidth needed for the new user in MHz
-    
+
     Returns:
     - (has_capacity, available_bandwidth, required_adjustment)
     """
     # Get current network state
     current_state = get_current_network_state()
-    
+
     # Determine slice key
     if slice_type == "eMBB":
         slice_key = "embb_slice"
@@ -505,12 +627,12 @@ def check_slice_capacity(slice_type, required_bandwidth):
         slice_key = "urllc_slice"
     else:  # mMTC
         slice_key = "mmtc_slice"
-    
+
     # Get slice information
     total_capacity = current_state[slice_key]["total_capacity"]
     current_usage = current_state[slice_key]["resource_usage"]
     available_bandwidth = total_capacity - current_usage
-    
+
     # Check if there's enough capacity
     if available_bandwidth >= required_bandwidth:
         return True, available_bandwidth, 0
@@ -518,20 +640,21 @@ def check_slice_capacity(slice_type, required_bandwidth):
         # Not enough capacity, return how much adjustment is needed
         return False, available_bandwidth, required_bandwidth - available_bandwidth
 
+
 def find_adjustable_users(slice_type, adjustment_needed):
     """Identify users whose bandwidth can be reduced
-    
+
     Parameters:
     - slice_type: "eMBB" or "URLLC"
     - adjustment_needed: Amount of bandwidth that needs to be freed
-    
+
     Returns:
     - (adjustments_possible, user_adjustments, total_freed_bandwidth)
     - user_adjustments is a list of tuples: (user_id, old_bandwidth, new_bandwidth, old_rate, new_rate)
     """
     # Get current network state
     current_state = get_current_network_state()
-    
+
     # Determine slice key and minimum rate
     # slice_key = "embb_slice" if slice_type == "eMBB" else "urllc_slice"
     if slice_type == "eMBB":
@@ -546,27 +669,27 @@ def find_adjustable_users(slice_type, adjustment_needed):
 
     # Get all users in this slice
     users = current_state[slice_key]["users"]
-    
+
     # Sort users by rate (highest first) to optimize adjustments
     sorted_users = sorted(users, key=lambda u: u["rate"], reverse=True)
-    
+
     # Track adjustments
     user_adjustments = []
     total_freed_bandwidth = 0
-    
+
     # Try to adjust users until we free enough bandwidth
     for user in sorted_users:
         user_id = user["user_id"]
         current_bandwidth = user["bandwidth"]
         cqi = user["cqi"]
         current_rate = user["rate"]
-        
+
         # Calculate minimum bandwidth needed to meet minimum rate
         # Inverting Shannon's formula: min_bandwidth = min_rate / (log10(1 + 10^(CQI/10)) * 10)
         snr = 10 ** (cqi / 10)
         shannon_factor = math.log10(1 + snr) * 10
         min_bandwidth_needed = math.ceil(min_rate / shannon_factor)
-        
+
         # Ensure minimum bandwidth still meets slice constraints
         if slice_type == "eMBB":
             min_bandwidth_needed = max(min_bandwidth_needed, 6.0)  # eMBB最小为6 MHz
@@ -577,19 +700,19 @@ def find_adjustable_users(slice_type, adjustment_needed):
 
         # Calculate how much we can reduce for this user
         max_reduction = current_bandwidth - min_bandwidth_needed
-        
+
         # If we can reduce this user's bandwidth
         if max_reduction > 0:
             # Calculate new bandwidth and resulting rate
             new_bandwidth = current_bandwidth - max_reduction
             new_rate = calculate_rate_from_cqi(new_bandwidth, cqi)
-            
+
             # Add to adjustments list
             user_adjustments.append((user_id, current_bandwidth, new_bandwidth, current_rate, new_rate))
-            
+
             # Update total freed bandwidth
             total_freed_bandwidth += max_reduction
-            
+
             # Check if we've freed enough
             if total_freed_bandwidth >= adjustment_needed:
                 # Optimization: If we've freed more than needed, we can give some back
@@ -599,15 +722,16 @@ def find_adjustable_users(slice_type, adjustment_needed):
                     user_id, old_bw, new_bw, old_rate, new_rate = user_adjustments[-1]
                     adjusted_new_bw = new_bw + excess
                     adjusted_new_rate = calculate_rate_from_cqi(adjusted_new_bw, cqi)
-                    
+
                     # Update the adjustment entry
                     user_adjustments[-1] = (user_id, old_bw, adjusted_new_bw, old_rate, adjusted_new_rate)
                     total_freed_bandwidth = adjustment_needed  # We've freed exactly what was needed
-                
+
                 return True, user_adjustments, total_freed_bandwidth
-    
+
     # If we get here, we couldn't free enough bandwidth
     return False, user_adjustments, total_freed_bandwidth
+
 
 def apply_bandwidth_adjustments(slice_type, user_adjustments):
     """Apply bandwidth adjustments to existing users
@@ -629,7 +753,7 @@ def apply_bandwidth_adjustments(slice_type, user_adjustments):
         slice_key = "urllc_slice"
     else:  # mMTC
         slice_key = "mmtc_slice"
-    
+
     # Dictionary to map user_id to new values for faster lookup
     adjustment_map = {user_id: (new_bw, new_rate) for user_id, _, new_bw, _, new_rate in user_adjustments}
     
@@ -663,11 +787,11 @@ def apply_bandwidth_adjustments(slice_type, user_adjustments):
 def get_slice_utilization_rates():
     """Get current utilization rates for both slices"""
     current_state = get_current_network_state()
-    
+
     embb_total = current_state["embb_slice"]["total_capacity"]
     embb_used = current_state["embb_slice"]["resource_usage"]
     embb_rate = embb_used / embb_total
-    
+
     urllc_total = current_state["urllc_slice"]["total_capacity"]
     urllc_used = current_state["urllc_slice"]["resource_usage"]
     urllc_rate = urllc_used / urllc_total
@@ -675,7 +799,7 @@ def get_slice_utilization_rates():
     mmtc_total = current_state["mmtc_slice"]["total_capacity"]
     mmtc_used = current_state["mmtc_slice"]["resource_usage"]
     mmtc_rate = mmtc_used / mmtc_total
-    
+
     return embb_rate, urllc_rate, mmtc_rate
 
 
@@ -767,7 +891,7 @@ def check_workload_balance(target_slice_type, cqi, required_bandwidth):
 def apply_heuristic_bandwidth(slice_type, request, min_bandwidth, max_bandwidth):
     """Apply heuristic rules to determine bandwidth based on request type"""
     request_lower = request.lower()
-    
+
     if slice_type == "eMBB":
         # For eMBB, use more bandwidth for video/streaming, less for other applications
 
@@ -800,7 +924,7 @@ def apply_heuristic_bandwidth(slice_type, request, min_bandwidth, max_bandwidth)
 def apply_heuristic_latency(slice_type, request, min_latency, max_latency):
     """Apply heuristic rules to determine latency based on request type"""
     request_lower = request.lower()
-    
+
     if slice_type == "eMBB":
         if any(keyword in request_lower for keyword in ["video", "stream", "watch", "movie", "4k", "8k"]):
             return float(min(max_latency, 50.0))  # Medium latency for video is fine
@@ -832,7 +956,7 @@ def network_monitor(slice_type: Optional[str] = None) -> Dict[str, Any]:
     """Get network slice status"""
     # Get current network state
     current_state = get_current_network_state()
-    
+
     if slice_type == "eMBB":
         return {"embb_slice": current_state["embb_slice"]}
     elif slice_type == "URLLC":
@@ -843,9 +967,52 @@ def network_monitor(slice_type: Optional[str] = None) -> Dict[str, Any]:
         return current_state
 
 @tool
+def knowledge_base_query(query: str) -> str:
+    """Query knowledge base to get relevant information"""
+    # Return the entire knowledge base content, while providing query-based filtered results
+    result = [
+        "# Knowledge Base Search Results",
+        "## Complete Knowledge Base",
+        KNOWLEDGE_BASE_CONTENT,
+        "## Relevant Information Extracted Based on Query"
+    ]
+    
+    # Simple keyword matching
+    query_terms = query.lower().split()
+    relevant_lines = []
+    
+    for line in KNOWLEDGE_BASE_CONTENT.split('\n'):
+        if any(term in line.lower() for term in query_terms):
+            relevant_lines.append(line)
+    
+    if relevant_lines:
+        result.append("\n".join(relevant_lines))
+    else:
+        result.append("No information directly related to the query was found. Please refer to the complete knowledge base content.")
+    
+    # Try to infer application type
+    application_types = []
+    if "video" in query or "4k" in query.lower() or "watch" in query:
+        application_types.append("HD video streaming")
+    if "download" in query or "game file" in query:
+        application_types.append("Large file download")
+    if "surgery" in query or "medical" in query:
+        application_types.append("Remote medicine/surgery")
+    if "control" in query or "automation" in query:
+        application_types.append("Real-time control system")
+    
+    if application_types:
+        result.append("\n## Inferred Application Types")
+        for app_type in application_types:
+            slice_type, reasons = get_application_slice_type(app_type)
+            result.append(f"- {app_type}: Recommend using {slice_type} slice (Reason: {', '.join(reasons)})")
+    
+    return "\n".join(result)
+
+@tool
 def check_and_adjust_capacity(slice_type: str, required_bandwidth: float) -> Dict[str, Any]:
     """Check if slice has capacity for new user and perform dynamic adjustment if needed
-    
+
     Parameters:
     - slice_type: "eMBB" or "URLLC" or "mMTC"
     - required_bandwidth: Bandwidth needed for the new user in MHz
@@ -911,19 +1078,19 @@ def check_and_adjust_capacity(slice_type: str, required_bandwidth: float) -> Dic
 @tool
 def workload_balance_tool(target_slice_type: str, cqi: int, required_bandwidth: float) -> Dict[str, Any]:
     """Check if workload should be balanced between slices
-    
+
     Parameters:
     - target_slice_type: Originally targeted slice type ("eMBB" or "URLLC" or "mMTC")
     - cqi: User's Channel Quality Indicator
     - required_bandwidth: Required bandwidth for the user
-    
+
     Returns:
     - Dictionary with balancing recommendation
     """
     should_rebalance, recommended_slice, reason = check_workload_balance(
         target_slice_type, cqi, required_bandwidth
     )
-    
+
     # Get utilization rates for reporting
     embb_rate, urllc_rate, mmtc_rate = get_slice_utilization_rates()
 
@@ -942,13 +1109,13 @@ def workload_balance_tool(target_slice_type: str, cqi: int, required_bandwidth: 
 @tool
 def beamforming_tool(user_id: str, slice_type: str, cqi: int, request: str) -> Dict[str, Any]:
     """Execute beamforming algorithm using CQI and request analysis
-    
+
     Parameters:
     - user_id: User identifier
     - slice_type: Either "eMBB" or "URLLC" or "mMTC" or "mMTC"
     - cqi: Channel Quality Indicator (1-15)
     - request: User's request text
-    
+
     Returns:
     - Dictionary containing allocated resources
     """
@@ -963,7 +1130,7 @@ def beamforming_tool(user_id: str, slice_type: str, cqi: int, request: str) -> D
         slice_key = "mmtc_slice"
 
     available_bandwidth = current_state[slice_key]["total_capacity"] - current_state[slice_key]["resource_usage"]
-    
+
     # Define constraints based on slice type
     if slice_type == "eMBB":
         min_bandwidth = 6.0
@@ -980,11 +1147,11 @@ def beamforming_tool(user_id: str, slice_type: str, cqi: int, request: str) -> D
         max_bandwidth = float(min(3, available_bandwidth))  # mMTC通常只需要很少带宽
         min_latency = 100
         max_latency = 1000
-    
+
     # Ensure max_bandwidth is at least min_bandwidth (even if we're exceeding available)
     # This will get corrected during capacity check later
     max_bandwidth = max(max_bandwidth, min_bandwidth)
-    
+
     # Create a prompt for the LLM to analyze the request and recommend a bandwidth
     bandwidth_prompt = f"""
 Based on the following user request and network conditions, recommend an appropriate bandwidth allocation:
@@ -1007,20 +1174,20 @@ Consider:
 
 Please respond with a single number representing your recommended bandwidth in MHz.
 """
-    
+
     try:
         # Call LLM to analyze and recommend bandwidth
-        messages = [SystemMessage(content="You are a network resource allocation expert."), 
-                   HumanMessage(content=bandwidth_prompt)]
+        messages = [SystemMessage(content="You are a network resource allocation expert."),
+                    HumanMessage(content=bandwidth_prompt)]
         response = llm.invoke(messages)
-        
+
         # Extract the bandwidth recommendation from the response
         # Look for an integer in the response
         # bandwidth_match = re.search(r'\b(\d+)\b', response.content)
         bandwidth_match = re.search(r'\b(\d+\.?\d*)\b', response.content)
         if bandwidth_match:
             recommended_bandwidth = float(bandwidth_match.group(1))
-            
+
             # Validate the recommendation is within allowed range
             if min_bandwidth <= recommended_bandwidth <= max_bandwidth:
                 allocated_bandwidth = recommended_bandwidth
@@ -1034,18 +1201,18 @@ Please respond with a single number representing your recommended bandwidth in M
         print(f"LLM bandwidth recommendation failed: {e}")
         # Fallback to heuristic
         allocated_bandwidth = apply_heuristic_bandwidth(slice_type, request, min_bandwidth, max_bandwidth)
-    
+
     # Determine latency based on application type
     allocated_latency = apply_heuristic_latency(slice_type, request, min_latency, max_latency)
-    
+
     # Calculate rate based on CQI and bandwidth using Shannon's formula
     allocated_rate = calculate_rate_from_cqi(allocated_bandwidth, cqi)
-    
+
     # Validate if rate meets the requirements
     rate_valid = False
     adjustment_made = False
     adjustment_reason = ""
-    
+
     if slice_type == "eMBB":
         if allocated_rate < 100:
             # Rate too low for eMBB, adjust bandwidth
@@ -1062,7 +1229,7 @@ Please respond with a single number representing your recommended bandwidth in M
             adjustment_made = True
             adjustment_reason = f"Initial rate above eMBB maximum (400 Mbps). Decreased bandwidth from {old_bandwidth} to {allocated_bandwidth} MHz."
         rate_valid = 100 <= allocated_rate <= 400
-    elif slice_type == "URLLC": # URLLC
+    elif slice_type == "URLLC":  # URLLC
         if allocated_rate > 100:
             # Rate too high for URLLC, adjust bandwidth
             old_bandwidth = allocated_bandwidth
@@ -1088,7 +1255,7 @@ Please respond with a single number representing your recommended bandwidth in M
         rate_valid = 1 <= allocated_rate <= 100
     else:  # mMTC
         rate_valid = 0.1 <= allocated_rate <= 1
-    
+
     # Check if we have capacity for this bandwidth allocation
     has_capacity, available_bandwidth, adjustment_needed = check_slice_capacity(
         slice_type, allocated_bandwidth
@@ -1113,9 +1280,10 @@ Please respond with a single number representing your recommended bandwidth in M
     }
 
 @tool
-def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float, cqi: int, bandwidth: float) -> Dict[str, Any]:
+def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float, cqi: int, bandwidth: float) -> Dict[
+    str, Any]:
     """Allocate user to slice and update network state
-    
+
     Parameters:
     - user_id: User identifier
     - slice_type: Either "eMBB" or "URLLC" or "mMTC"
@@ -1126,7 +1294,7 @@ def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float,
     """
     # Get current network state
     current_state = get_current_network_state()
-    
+
     # Create new user with CQI and bandwidth information
     new_user = {
         "user_id": user_id,
@@ -1135,7 +1303,7 @@ def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float,
         "cqi": cqi,
         "bandwidth": bandwidth
     }
-    
+
     # Update corresponding slice
     if slice_type == "eMBB":
         slice_key = "embb_slice"
@@ -1143,19 +1311,19 @@ def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float,
         slice_key = "urllc_slice"
     else:  # mMTC
         slice_key = "mmtc_slice"
-    
+
     # Add user
     current_state[slice_key]["users"].append(new_user)
-    
+
     # Update resource usage
     current_state[slice_key]["resource_usage"] += bandwidth
-    
+
     # Update utilization rate
     current_state[slice_key]["utilization_rate"] = calculate_utilization_rate(
         current_state[slice_key]["resource_usage"],
         current_state[slice_key]["total_capacity"]
     )
-    
+
     # Update total user count
     current_state["total_users"] = (
             len(current_state["embb_slice"]["users"]) +
@@ -1167,7 +1335,7 @@ def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float,
 
     # Update global state
     update_network_state(current_state)
-    
+
     # Return allocation result
     return {
         "status": "success",
@@ -1190,6 +1358,7 @@ def slice_allocation(user_id: str, slice_type: str, rate: float, latency: float,
 # Tool list
 tools = [
     network_monitor, 
+    knowledge_base_query, 
     check_and_adjust_capacity, 
     workload_balance_tool, 
     beamforming_tool, 
@@ -1211,7 +1380,6 @@ The current network has two types of slices:
   - Data rate: 1-100 Mbps
   - Latency: 1-10ms
   - Total capacity: 30 MHz
-  
 - mMTC (massive Machine-Type Communications): suitable for large-scale IoT device connectivity
   - Bandwidth：1-3 MHz
   - Data rate：0.1-1 Mbps
@@ -1253,13 +1421,39 @@ Please analyze this request to understand the user's intent and network requirem
     # Get current network state
     network_state = network_monitor.invoke({})
     state["memory"]["network_state"] = network_state
-    
+    """
+    # Print concise initial report and user table
+    initial_report = generate_concise_report(get_current_network_state())
+    initial_table = generate_user_allocation_table(get_current_network_state()) # modified by Jwen
+    print("\n" + "-"*40)
+    print("INITIAL NETWORK STATE")
+    print("-"*40)
+    print(initial_report)
+    print(initial_table)
+    """
     return state
 
 def understand_intent(state: NetworkState) -> NetworkState:
     """Step 1: Understand user intent by analyzing request"""
     state["step_count"] += 1
     
+    # Get the request for analysis
+    user_request = state["request"]
+    
+    # First, directly use the knowledge base to determine slice type based on the request
+    kb_recommended_slice, kb_reasons = get_application_slice_type(user_request)
+    
+    # Store knowledge base recommendation in state memory
+    state["memory"]["kb_recommended_slice"] = kb_recommended_slice
+    state["memory"]["kb_slice_reasons"] = kb_reasons
+    
+    print(f"Knowledge Base recommended slice: {kb_recommended_slice} ({kb_reasons[0]})")
+    
+    # Query knowledge base and also store the full content
+    kb_content = knowledge_base_query.invoke({"query": user_request})
+    state["memory"]["knowledge_base"] = kb_content
+    
+    # Now, also use the LLM for a deeper intent analysis
     # Enhanced intent analysis prompt with comprehensive guidance, removed CQI information
     intent_prompt = f"""
 Based on the user request: "{state["request"]}"
@@ -1276,7 +1470,6 @@ CLASSIFICATION GUIDELINES:
    - Very low latency (<10ms)
    - High reliability
    - Example applications: remote control, autonomous driving, industrial automation, real-time monitoring, IoT sensors
-
 3. mMTC (Massive Machine-Type Communications) - Choose when the application primarily needs:
    - Massive connections of low-throughput devices
    - Can tolerate high latency (100-1000ms)
@@ -1363,11 +1556,14 @@ Please provide a similarly detailed analysis with a clear slice recommendation f
     
     return state
 
-
 def allocate_slice_type(state: NetworkState) -> NetworkState:
     """Step 2: Allocate appropriate slice type based on intent"""
     state["step_count"] += 1
-
+    
+    # Get knowledge base recommendation from the state memory
+    kb_recommended_slice = state["memory"]["kb_recommended_slice"]
+    kb_slice_reasons = state["memory"]["kb_slice_reasons"]
+    
     # Enhanced prompt for slice allocation, decoupled from CQI
     slice_prompt = """
 Based on your intent analysis, I need your EXPLICIT recommendation for the appropriate network slice.
@@ -1390,13 +1586,6 @@ NETWORK SLICE CHARACTERISTICS:
   * Latency: 1-10ms
   * Best for: remote control, IoT, automation, real-time monitoring
 
-- mMTC (Massive Machine-Type Communications):
-  * For massive IoT sensor networks
-  * Data rate: 0.1-1 Mbps
-  * Bandwidth: 1-3 MHz
-  * Latency: 100-1000ms
-  * Best for: smart meters, environmental sensors, asset tracking
-
 DETAILED RECOMMENDATION REQUIRED:
 Your response MUST begin with the exact phrase: "I recommend using [eMBB/URLLC/mMTC] slice, because..."
 
@@ -1418,7 +1607,7 @@ I recommend using mMTC slice, because smart meter data reporting involves small 
 Please provide your recommendation in this exact format for the user's request.
 """
     state["history"].append({"role": "user", "content": slice_prompt})
-
+    
     # Create message list
     messages = []
     for msg in state["history"]:
@@ -1428,42 +1617,68 @@ Please provide your recommendation in this exact format for the user's request.
             messages.append(HumanMessage(content=msg["content"]))
         elif msg["role"] == "assistant":
             messages.append(AIMessage(content=msg["content"]))
-
+    
     # Call LLM to determine slice type
     response = llm.invoke(messages)
     decision = response.content
-
+    
     # Record response
     state["history"].append({"role": "assistant", "content": decision})
-
+    
     # Extract recommended slice type from LLM response
     slice_match = re.search(r"I recommend using (eMBB|URLLC|mMTC) slice", decision)
-
+    
     if slice_match:
         llm_recommended_slice = slice_match.group(1)
-        # Store the LLM recommendation as the final decision
-        state["memory"]["final_slice"] = llm_recommended_slice
-    else:
-        # If no explicit recommendation is found, determine based on keywords in the response
-        if "bandwidth" in decision.lower() and not "latency" in decision.lower():
-            state["memory"]["final_slice"] = "eMBB"
-        elif "latency" in decision.lower() and not "bandwidth" in decision.lower():
-            state["memory"]["final_slice"] = "URLLC"
-        elif "video" in decision.lower() or "download" in decision.lower():
-            state["memory"]["final_slice"] = "eMBB"
-        elif "control" in decision.lower() or "real-time" in decision.lower():
-            state["memory"]["final_slice"] = "URLLC"
-        elif "sensor" in decision.lower() or "meter" in decision.lower() or "tracking" in decision.lower():
-            state["memory"]["final_slice"] = "mMTC"
+        # Store the LLM recommendation for comparison
+        state["memory"]["llm_recommended_slice"] = llm_recommended_slice
+        
+        # Compare with knowledge base recommendation
+        if llm_recommended_slice != kb_recommended_slice:
+            # If different, use the knowledge base recommendation
+            print(f"LLM recommended {llm_recommended_slice} but knowledge base recommended {kb_recommended_slice}, using knowledge base recommendation")
+            state["memory"]["final_slice"] = kb_recommended_slice
+            state["memory"]["intent_override_applied"] = True
+            
+            # Add explanation to history
+            override_prompt = f"""
+Intent understanding override applied:
+- LLM recommended slice: {llm_recommended_slice}
+- Knowledge base recommended slice: {kb_recommended_slice}
+- Knowledge base reason: {kb_slice_reasons[0]}
+
+Based on knowledge base guidelines, we will use {kb_recommended_slice} slice instead of {llm_recommended_slice}.
+"""
+            state["history"].append({"role": "user", "content": override_prompt})
+            
+            # Get LLM response to the override
+            messages = []
+            for msg in state["history"]:
+                if msg["role"] == "system":
+                    messages.append(SystemMessage(content=msg["content"]))
+                elif msg["role"] == "user":
+                    messages.append(HumanMessage(content=msg["content"]))
+                elif msg["role"] == "assistant":
+                    messages.append(AIMessage(content=msg["content"]))
+            
+            response = llm.invoke(messages)
+            override_decision = response.content
+            
+            # Record response
+            state["history"].append({"role": "assistant", "content": override_decision})
         else:
-            # Default to eMBB if we can't determine
-            state["memory"]["final_slice"] = "eMBB"
-        print(
-            f"WARNING: LLM didn't provide explicit slice recommendation. Using extracted recommendation: {state['memory']['final_slice']}")
-
-    # Ensure we have a final slice determination
+            # If same, use either recommendation
+            state["memory"]["final_slice"] = llm_recommended_slice
+            state["memory"]["intent_override_applied"] = False
+    else:
+        # If no explicit recommendation is found, use knowledge base recommendation
+        state["memory"]["final_slice"] = kb_recommended_slice
+        state["memory"]["intent_override_applied"] = True
+        print("WARNING: LLM didn't provide explicit slice recommendation. Using knowledge base recommendation.")
+    
+    # Ensure consistency for specific applications based on the now-final slice type
     final_slice = state["memory"]["final_slice"]
-
+    
     # Check if workload balancing is needed
     # Estimate bandwidth based on slice type
     if final_slice == "eMBB":
@@ -1472,22 +1687,22 @@ Please provide your recommendation in this exact format for the user's request.
         estimated_bandwidth = 3
     else:  # mMTC
         estimated_bandwidth = 1
-
+    
     # Check workload balance
     balance_result = workload_balance_tool.invoke({
         "target_slice_type": final_slice,
         "cqi": state["cqi"],
         "required_bandwidth": estimated_bandwidth
     })
-
+    
     # Record the balance result
     state["memory"]["balance_result"] = balance_result
-
+    
     # Apply workload balancing recommendation if needed
     if balance_result["should_rebalance"]:
         state["memory"]["final_slice"] = balance_result["recommended_slice"]
         state["memory"]["balance_applied"] = True
-
+        
         # Add explanation to history
         balance_prompt = f"""
 Workload balancing recommendation:
@@ -1499,7 +1714,7 @@ Workload balancing recommendation:
 Based on workload balancing considerations, we will use {balance_result["recommended_slice"]} slice instead of {balance_result["original_slice"]}.
 """
         state["history"].append({"role": "user", "content": balance_prompt})
-
+        
         # Get LLM response to workload balancing
         messages = []
         for msg in state["history"]:
@@ -1509,20 +1724,19 @@ Based on workload balancing considerations, we will use {balance_result["recomme
                 messages.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == "assistant":
                 messages.append(AIMessage(content=msg["content"]))
-
+        
         response = llm.invoke(messages)
         balance_decision = response.content
-
+        
         # Record response
         state["history"].append({"role": "assistant", "content": balance_decision})
     else:
         state["memory"]["balance_applied"] = False
-
+    
     # Determine next step
     state["current_step"] = "allocate_resources"
-
+    
     return state
-
 
 def allocate_resources(state: NetworkState) -> NetworkState:
     """Step 3: Allocate bandwidth and calculate transmission rate"""
@@ -1704,14 +1918,13 @@ Please review these resource allocations and confirm if they are appropriate for
     
     return state
 
-
 def evaluate_network(state: NetworkState) -> NetworkState:
     """Step 4: Evaluate network state and check rate requirements"""
     state["step_count"] += 1
-
+    
     # Check if allocation failed due to capacity constraints
     allocation_failed = state["memory"].get("allocation_failed", False)
-
+    
     if allocation_failed:
         # Create failure message
         network_prompt = f"""
@@ -1725,7 +1938,7 @@ Please provide a final summary explaining why this user couldn't be accommodated
 3. Consider moving to a different location with better signal quality
 """
         state["history"].append({"role": "user", "content": network_prompt})
-
+        
         # Create message list
         messages = []
         for msg in state["history"]:
@@ -1735,29 +1948,29 @@ Please provide a final summary explaining why this user couldn't be accommodated
                 messages.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == "assistant":
                 messages.append(AIMessage(content=msg["content"]))
-
+        
         # Call LLM to generate failure evaluation
         response = llm.invoke(messages)
         evaluation = response.content
-
+        
         # Record final result
         state["final_result"] = evaluation
-
+        
         # Print concise failure report
-        print("\n" + "-" * 40)
+        print("\n" + "-"*40)
         print(f"ALLOCATION FAILED FOR USER {state['user_id']}")
-        print("-" * 40)
+        print("-"*40)
         print(f"Request: {state['request']}")
         print(f"Slice type: {state['memory']['final_slice']}")
         print(f"Reason: Insufficient capacity even after attempted adjustments")
-
+        
         return state
-
+    
     # Get necessary information for successful allocation
     beamforming_result = state["memory"]["beamforming_result"]
     final_slice = state["memory"]["final_slice"]
     adjustment_result = state["memory"]["adjustment_result"]
-
+    
     # Execute resource allocation
     allocation_result = slice_allocation.invoke({
         "user_id": state["user_id"],
@@ -1767,38 +1980,38 @@ Please provide a final summary explaining why this user couldn't be accommodated
         "cqi": state["cqi"],
         "bandwidth": beamforming_result["allocated_bandwidth"]
     })
-
+    
     # Record results
     state["memory"]["allocation_result"] = allocation_result
-
+    
     # Get updated network state
     updated_network_state = network_monitor.invoke({})
     state["memory"]["updated_network_state"] = updated_network_state
-
+    
     # Get list of adjusted user IDs
     adjusted_user_ids = []
     if adjustment_result["adjustments_made"]:
         adjusted_user_ids = [adj["user_id"] for adj in adjustment_result["user_adjustments"]]
-
+    
     # Print concise report and user allocation table
-    print("\n" + "-" * 40)
+    print("\n" + "-"*40)
     print(f"ALLOCATION RESULT FOR USER {state['user_id']}")
-    print("-" * 40)
+    print("-"*40)
     concise_report = generate_concise_report(
-        get_current_network_state(),
-        state["user_id"],
+        get_current_network_state(), 
+        state["user_id"], 
         adjustment_result
     )
     print(concise_report)
-
+    
     # Print complete user allocation table
     user_table = generate_user_allocation_table(
         get_current_network_state(),
-        state["user_id"],
+        state["user_id"], 
         adjusted_user_ids
     )
     print(user_table)
-
+    
     # Create dynamic adjustment summary if adjustments were made
     adjustment_summary = ""
     if adjustment_result["adjustments_made"]:
@@ -1806,11 +2019,20 @@ Please provide a final summary explaining why this user couldn't be accommodated
         adjustment_summary += f"- {len(adjustment_result['user_adjustments'])} users had their bandwidth reduced to accommodate this new user\n"
         adjustment_summary += f"- Total bandwidth freed: {adjustment_result['freed_bandwidth']} MHz\n\n"
         adjustment_summary += "User adjustments:\n"
-
+        
         for adj in adjustment_result["user_adjustments"]:
             adjustment_summary += f"- User {adj['user_id']}: {adj['old_bandwidth']} MHz → {adj['new_bandwidth']} MHz ({adj['bandwidth_reduction']} MHz reduction)\n"
             adjustment_summary += f"  Rate: {adj['old_rate']:.2f} Mbps → {adj['new_rate']:.2f} Mbps (still meets requirements)\n"
-
+    
+    # Add intent understanding override info if applied
+    intent_override_summary = ""
+    if state["memory"].get("intent_override_applied", False):
+        intent_override_summary = "\n## Intent Understanding Override Applied\n"
+        intent_override_summary += f"- LLM recommended slice: {state['memory'].get('llm_recommended_slice', 'Unknown')}\n"
+        intent_override_summary += f"- Knowledge base recommended slice: {state['memory']['kb_recommended_slice']}\n"
+        intent_override_summary += f"- Knowledge base reason: {state['memory']['kb_slice_reasons'][0]}\n"
+        intent_override_summary += f"- Final slice allocation: {state['memory']['final_slice']}\n"
+    
     # Add workload balance info if applied
     balance_summary = ""
     if state["memory"].get("balance_applied", False):
@@ -1824,7 +2046,7 @@ Please provide a final summary explaining why this user couldn't be accommodated
     # Calculate total transmission rates
     embb_total_rate, urllc_total_rate, mmtc_total_rate = calculate_total_transmission_rates()
     avg_resource_util = calculate_average_resource_utilization()
-
+    
     # Create network evaluation prompt
     network_prompt = f"""
 Network state after allocating resources to user {state["user_id"]}:
@@ -1854,15 +2076,15 @@ User allocation details:
 - Bandwidth: {beamforming_result['allocated_bandwidth']} MHz
 - Data rate: {beamforming_result['allocated_rate']:.2f} Mbps (Required: {beamforming_result['rate_requirements']})
 - Latency: {beamforming_result['allocated_latency']} ms
+{intent_override_summary}
 {adjustment_summary}
 {balance_summary}
 Please provide a final summary of the resource allocation, evaluating whether the network adequately supports this user's requirements.
 Include details about any dynamic adjustments or workload balancing made to accommodate this user.
 """
     state["history"].append({"role": "user", "content": network_prompt})
-
+    
     # Create message list
-
     messages = []
     for msg in state["history"]:
         if msg["role"] == "system":
@@ -1871,16 +2093,15 @@ Include details about any dynamic adjustments or workload balancing made to acco
             messages.append(HumanMessage(content=msg["content"]))
         elif msg["role"] == "assistant":
             messages.append(AIMessage(content=msg["content"]))
-
+    
     # Call LLM to generate network evaluation
     response = llm.invoke(messages)
     evaluation = response.content
-
+    
     # Record final result
     state["final_result"] = evaluation
-
+    
     return state
-
 
 def route_next(state: NetworkState) -> str:
     """Route to next node"""
@@ -1954,10 +2175,9 @@ def create_network_graph():
     
     # Add termination edge
     graph.add_edge("evaluate_network", END)
-
-    app = graph.compile()
-
-    return app
+    
+    # Compile graph
+    return graph.compile()
 
 # ====================== Main Function ======================
 
@@ -2277,10 +2497,10 @@ def main(num_users=4, export_file="fileName.csv"):
     total_capacity = embb_capacity + urllc_capacity + mmtc_capacity
 
     weighted_avg_util = (
-            (avg_embb_util * embb_capacity) +
-            (avg_urllc_util * urllc_capacity) +
-            (avg_mmtc_util * mmtc_capacity)
-    ) / total_capacity
+                                (avg_embb_util * embb_capacity) +
+                                (avg_urllc_util * urllc_capacity) +
+                                (avg_mmtc_util * mmtc_capacity)
+                        ) / total_capacity
 
     print(f"\nWeighted Average Utilization: {weighted_avg_util:.2f}%")
 
@@ -2315,4 +2535,4 @@ def main(num_users=4, export_file="fileName.csv"):
 
 if __name__ == "__main__":
     # Test with 10 users by default and export results to CSV
-    main(num_users=30, export_file="network_slicing_results_DSv3NKB.csv") # The number of users can be adjusted as needed
+    main(num_users=30, export_file="network_slicing_results_DSv3KB.csv") # The number of users can be adjusted as needed
