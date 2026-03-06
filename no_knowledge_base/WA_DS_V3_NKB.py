@@ -8,6 +8,9 @@ from tabulate import tabulate  # For formatted table output
 import pandas as pd  # For reading CSV files and exporting results
 import csv  # For writing CSV files
 
+# Import Prompt Manager
+from prompt_manager import prompt_manager, get_prompt_for_context
+
 # LangGraph and LangChain related
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -1235,10 +1238,38 @@ def initialize(state: NetworkState) -> NetworkState:
     state["memory"] = {}
     state["step_count"] = 0
     state["current_step"] = "understand_intent"
-    
-    # Add system message
-    state["history"].append({"role": "system", "content": SYSTEM_PROMPT})
-    
+
+    # Get current network state first for dynamic prompt
+    network_state = network_monitor.invoke({})
+    state["memory"]["network_state"] = network_state
+
+    # Extract slice loads for dynamic prompt
+    slice_loads = {
+        "embb": network_state.get("embb_utilization", 0),
+        "urllc": network_state.get("urllc_utilization", 0),
+        "mmtc": network_state.get("mmtc_utilization", 0)
+    }
+
+    # Determine resource status
+    max_load = max(slice_loads.values())
+    if max_load > 85:
+        resource_status = "critical"
+    elif max_load > 70:
+        resource_status = "limited"
+    else:
+        resource_status = "sufficient"
+
+    # Build dynamic prompt using PromptManager
+    dynamic_prompt = get_prompt_for_context(
+        cqi=state["cqi"],
+        slice_loads=slice_loads,
+        priority="normal",
+        resource_status=resource_status
+    )
+
+    # Add system message with dynamic prompt
+    state["history"].append({"role": "system", "content": dynamic_prompt})
+
     # Add user request
     user_request = f"""
 New User ID: {state["user_id"]}
@@ -1249,11 +1280,7 @@ Channel Quality Indicator (CQI): {state["cqi"]}
 Please analyze this request to understand the user's intent and network requirements.
 """
     state["history"].append({"role": "user", "content": user_request})
-    
-    # Get current network state
-    network_state = network_monitor.invoke({})
-    state["memory"]["network_state"] = network_state
-    
+
     return state
 
 def understand_intent(state: NetworkState) -> NetworkState:
