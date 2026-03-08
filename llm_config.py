@@ -10,13 +10,13 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "deepseek").lower()
 # LLM Model Configurations
 LLM_CONFIGS = {
     "deepseek": {
-        "api_key": os.getenv("DEEPSEEK_API_KEY", "sk-d30d34deffca4d53a75c70ab02de95a5"),
+        "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
         "base_url": "https://api.deepseek.com",
         "model": "deepseek-chat",
         "temperature": 0
     },
     "minimax": {
-        "api_key": os.getenv("MINIMAX_API_KEY", "sk-cp-PLaMZ3myaTfPsiHuJaXEWlp-Oc9MROojXu1K3fwaAxXXKosn5dvUuoppMVP6KmGedta2byd461FJ-QbvJb4W6IpnuzOiO_BHClykXr8J099Q0VH3St3LUZ4"),
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
         "base_url": "https://api.minimax.io/v1",
         "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5"),
         "temperature": 0

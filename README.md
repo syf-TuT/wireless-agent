@@ -12,17 +12,29 @@ Step 2: Select an area and output the "Tongji" campus layout (Tongji.osm);
 
 Step 3: Add the file path of Tongji.osm to the RayTracing_cqi.py;
 
-Step 4: Add the RayTracing results to the WA_DS_V3_NKB.py for network slicing;
+Step 4: Run the agent (choose one version):
 
-Step 5: 代码中指定llm模型
-# 指定使用 MiniMax
-llm = get_llm("minimax")
+    # Without Knowledge Base
+    cd no_knowledge_base
+    python WA_DS_V3_NKB.py
 
-# 指定模型版本
-llm = get_llm("minimax", model="abab6.5g-chat", temperature=0.5)
+    # With Knowledge Base + RAG
+    cd with_knowledge_base
+    python WA_DS_V3_KB.py
+
+Step 5: Configure LLM (optional, defaults to DeepSeek):
+
+    # Default: DeepSeek
+    from llm_config import get_llm
+    llm = get_llm()
+
+    # Use MiniMax
+    llm = get_llm("minimax")
+
+    # Use custom model
+    llm = get_llm("minimax", model="abab6.5g-chat", temperature=0.5)
+
+Supported LLM providers: deepseek, minimax, openai, azure_openai
 
 Step 6: Output the network slicing results.
-
-
-
 
