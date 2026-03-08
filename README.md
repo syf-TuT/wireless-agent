@@ -14,7 +14,14 @@ Step 3: Add the file path of Tongji.osm to the RayTracing_cqi.py;
 
 Step 4: Add the RayTracing results to the WA_DS_V3_NKB.py for network slicing;
 
-Step 5: Output the network slicing results.
+Step 5: 代码中指定llm模型
+# 指定使用 MiniMax
+llm = get_llm("minimax")
+
+# 指定模型版本
+llm = get_llm("minimax", model="abab6.5g-chat", temperature=0.5)
+
+Step 6: Output the network slicing results.
 
 
 

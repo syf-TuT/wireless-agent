@@ -4,6 +4,7 @@ import math
 import random
 from datetime import datetime
 import re
+import os
 from tabulate import tabulate  # For formatted table output
 import pandas as pd  # For reading CSV files and exporting results
 import csv  # For writing CSV files
@@ -12,15 +13,51 @@ import csv  # For writing CSV files
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
 
-# Set up LLM
-llm = ChatOpenAI(
-    api_key="sk-d30d34deffca4d53a75c70ab02de95a5",
-    base_url="https://api.deepseek.com",
-    model="deepseek-chat",
-    temperature=0
-)
+# LLM Configuration (supports DeepSeek, MiniMax, OpenAI, Azure OpenAI)
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from llm_config import get_llm
+
+llm = get_llm("deepseek")
+
+# ====================== RAG System Initialization ======================
+# Import RAG optimization module
+from rag_system import initialize_rag_system, HybridRetriever
+
+# RAG system configuration
+RAG_INITIALIZED = False
+hybrid_retriever: Optional[HybridRetriever] = None
+
+def init_rag():
+    """Initialize RAG system"""
+    global RAG_INITIALIZED, hybrid_retriever
+
+    if RAG_INITIALIZED:
+        return hybrid_retriever
+
+    # Determine knowledge base path
+    kb_path = r"F:\code\wirelessagent\with_knowledge_base\Intent_Understand.txt"
+
+    # Fallback to old path if new one doesn't exist
+    if not os.path.exists(kb_path):
+        kb_path = r"F:\code\WirelessAgent_R1\Knowledge_Base\Intent_Understand.txt"
+
+    print(f"[RAG] Using knowledge base: {kb_path}")
+
+    try:
+        _, hybrid_retriever = initialize_rag_system(
+            knowledge_base_path=kb_path,
+            embedding_model="all-MiniLM-L6-v2"
+        )
+        RAG_INITIALIZED = True
+        print("[RAG] RAG system initialized successfully!")
+    except Exception as e:
+        print(f"[RAG] Failed to initialize RAG system: {e}")
+        print("[RAG] Falling back to traditional keyword matching...")
+        hybrid_retriever = None
+
+    return hybrid_retriever
 
 # ====================== Knowledge Base Access Functions ======================
 
@@ -754,7 +791,7 @@ def apply_bandwidth_adjustments(slice_type, user_adjustments):
     else:  # mMTC
         slice_key = "mmtc_slice"
 
-    # Dictionary to map user_id to new values for faster lookup
+    # Dictionary to maps user_id to new values for faster lookup
     adjustment_map = {user_id: (new_bw, new_rate) for user_id, _, new_bw, _, new_rate in user_adjustments}
     
     # Calculate total bandwidth reduction
@@ -1008,6 +1045,68 @@ def knowledge_base_query(query: str) -> str:
             result.append(f"- {app_type}: Recommend using {slice_type} slice (Reason: {', '.join(reasons)})")
     
     return "\n".join(result)
+
+# ====================== RAG-Enhanced Knowledge Base Query ======================
+# Global RAG retriever instance
+_rag_retriever = None
+
+def get_rag_retriever():
+    """Get or initialize the RAG retriever"""
+    global _rag_retriever
+    if _rag_retriever is None:
+        _rag_retriever = init_rag()
+    return _rag_retriever
+
+@tool
+def knowledge_base_query_rag(query: str, top_k: int = 3) -> str:
+    """
+    RAG-enhanced knowledge base query using semantic search
+
+    Parameters:
+    - query: User network request description
+    - top_k: Number of most similar examples to return (default: 3)
+
+    Returns:
+    - Formatted context with relevant knowledge base examples
+    """
+    retriever = get_rag_retriever()
+
+    if retriever is None:
+        # Fallback to traditional method
+        return knowledge_base_query.invoke({"query": query})
+
+    try:
+        # Use hybrid retriever for semantic + keyword search
+        context = retriever.retrieve_with_context(query, k=top_k, alpha=0.7)
+
+        # Add inference recommendation
+        inferred = _infer_slice_type(query)
+        if inferred:
+            context += f"\n\n# Inferred Recommendation\n{inferred}"
+
+        return context
+    except Exception as e:
+        print(f"[RAG] Error during retrieval: {e}")
+        # Fallback to traditional method
+        return knowledge_base_query.invoke({"query": query})
+
+def _infer_slice_type(query: str) -> str:
+    """Infer slice type from query keywords"""
+    query_lower = query.lower()
+
+    # eMBB keywords
+    if any(k in query_lower for k in ['video', '4k', '8k', 'stream', 'download', 'game', 'vr', 'ar', 'cloud', 'hd', 'movie']):
+        return "eMBB - High bandwidth required for media applications"
+
+    # URLLC keywords
+    if any(k in query_lower for k in ['control', 'auto', 'remote', 'surgery', 'vehicle', 'drone', 'industrial', 'real-time', 'critical']):
+        return "URLLC - Low latency and high reliability required"
+
+    # mMTC keywords
+    if any(k in query_lower for k in ['sensor', 'meter', 'iot', 'monitor', 'smart', 'wearable', 'massive']):
+        return "mMTC - Massive machine-type communications"
+
+    return "Unknown - Please analyze with LLM"
 
 @tool
 def check_and_adjust_capacity(slice_type: str, required_bandwidth: float) -> Dict[str, Any]:
@@ -1446,11 +1545,23 @@ def understand_intent(state: NetworkState) -> NetworkState:
     # Store knowledge base recommendation in state memory
     state["memory"]["kb_recommended_slice"] = kb_recommended_slice
     state["memory"]["kb_slice_reasons"] = kb_reasons
-    
+
     print(f"Knowledge Base recommended slice: {kb_recommended_slice} ({kb_reasons[0]})")
-    
-    # Query knowledge base and also store the full content
-    kb_content = knowledge_base_query.invoke({"query": user_request})
+
+    # Query knowledge base using RAG (semantic search)
+    # Try RAG first, fallback to traditional if RAG not initialized
+    try:
+        retriever = get_rag_retriever()
+        if retriever is not None:
+            kb_content = knowledge_base_query_rag.invoke({"query": user_request, "top_k": 3})
+            print("[RAG] Using RAG-enhanced knowledge base query")
+        else:
+            kb_content = knowledge_base_query.invoke({"query": user_request})
+            print("[RAG] Using traditional keyword matching")
+    except Exception as e:
+        print(f"[RAG] Error: {e}, falling back to traditional method")
+        kb_content = knowledge_base_query.invoke({"query": user_request})
+
     state["memory"]["knowledge_base"] = kb_content
     
     # Now, also use the LLM for a deeper intent analysis
@@ -2325,7 +2436,7 @@ def main(num_users=4, export_file="fileName.csv"):
     print("Starting network slice management system with CSV-based user testing...\n")
 
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\WirelessAgent_R1\ray_tracing_results.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_north.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)
@@ -2534,5 +2645,24 @@ def main(num_users=4, export_file="fileName.csv"):
 
 
 if __name__ == "__main__":
+    # Initialize RAG system at startup
+    print("=" * 60)
+    print("Initializing WirelessAgent with RAG optimization...")
+    print("=" * 60)
+
+    # Pre-initialize RAG system for faster first query
+    try:
+        retriever = get_rag_retriever()
+        if retriever is not None:
+            print("[SUCCESS] RAG system initialized - Semantic search enabled")
+        else:
+            print("[WARNING] RAG initialization failed - Using traditional keyword matching")
+    except Exception as e:
+        print(f"[WARNING] RAG initialization error: {e}")
+
+    print("=" * 60)
+    print("Starting network slicing processing...")
+    print("=" * 60)
+
     # Test with 10 users by default and export results to CSV
     main(num_users=30, export_file="network_slicing_results_DSv3KB.csv") # The number of users can be adjusted as needed

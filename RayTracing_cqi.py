@@ -394,7 +394,7 @@ def perform_ray_tracing(tx_position, rx_positions, buildings, tx_power_dBm=30):
 
 def main():
     # File path
-    file_path = r"C:\Users\86178\Desktop\毕设\代码\TJU.osm"
+    file_path = r"/maps\TJU_north.osm"
     
     try:
         # Parse buildings from OSM
@@ -438,7 +438,7 @@ def main():
         results = perform_ray_tracing(tx_position, rx_positions, cartesian_buildings)
         
         # Save results to CSV=============================================================================================================
-        output_path = 'ray_tracing_results.csv' # Output file path modifed by Jingwen TONG
+        output_path = 'ray_tracing_results/ray_tracing_results_north.csv'  # Output file path modifed by Jingwen TONG
         with open(output_path, 'w', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['RX_ID', 'X', 'Y', 'Z', 'SNR_dB', 'RX_Power_dBm', 'CQI', 'LOS', 'User_Request', 'Request_Label']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

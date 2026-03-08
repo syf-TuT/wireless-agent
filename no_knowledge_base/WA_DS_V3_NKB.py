@@ -12,15 +12,11 @@ import csv  # For writing CSV files
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
 
-# Set up LLM
-llm = ChatOpenAI(
-    api_key="sk-d30d34deffca4d53a75c70ab02de95a5",
-    base_url="https://api.deepseek.com",
-    model="deepseek-chat",
-    temperature=0
-)
+# LLM Configuration (supports DeepSeek, MiniMax, OpenAI, Azure OpenAI)
+from llm_config import get_llm
+
+llm = get_llm()
 
 # ====================== CSV Data Loading Function ======================
 
@@ -630,7 +626,7 @@ def apply_bandwidth_adjustments(slice_type, user_adjustments):
     else:  # mMTC
         slice_key = "mmtc_slice"
     
-    # Dictionary to map user_id to new values for faster lookup
+    # Dictionary to maps user_id to new values for faster lookup
     adjustment_map = {user_id: (new_bw, new_rate) for user_id, _, new_bw, _, new_rate in user_adjustments}
     
     # Calculate total bandwidth reduction
@@ -2105,7 +2101,7 @@ def main(num_users=4, export_file="fileName.csv"):
     print("Starting network slice management system with CSV-based user testing...\n")
 
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\WirelessAgent_R1\ray_tracing_results.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\RayTracingResults\ray_tracing_results_north.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)

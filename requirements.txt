@@ -54,3 +54,10 @@ tzdata==2025.2
 urllib3==2.5.0
 xxhash==3.6.0
 zstandard==0.25.0
+# RAG dependencies
+faiss-cpu==1.7.4
+rank-bm25==0.2.2
+langchain-community==0.2.16
+sentence-transformers==5.2.3
+torch==2.10.0
+transformers==5.3.0
