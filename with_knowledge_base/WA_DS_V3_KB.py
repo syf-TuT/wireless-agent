@@ -19,7 +19,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from llm_config import get_llm
 
-llm = get_llm("deepseek")
+llm = get_llm("minimax")
 
 # ====================== RAG System Initialization ======================
 # Import RAG optimization module
@@ -38,17 +38,21 @@ def init_rag():
 
     # Determine knowledge base path
     kb_path = r"F:\code\wirelessagent\with_knowledge_base\Intent_Understand.txt"
-
+    import os
     # Fallback to old path if new one doesn't exist
     if not os.path.exists(kb_path):
         kb_path = r"F:\code\WirelessAgent_R1\Knowledge_Base\Intent_Understand.txt"
 
     print(f"[RAG] Using knowledge base: {kb_path}")
 
+    # 本地模型路径
+
+    local_model_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "all-MiniLM-L6-v2")
+
     try:
         _, hybrid_retriever = initialize_rag_system(
             knowledge_base_path=kb_path,
-            embedding_model="all-MiniLM-L6-v2"
+            embedding_model=local_model_path
         )
         RAG_INITIALIZED = True
         print("[RAG] RAG system initialized successfully!")

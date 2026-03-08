@@ -9,6 +9,9 @@ import re
 import os
 import pickle
 from typing import List, Dict, Any, Optional, Tuple
+
+# 使用本地模型（无需网络）
+LOCAL_MODEL_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "all-MiniLM-L6-v2")
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
 from langchain_community.vectorstores import FAISS
@@ -19,8 +22,24 @@ from sentence_transformers import SentenceTransformer
 class LocalSentenceTransformerEmbeddings(Embeddings):
     """本地Sentence Transformer嵌入模型封装"""
 
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
-        self.model = SentenceTransformer(model_name)
+    def __init__(self, model_name: str = LOCAL_MODEL_PATH):
+        # 强制使用本地缓存目录，禁止网络访问
+        cache_folder = os.path.join(os.path.dirname(os.path.dirname(__file__)), "models", "cache")
+        os.makedirs(cache_folder, exist_ok=True)
+
+        # 优先使用本地模型路径
+        if os.path.exists(model_name):
+            self.model = SentenceTransformer(
+                model_name,
+                cache_folder=cache_folder,
+                device='cpu'
+            )
+        else:
+            # 回退到默认模型名（会从HuggingFace下载）
+            self.model = SentenceTransformer(
+                "all-MiniLM-L6-v2",
+                cache_folder=cache_folder
+            )
         self.model_name = model_name
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
