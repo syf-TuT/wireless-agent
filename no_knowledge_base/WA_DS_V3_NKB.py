@@ -8,6 +8,116 @@ from tabulate import tabulate  # For formatted table output
 import pandas as pd  # For reading CSV files and exporting results
 import csv  # For writing CSV files
 
+# ====================== Token Tracking ======================
+# Global token usage tracking
+TOKEN_STATS = {
+    "total_prompt_tokens": 0,
+    "total_completion_tokens": 0,
+    "total_tokens": 0,
+    "llm_call_count": 0
+}
+
+def get_token_usage():
+    """Get current token usage statistics"""
+    return TOKEN_STATS.copy()
+
+def reset_token_stats():
+    """Reset token statistics"""
+    global TOKEN_STATS
+    TOKEN_STATS = {
+        "total_prompt_tokens": 0,
+        "total_completion_tokens": 0,
+        "total_tokens": 0,
+        "llm_call_count": 0
+    }
+
+def llm_with_token_tracking(llm, messages, operation_name="LLM"):
+    """
+    Wrapper for LLM invocation that tracks token usage.
+    Uses tiktoken for estimation when API doesn't return usage.
+
+    Parameters:
+    - llm: The LLM instance
+    - messages: Messages to send to LLM
+    - operation_name: Name of the operation for logging
+
+    Returns:
+    - response: LLM response
+    """
+    global TOKEN_STATS
+
+    # Estimate prompt tokens before call using tiktoken
+    prompt_tokens_estimate = 0
+    try:
+        import tiktoken
+        enc = tiktoken.get_encoding("cl100k_base")
+        for m in messages:
+            if hasattr(m, 'content'):
+                prompt_tokens_estimate += len(enc.encode(str(m.content)))
+            else:
+                prompt_tokens_estimate += len(enc.encode(str(m)))
+    except:
+        # Fallback: rough estimation (1 token ≈ 4 characters)
+        for m in messages:
+            if hasattr(m, 'content'):
+                prompt_tokens_estimate += len(str(m.content)) // 4
+            else:
+                prompt_tokens_estimate += len(str(m)) // 4
+
+    # Invoke LLM
+    try:
+        response = llm.invoke(messages)
+    except Exception as e:
+        print(f"[LLM Error] {operation_name}: {e}")
+        return None
+
+    # Try to get actual token usage from response
+    completion_tokens = 0
+    total_tokens = 0
+
+    try:
+        # Method 1: Check LangChain's usage_metadata
+        if hasattr(response, 'usage_metadata') and response.usage_metadata:
+            usage = response.usage_metadata
+            prompt_tokens = usage.get('input_tokens', prompt_tokens_estimate)
+            completion_tokens = usage.get('output_tokens', 0)
+            total_tokens = usage.get('total_tokens', prompt_tokens + completion_tokens)
+        # Method 2: Check response_metadata
+        elif hasattr(response, 'response_metadata') and response.response_metadata:
+            resp_meta = response.response_metadata
+            if 'usage' in resp_meta:
+                usage = resp_meta['usage']
+                prompt_tokens = usage.get('prompt_tokens', prompt_tokens_estimate)
+                completion_tokens = usage.get('completion_tokens', 0)
+                total_tokens = usage.get('total_tokens', prompt_tokens + completion_tokens)
+            else:
+                # Estimate completion tokens
+                completion_tokens = len(response.content) // 4
+                total_tokens = prompt_tokens_estimate + completion_tokens
+        else:
+            # Method 3: Estimate completion tokens
+            completion_tokens = len(response.content) // 4
+            total_tokens = prompt_tokens_estimate + completion_tokens
+    except Exception:
+        # Fallback: estimate
+        completion_tokens = len(response.content) // 4 if response and hasattr(response, 'content') else 0
+        total_tokens = prompt_tokens_estimate + completion_tokens
+
+    # Calculate actual tokens for this call
+    actual_prompt_tokens = prompt_tokens_estimate
+    actual_completion_tokens = completion_tokens
+    actual_total_tokens = actual_prompt_tokens + actual_completion_tokens
+
+    # Update global stats (cumulative)
+    TOKEN_STATS["total_prompt_tokens"] += actual_prompt_tokens
+    TOKEN_STATS["total_completion_tokens"] += actual_completion_tokens
+    TOKEN_STATS["total_tokens"] += actual_total_tokens
+    TOKEN_STATS["llm_call_count"] += 1
+
+    print(f"[Token] {operation_name}: prompt~{actual_prompt_tokens}, completion~{actual_completion_tokens}, total~{actual_total_tokens}")
+
+    return response
+
 # LangGraph and LangChain related
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
@@ -119,6 +229,7 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileNam
             "URLLC Total Rate Before (Mbps)", "URLLC Total Rate After (Mbps)",
             "mMTC Total Rate Before (Mbps)", "mMTC Total Rate After (Mbps)",
             "Avg Resource Util Before (%)", "Avg Resource Util After (%)",
+            "Token Used", "Prompt Tokens", "Completion Tokens", "LLM Calls",
             "Request"
         ]
 
@@ -149,10 +260,15 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="fileNam
                     result.get("embb_total_rate_after", "N/A"),
                     result.get("urllc_total_rate_before", "N/A"),
                     result.get("urllc_total_rate_after", "N/A"),
-                    result.get("mmtc_total_rate_before", "N/A"),  # 添加mMTC列
-                    result.get("mmtc_total_rate_after", "N/A"),  # 添加mMTC列
+                    result.get("mmtc_total_rate_before", "N/A"),
+                    result.get("mmtc_total_rate_after", "N/A"),
                     result.get("avg_resource_util_before", "N/A"),
                     result.get("avg_resource_util_after", "N/A"),
+                    # Token statistics
+                    result.get("token_used", 0),
+                    result.get("prompt_tokens", 0),
+                    result.get("completion_tokens", 0),
+                    result.get("llm_call_count", 0),
                     result["request"]
                 ]
                 writer.writerow(row)
@@ -1006,9 +1122,9 @@ Please respond with a single number representing your recommended bandwidth in M
     
     try:
         # Call LLM to analyze and recommend bandwidth
-        messages = [SystemMessage(content="You are a network resource allocation expert."), 
+        messages = [SystemMessage(content="You are a network resource allocation expert."),
                    HumanMessage(content=bandwidth_prompt)]
-        response = llm.invoke(messages)
+        response = llm_with_token_tracking(llm, messages, "Bandwidth_Analysis")
         
         # Extract the bandwidth recommendation from the response
         # Look for an integer in the response
@@ -1348,7 +1464,7 @@ Please provide a similarly detailed analysis with a clear slice recommendation f
             messages.append(AIMessage(content=msg["content"]))
     
     # Call LLM to analyze intent
-    response = llm.invoke(messages)
+    response = llm_with_token_tracking(llm, messages, "Intent_Analysis")
     analysis = response.content
     
     # Record response
@@ -1426,7 +1542,7 @@ Please provide your recommendation in this exact format for the user's request.
             messages.append(AIMessage(content=msg["content"]))
 
     # Call LLM to determine slice type
-    response = llm.invoke(messages)
+    response = llm_with_token_tracking(llm, messages, "Slice_Type_Determination")
     decision = response.content
 
     # Record response
@@ -1506,7 +1622,7 @@ Based on workload balancing considerations, we will use {balance_result["recomme
             elif msg["role"] == "assistant":
                 messages.append(AIMessage(content=msg["content"]))
 
-        response = llm.invoke(messages)
+        response = llm_with_token_tracking(llm, messages, "Workload_Balance")
         balance_decision = response.content
 
         # Record response
@@ -1594,8 +1710,8 @@ Based on workload balancing considerations and actual bandwidth requirements, we
                     messages.append(HumanMessage(content=msg["content"]))
                 elif msg["role"] == "assistant":
                     messages.append(AIMessage(content=msg["content"]))
-            
-            response = llm.invoke(messages)
+
+            response = llm_with_token_tracking(llm, messages, "Workload_Balance_Post_BF")
             balance_decision = response.content
             
             # Record response
@@ -1681,7 +1797,7 @@ Please review these resource allocations and confirm if they are appropriate for
             messages.append(AIMessage(content=msg["content"]))
     
     # Call LLM to review resource allocation
-    response = llm.invoke(messages)
+    response = llm_with_token_tracking(llm, messages, "Allocate_Resources")
     review = response.content
     
     # Record response
@@ -1733,7 +1849,7 @@ Please provide a final summary explaining why this user couldn't be accommodated
                 messages.append(AIMessage(content=msg["content"]))
 
         # Call LLM to generate failure evaluation
-        response = llm.invoke(messages)
+        response = llm_with_token_tracking(llm, messages, "Failure_Evaluation")
         evaluation = response.content
 
         # Record final result
@@ -1869,7 +1985,7 @@ Include details about any dynamic adjustments or workload balancing made to acco
             messages.append(AIMessage(content=msg["content"]))
 
     # Call LLM to generate network evaluation
-    response = llm.invoke(messages)
+    response = llm_with_token_tracking(llm, messages, "Network_Evaluation")
     evaluation = response.content
 
     # Record final result
@@ -2100,8 +2216,11 @@ def main(num_users=4, export_file="fileName.csv"):
     """
     print("Starting network slice management system with CSV-based user testing...\n")
 
+    # Reset token statistics at the start
+    reset_token_stats()
+
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\wirelessagent\RayTracingResults\ray_tracing_results_north.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_north.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)
@@ -2120,6 +2239,14 @@ def main(num_users=4, export_file="fileName.csv"):
 
     # Process each user
     for i, user in enumerate(users):
+        # Reset per-user token stats
+        user_token_stats = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+            "llm_calls": 0
+        }
+
         print(f"\n{'-' * 140}")
         print(f"PROCESSING USER {user['user_id']} ({i + 1}/{len(users)})")
         print(f"Request: \"{user['request']}\"")
@@ -2139,6 +2266,14 @@ def main(num_users=4, export_file="fileName.csv"):
             cqi=user['cqi'],
             ground_truth=user.get('ground_truth')
         )
+
+        # Get token usage for this user
+        current_tokens = get_token_usage()
+        # Calculate tokens used for this specific user (cumulative)
+        result["token_used"] = current_tokens["total_tokens"]
+        result["prompt_tokens"] = current_tokens["total_prompt_tokens"]
+        result["completion_tokens"] = current_tokens["total_completion_tokens"]
+        result["llm_call_count"] = current_tokens["llm_call_count"]
 
         # Store detailed result for CSV export
         detailed_results.append(result)

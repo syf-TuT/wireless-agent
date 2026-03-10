@@ -1,31 +1,31 @@
 RX_ID,X,Y,Z,SNR_dB,RX_Power_dBm,CQI,LOS,User_Request,Request_Label
-1,180.95,-13.49,1.50,11.25,-81.74,8,0,I need to check the status of city-wide smart streetlights,mMTC
-2,312.75,-63.51,1.50,-1.55,-94.54,4,0,I want to update my social media status,eMBB
-3,246.55,-156.90,1.50,0.36,-92.63,5,0,Smart city parking sensor reporting availability,mMTC
-4,-35.43,-115.46,1.50,18.47,-74.52,11,0,I want to play competitive mobile games with ultra-low latency,URLLC
-5,193.13,86.12,1.50,7.56,-85.43,7,0,I want to remotely access my work computer,eMBB
-6,-38.78,-89.14,1.50,22.81,-70.18,12,0,I want to use augmented reality navigation,eMBB
-7,307.24,51.48,1.50,-1.05,-94.04,4,0,I need to track the location of a shipping container,mMTC
-8,-99.32,14.26,1.50,20.65,-72.34,12,0,I need to synchronize distributed financial ledgers instantly,URLLC
-9,-26.87,-315.70,1.50,-2.07,-95.06,4,0,I want to download a big game file,eMBB
-10,12.28,-199.44,1.50,8.12,-84.87,7,0,I want to browse websites and check email,eMBB
-11,251.96,-346.48,1.50,-8.28,-101.27,2,0,Smart city parking sensor reporting availability,mMTC
-12,49.27,44.82,1.50,33.56,-59.43,15,0,I want to listen to low-quality audio streaming,eMBB
-13,-70.27,-113.08,1.50,15.99,-77.00,10,0,I need to use cloud-based AI services for image processing,eMBB
-14,157.42,-22.08,1.50,14.31,-78.68,10,0,I need to make a high-quality voice call,eMBB
-15,-35.55,-306.94,1.50,-1.54,-94.53,4,0,I need to sync my calendar and contacts,eMBB
-16,274.53,-81.48,1.50,0.88,-92.11,5,0,Smart city parking sensor reporting availability,mMTC
-17,265.13,59.41,1.50,2.00,-90.99,5,0,I want to listen to low-quality audio streaming,eMBB
-18,-109.86,75.84,1.50,15.12,-77.87,10,0,I need to control precision CNC machines with zero tolerance for delay,URLLC
-19,-16.80,-325.33,1.50,-2.65,-95.64,4,0,I want to stream music while browsing social media,eMBB
-20,40.82,-232.30,1.50,4.59,-88.40,6,0,I want to remotely access my work computer,eMBB
-21,101.02,25.06,1.50,24.05,-68.94,13,0,My smart meter needs to report its reading,mMTC
-22,-8.19,-243.43,1.50,3.70,-89.29,6,0,I want to listen to low-quality audio streaming,eMBB
-23,-40.21,60.96,1.50,27.52,-65.47,14,0,I want to watch 4K video,eMBB
-24,68.89,-337.07,1.50,-3.67,-96.66,3,0,I want to play competitive mobile games with ultra-low latency,URLLC
-25,-70.71,-170.04,1.50,9.35,-83.64,8,0,I want to play competitive mobile games with ultra-low latency,URLLC
-26,314.09,-206.59,1.50,-5.27,-98.26,3,0,I need instant facial recognition for public security threats,URLLC
-27,-18.45,-264.32,1.50,1.83,-91.16,5,0,I want to use augmented reality navigation,eMBB
-28,164.03,-224.18,1.50,1.33,-91.66,5,0,I want to download a large software update,eMBB
-29,-36.77,-183.83,1.50,9.20,-83.79,8,0,I need immediate machine shutdown capability for safety incidents,URLLC
-30,24.08,-312.14,1.50,-1.69,-94.68,4,0,I want to use augmented reality navigation,eMBB
+1,314.58,-53.52,1.50,-1.55,-94.54,4,0,I need instant facial recognition for public security threats,URLLC
+2,-84.91,-72.88,1.50,19.13,-73.86,11,0,I want to browse websites and check email,eMBB
+3,-2.70,-96.15,1.50,23.90,-69.09,13,0,I need to make a high-quality voice call,eMBB
+4,270.41,-73.49,1.50,1.37,-91.62,5,0,I want to download a large software update,eMBB
+5,-25.22,-254.79,1.50,2.55,-90.44,5,0,I need to control precision CNC machines with zero tolerance for delay,URLLC
+6,52.29,-215.16,1.50,6.05,-86.94,7,0,I want to use remote surgery equipment,URLLC
+7,304.99,-324.17,1.50,-9.08,-102.07,1,0,I need to transmit real-time patient vital signs during critical care,URLLC
+8,49.49,15.53,1.50,40.93,-52.06,15,0,I want to browse websites and check email,eMBB
+9,-80.81,-225.93,1.50,3.73,-89.26,6,0,I want to download a big game file,eMBB
+10,3.39,-251.12,1.50,3.07,-89.92,6,0,I need to monitor water level in a reservoir,mMTC
+11,-6.58,29.63,1.50,44.74,-48.25,15,0,I need to make a high-quality voice call,eMBB
+12,-29.09,-343.69,1.50,-3.91,-96.90,3,0,I need to deploy early warning systems for natural disasters,URLLC
+13,-20.14,-175.13,1.50,10.63,-82.36,8,0,My smart trash can needs to signal that it's full,mMTC
+14,13.18,-86.31,1.50,26.46,-66.53,14,0,I want to participate in a virtual reality gaming session,eMBB
+15,172.12,-279.10,1.50,-2.40,-95.39,4,0,Industrial equipment monitoring sensor data,mMTC
+16,261.46,-309.13,1.50,-7.01,-100.00,2,0,I need immediate machine shutdown capability for safety incidents,URLLC
+17,173.29,7.31,1.50,12.26,-80.73,9,0,I want to play competitive mobile games with ultra-low latency,URLLC
+18,-32.96,64.99,1.50,27.78,-65.21,14,0,I need to use maps for basic navigation,eMBB
+19,175.79,-199.88,1.50,2.33,-90.66,5,0,My smart agriculture sensor needs to report soil temperature,mMTC
+20,-40.22,-243.16,1.50,3.32,-89.67,6,0,I want to download a big game file,eMBB
+21,117.70,58.80,1.50,18.34,-74.65,11,0,I need to check the status of my smart home sensors,mMTC
+22,-38.49,-121.26,1.50,17.35,-75.64,11,0,I need to control a robotic arm in real time,URLLC
+23,156.78,-123.14,1.50,8.95,-84.04,8,0,I need instant alerts for life-threatening patient conditions,URLLC
+24,23.54,-274.27,1.50,1.13,-91.86,5,0,I need microsecond-level latency for high-frequency tradin,URLLC
+25,308.04,-202.22,1.50,-4.82,-97.81,3,0,I need to control critical infrastructure with zero downtime,URLLC
+26,81.19,-293.93,1.50,-0.98,-93.97,4,0,A network of environmental sensors needs to report air quality,mMTC
+27,154.78,-19.71,1.50,14.74,-78.25,10,0,I need to control remote diagnostic equipment in rural clinics,URLLC
+28,287.72,-32.48,1.50,0.64,-92.35,5,0,Smart city parking sensor reporting availability,mMTC
+29,30.66,-97.45,1.50,23.33,-69.66,13,0,I want to update my social media status,eMBB
+30,-24.96,-87.95,1.50,24.39,-68.60,13,0,I need real-time fraud detection for financial transactions,URLLC
