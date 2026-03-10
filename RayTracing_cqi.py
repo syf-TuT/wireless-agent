@@ -394,7 +394,7 @@ def perform_ray_tracing(tx_position, rx_positions, buildings, tx_power_dBm=30):
 
 def main():
     # File path
-    file_path = r"/maps\TJU_north.osm"
+    file_path = "maps/TJU_west.osm"
     
     try:
         # Parse buildings from OSM
