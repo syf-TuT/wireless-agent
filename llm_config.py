@@ -17,8 +17,8 @@ LLM_CONFIGS = {
     },
     "minimax": {
         "api_key": os.getenv("MINIMAX_API_KEY", ""),
-        "base_url": "https://api.minimax.io/v1",
-        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5"),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5-highspeed"),
         "temperature": 0
     },
     "openai": {
