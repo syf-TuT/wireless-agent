@@ -167,7 +167,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from llm_config import get_llm
 
-llm = get_llm("minimax")
+llm = get_llm("minimax-m2.1")
 
 # ====================== RAG System Initialization ======================
 # Import RAG optimization module
@@ -225,7 +225,7 @@ def load_knowledge_base(file_path):
         return content
 
 # Knowledge base file path
-KNOWLEDGE_BASE_PATH = r"F:\code\WirelessAgent_R1\Knowledge_Base\Intent_Understand.txt"
+KNOWLEDGE_BASE_PATH = r"F:\code\wirelessagent\with_knowledge_base\Intent_Understand.txt"
 # Preload knowledge base
 KNOWLEDGE_BASE_CONTENT = load_knowledge_base(KNOWLEDGE_BASE_PATH)
 
@@ -1044,7 +1044,7 @@ def check_workload_balance(target_slice_type, cqi, required_bandwidth):
             if urllc_potential_rate is not None:
                 if 1 <= urllc_potential_rate <= 100:  # URLLC rate range
                     return True, "URLLC", f"Rebalancing workload: URLLC utilization ({urllc_rate:.2%}) is significantly lower than eMBB ({embb_rate:.2%})"
-        elif mmtc_diff > 0.2 and mmtc_rate < embb_rate and mmtc_rate < urllc_rate:
+        elif mmtc_diff > 0.8 and mmtc_rate < embb_rate and mmtc_rate < urllc_rate:
             if mmtc_potential_rate is not None:
                 if 0.1 <= mmtc_potential_rate <= 1:  # mMTC rate range
                     return True, "mMTC", f"Rebalancing workload: mMTC utilization ({mmtc_rate:.2%}) is significantly lower than eMBB ({embb_rate:.2%})"
@@ -1058,7 +1058,7 @@ def check_workload_balance(target_slice_type, cqi, required_bandwidth):
             if embb_potential_rate is not None:
                 if 100 <= embb_potential_rate <= 400:  # eMBB rate range
                     return True, "eMBB", f"Rebalancing workload: eMBB utilization ({embb_rate:.2%}) is significantly lower than URLLC ({urllc_rate:.2%})"
-        elif mmtc_diff > 0.2 and mmtc_rate < urllc_rate and mmtc_rate < embb_rate:
+        elif mmtc_diff > 0.8 and mmtc_rate < urllc_rate and mmtc_rate < embb_rate:
             if mmtc_potential_rate is not None:
                 if 0.1 <= mmtc_potential_rate <= 1:  # mMTC rate range
                     return True, "mMTC", f"Rebalancing workload: mMTC utilization ({mmtc_rate:.2%}) is significantly lower than URLLC ({urllc_rate:.2%})"
@@ -1068,11 +1068,11 @@ def check_workload_balance(target_slice_type, cqi, required_bandwidth):
         embb_diff = abs(mmtc_rate - embb_rate)
         urllc_diff = abs(mmtc_rate - urllc_rate)
 
-        if embb_diff > 0.2 and embb_rate < mmtc_rate and embb_rate < urllc_rate:
+        if embb_diff > 0.8 and embb_rate < mmtc_rate and embb_rate < urllc_rate:
             if embb_potential_rate is not None:
                 if 100 <= embb_potential_rate <= 400:  # eMBB rate range
                     return True, "eMBB", f"Rebalancing workload: eMBB utilization ({embb_rate:.2%}) is significantly lower than mMTC ({mmtc_rate:.2%})"
-        elif urllc_diff > 0.2 and urllc_rate < mmtc_rate and urllc_rate < embb_rate:
+        elif urllc_diff > 0.8 and urllc_rate < mmtc_rate and urllc_rate < embb_rate:
             if urllc_potential_rate is not None:
                 if 1 <= urllc_potential_rate <= 100:  # URLLC rate range
                     return True, "URLLC", f"Rebalancing workload: URLLC utilization ({urllc_rate:.2%}) is significantly lower than mMTC ({mmtc_rate:.2%})"
@@ -1261,7 +1261,7 @@ def _infer_slice_type(query: str) -> str:
         return "URLLC - Low latency and high reliability required"
 
     # mMTC keywords
-    if any(k in query_lower for k in ['sensor', 'meter', 'iot', 'monitor', 'smart', 'wearable', 'massive']):
+    if any(k in query_lower for k in ['sensor', 'meter', 'iot', 'monitor', 'smart', 'wearable', 'massive', "track" ]):
         return "mMTC - Massive machine-type communications"
 
     return "Unknown - Please analyze with LLM"
@@ -2597,7 +2597,7 @@ def main(num_users=4, export_file="fileName.csv"):
     reset_token_stats()
 
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_north.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)
@@ -2841,4 +2841,4 @@ if __name__ == "__main__":
     print("=" * 60)
 
     # Test with 10 users by default and export results to CSV
-    main(num_users=30, export_file="network_slicing_results_DSv3KB.csv") # The number of users can be adjusted as needed
+    main(num_users=30, export_file=r"F:\code\wirelessagent\run_results\batch_run\kb\minimax-m2.1\network_slicing_results_TJU_gym_minimax-m2.1.csv") # The number of users can be adjusted as needed

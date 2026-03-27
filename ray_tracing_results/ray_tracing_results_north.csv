@@ -1,31 +1,31 @@
 RX_ID,X,Y,Z,SNR_dB,RX_Power_dBm,CQI,LOS,User_Request,Request_Label
-1,314.58,-53.52,1.50,-1.55,-94.54,4,0,I need instant facial recognition for public security threats,URLLC
-2,-84.91,-72.88,1.50,19.13,-73.86,11,0,I want to browse websites and check email,eMBB
-3,-2.70,-96.15,1.50,23.90,-69.09,13,0,I need to make a high-quality voice call,eMBB
-4,270.41,-73.49,1.50,1.37,-91.62,5,0,I want to download a large software update,eMBB
-5,-25.22,-254.79,1.50,2.55,-90.44,5,0,I need to control precision CNC machines with zero tolerance for delay,URLLC
-6,52.29,-215.16,1.50,6.05,-86.94,7,0,I want to use remote surgery equipment,URLLC
-7,304.99,-324.17,1.50,-9.08,-102.07,1,0,I need to transmit real-time patient vital signs during critical care,URLLC
-8,49.49,15.53,1.50,40.93,-52.06,15,0,I want to browse websites and check email,eMBB
-9,-80.81,-225.93,1.50,3.73,-89.26,6,0,I want to download a big game file,eMBB
-10,3.39,-251.12,1.50,3.07,-89.92,6,0,I need to monitor water level in a reservoir,mMTC
-11,-6.58,29.63,1.50,44.74,-48.25,15,0,I need to make a high-quality voice call,eMBB
-12,-29.09,-343.69,1.50,-3.91,-96.90,3,0,I need to deploy early warning systems for natural disasters,URLLC
-13,-20.14,-175.13,1.50,10.63,-82.36,8,0,My smart trash can needs to signal that it's full,mMTC
-14,13.18,-86.31,1.50,26.46,-66.53,14,0,I want to participate in a virtual reality gaming session,eMBB
-15,172.12,-279.10,1.50,-2.40,-95.39,4,0,Industrial equipment monitoring sensor data,mMTC
-16,261.46,-309.13,1.50,-7.01,-100.00,2,0,I need immediate machine shutdown capability for safety incidents,URLLC
-17,173.29,7.31,1.50,12.26,-80.73,9,0,I want to play competitive mobile games with ultra-low latency,URLLC
-18,-32.96,64.99,1.50,27.78,-65.21,14,0,I need to use maps for basic navigation,eMBB
-19,175.79,-199.88,1.50,2.33,-90.66,5,0,My smart agriculture sensor needs to report soil temperature,mMTC
-20,-40.22,-243.16,1.50,3.32,-89.67,6,0,I want to download a big game file,eMBB
-21,117.70,58.80,1.50,18.34,-74.65,11,0,I need to check the status of my smart home sensors,mMTC
-22,-38.49,-121.26,1.50,17.35,-75.64,11,0,I need to control a robotic arm in real time,URLLC
-23,156.78,-123.14,1.50,8.95,-84.04,8,0,I need instant alerts for life-threatening patient conditions,URLLC
-24,23.54,-274.27,1.50,1.13,-91.86,5,0,I need microsecond-level latency for high-frequency tradin,URLLC
-25,308.04,-202.22,1.50,-4.82,-97.81,3,0,I need to control critical infrastructure with zero downtime,URLLC
-26,81.19,-293.93,1.50,-0.98,-93.97,4,0,A network of environmental sensors needs to report air quality,mMTC
-27,154.78,-19.71,1.50,14.74,-78.25,10,0,I need to control remote diagnostic equipment in rural clinics,URLLC
-28,287.72,-32.48,1.50,0.64,-92.35,5,0,Smart city parking sensor reporting availability,mMTC
-29,30.66,-97.45,1.50,23.33,-69.66,13,0,I want to update my social media status,eMBB
-30,-24.96,-87.95,1.50,24.39,-68.60,13,0,I need real-time fraud detection for financial transactions,URLLC
+1,-248.48,-61.09,1.50,8.75,-84.24,8,0,I want to use augmented reality navigation,eMBB
+2,105.05,217.75,1.50,2.20,-90.79,5,0,I need immediate machine shutdown capability for safety incidents,URLLC
+3,-140.79,-51.03,1.50,18.33,-74.66,11,0,I need to balance electrical load in real-time across microgrids,URLLC
+4,-274.59,22.16,1.50,10.72,-82.27,8,0,I need to check the status of city-wide smart streetlights,mMTC
+5,-80.54,-12.76,1.50,26.58,-66.41,14,0,I want to use remote surgery equipment,URLLC
+6,102.46,60.88,1.50,6.96,-86.03,7,0,My smart parking sensor needs to report if the spot is free,mMTC
+7,117.10,13.55,1.50,4.91,-88.08,6,0,I need immediate machine shutdown capability for safety incidents,URLLC
+8,-277.42,38.27,1.50,10.79,-82.20,8,0,I need to transmit real-time patient vital signs during critical care,URLLC
+9,-4.08,239.67,1.50,7.72,-85.27,7,0,A fleet of delivery drones needs to send low-rate telemetry data,mMTC
+10,-145.66,214.38,1.50,13.52,-79.47,9,0,A network of environmental sensors needs to report air quality,mMTC
+11,-122.07,97.58,1.50,43.36,-49.63,15,0,I need to detect and isolate power grid faults instantly,URLLC
+12,-13.71,257.65,1.50,6.53,-86.46,7,0,I need to check the status of my smart home sensors,mMTC
+13,1.05,216.96,1.50,9.55,-83.44,8,0,I need to check weather forecasts,eMBB
+14,11.60,-34.57,1.50,13.35,-79.64,9,0,I need reliable communication for firefighters inside buildings,URLLC
+15,-238.23,135.31,1.50,14.06,-78.93,9,0,I need to use maps for basic navigation,eMBB
+16,-120.04,-31.79,1.50,22.82,-70.17,12,0,I need to stream 8K video content,eMBB
+17,26.54,212.76,1.50,8.11,-84.88,7,0,I need instant alerts for life-threatening patient conditions,URLLC
+18,66.73,9.20,1.50,9.91,-83.08,8,0,My smart meter needs to report its reading,mMTC
+19,-18.64,247.15,1.50,7.74,-85.25,7,0,I need to control a robotic arm in real time,URLLC
+20,-186.18,-14.23,1.50,19.87,-73.12,11,0,I want to watch 4K video,eMBB
+21,-6.43,91.62,1.50,22.17,-70.82,12,0,I want to stream music while browsing social media,eMBB
+22,-124.99,163.97,1.50,22.73,-70.26,12,0,My asset tracking device needs to send location update,mMTC
+23,-48.90,25.96,1.50,30.23,-62.76,15,0,A network of environmental sensors needs to report air quality,mMTC
+24,-282.81,33.75,1.50,10.05,-82.94,8,0,I need to deploy early warning systems for natural disasters,URLLC
+25,-292.12,-43.49,1.50,6.10,-86.89,7,0,I want to update my social media status,eMBB
+26,-142.63,226.13,1.50,12.07,-80.92,9,0,I need to control precision CNC machines with zero tolerance for delay,URLLC
+27,-243.80,160.82,1.50,11.63,-81.36,9,0,I need to deploy early warning systems for natural disasters,URLLC
+28,50.51,-0.88,1.50,11.33,-81.66,8,0,I need to check the status of city-wide smart streetlights,mMTC
+29,-281.10,65.09,1.50,10.62,-82.37,8,0,I need to check the status of my smart home sensors,mMTC
+30,-281.71,-30.82,1.50,7.68,-85.31,7,0,I need to balance electrical load in real-time across microgrids,URLLC

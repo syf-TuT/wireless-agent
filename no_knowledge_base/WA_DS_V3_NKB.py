@@ -4,6 +4,7 @@ import math
 import random
 from datetime import datetime
 import re
+import copy
 from tabulate import tabulate  # For formatted table output
 import pandas as pd  # For reading CSV files and exporting results
 import csv  # For writing CSV files
@@ -126,7 +127,7 @@ from langchain_core.tools import tool
 # LLM Configuration (supports DeepSeek, MiniMax, OpenAI, Azure OpenAI)
 from llm_config import get_llm
 
-llm = get_llm()
+llm = get_llm("kimi-k2.5")
 
 # ====================== CSV Data Loading Function ======================
 
@@ -362,7 +363,7 @@ GLOBAL_NETWORK_STATE = {
 }
 
 # Store initial network state for reset operations
-INITIAL_NETWORK_STATE = GLOBAL_NETWORK_STATE.copy()
+INITIAL_NETWORK_STATE = copy.deepcopy(GLOBAL_NETWORK_STATE)
 
 # Store network state before each allocation for comparison
 PREVIOUS_NETWORK_STATE = None
@@ -2220,7 +2221,7 @@ def main(num_users=4, export_file="fileName.csv"):
     reset_token_stats()
 
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_north.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)
@@ -2446,4 +2447,4 @@ def main(num_users=4, export_file="fileName.csv"):
 
 if __name__ == "__main__":
     # Test with 10 users by default and export results to CSV
-    main(num_users=30, export_file="network_slicing_results_DSv3NKB.csv") # The number of users can be adjusted as needed
+    main(num_users=30, export_file=r"F:\code\wirelessagent\run_results\batch_run\nkb\kimi-k2.5\network_slicing_results_TJU_east_kimi-k2.5.csv") # The number of users can be adjusted as needed

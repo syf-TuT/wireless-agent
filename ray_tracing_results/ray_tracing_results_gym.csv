@@ -1,0 +1,31 @@
+RX_ID,X,Y,Z,SNR_dB,RX_Power_dBm,CQI,LOS,User_Request,Request_Label
+1,338.01,30.02,1.50,-3.80,-96.79,3,0,A network of environmental sensors needs to report air quality,mMTC
+2,132.24,307.95,1.50,18.88,-74.11,11,0,I want to browse websites and check email,eMBB
+3,-23.50,282.08,1.50,22.97,-70.02,13,0,I need to monitor water level in a reservoir,mMTC
+4,364.20,248.09,1.50,-1.87,-94.86,4,0,My wearable device needs to upload health data periodically,mMTC
+5,103.10,37.02,1.50,9.11,-83.88,8,0,I need to use cloud-based AI services for image processing,eMBB
+6,168.27,-31.64,1.50,0.88,-92.11,5,0,I need to stream 8K video content,eMBB
+7,286.69,265.94,1.50,3.98,-89.01,6,0,I need to track the location of a shipping container,mMTC
+8,6.57,272.80,1.50,30.00,-62.99,15,0,My wearable device needs to upload health data periodically,mMTC
+9,237.93,154.42,1.50,8.24,-84.75,7,0,I need reliable connectivity for implanted medical devices,URLLC
+10,-52.09,-33.52,1.50,1.10,-91.89,5,0,I need to check weather forecasts,eMBB
+11,293.82,190.49,1.50,3.62,-89.37,6,0,I need to check the status of city-wide smart streetlights,mMTC
+12,347.09,72.21,1.50,-2.95,-95.94,3,0,I need microsecond-level latency for high-frequency tradin,URLLC
+13,212.67,202.43,1.50,12.51,-80.48,9,0,I want to use holographic communication,eMBB
+14,-14.82,128.81,1.50,20.28,-72.71,12,0,I need to control critical infrastructure with zero downtime,URLLC
+15,179.72,58.52,1.50,7.35,-85.64,7,0,I need real-time fraud detection for financial transactions,URLLC
+16,72.09,351.22,1.50,16.47,-76.52,10,0,I need instant facial recognition for public security threats,URLLC
+17,103.56,134.48,1.50,23.06,-69.93,13,0,My smart trash can needs to signal that it's full,mMTC
+18,394.90,210.90,1.50,-3.82,-96.81,3,0,I need reliable communication for firefighters inside buildings,URLLC
+19,367.67,327.99,1.50,-3.25,-96.24,3,0,I need to monitor water level in a reservoir,mMTC
+20,-17.62,89.71,1.50,14.52,-78.47,10,0,I need to make a high-quality voice call,eMBB
+21,135.99,145.94,1.50,20.55,-72.44,12,0,I want to use holographic communication,eMBB
+22,78.93,342.87,1.50,17.62,-75.37,11,0,I need to check the status of my smart home sensors,mMTC
+23,408.93,-50.22,1.50,-9.57,-102.56,1,0,I need to detect and isolate power grid faults instantly,URLLC
+24,5.77,-45.83,1.50,1.46,-91.53,5,0,I want to use remote surgery equipment,URLLC
+25,383.29,-21.45,1.50,-7.65,-100.64,2,0,I want to stream music while browsing social media,eMBB
+26,254.89,313.44,1.50,5.42,-87.57,6,0,I need to balance electrical load in real-time across microgrids,URLLC
+27,379.45,92.69,1.50,-4.31,-97.30,3,0,I need to transmit real-time patient vital signs during critical care,URLLC
+28,305.12,362.93,1.50,-0.28,-93.27,4,0,I need reliable communication for firefighters inside buildings,URLLC
+29,55.37,275.21,1.50,34.68,-58.31,15,0,I need to participate in an online multiplayer game,URLLC
+30,-21.37,54.24,1.50,10.09,-82.90,8,0,I want to browse websites and check email,eMBB

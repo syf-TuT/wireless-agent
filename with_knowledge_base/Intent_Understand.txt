@@ -119,4 +119,11 @@
 ("My asset tracking device needs to send location update", "mMTC"),
 ("Smart city parking sensor reporting availability", "mMTC"),
 ("Industrial equipment monitoring sensor data", "mMTC")
-
+("I need to monitor water level in a reservoir periodically", "mMTC"),
+("I need to track the location of a shipping container", "mMTC"),
+("My wearable device needs to upload health data periodically", "mMTC"),
+("I need to check the status of city-wide smart streetlights", "mMTC"),
+("I need to check the status of my smart home sensors", "mMTC"),
+("The sensor needs to upload data every hour", "mMTC"),
+("I want to periodically check my smart device status", "mMTC"),
+("My IoT device reports data at regular intervals", "mMTC")

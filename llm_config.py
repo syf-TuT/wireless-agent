@@ -5,35 +5,82 @@ import os
 from langchain_openai import ChatOpenAI
 
 # Default to DeepSeek if not specified
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "deepseek").lower()
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "glm-5").lower()
 
 # LLM Model Configurations
 LLM_CONFIGS = {
-    "deepseek": {
-        "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
-        "base_url": "https://api.deepseek.com",
-        "model": "deepseek-chat",
-        "temperature": 0
-    },
-    "minimax": {
+    # "deepseek": {
+    #     "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
+    #     "base_url": "https://api.deepseek.com",
+    #     "model": "deepseek-chat",
+    #     "temperature": 0
+    # },
+    "minimax-m2": {
         "api_key": os.getenv("MINIMAX_API_KEY", ""),
         "base_url": "https://api.minimaxi.com/v1",
-        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5-highspeed"),
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2"),
         "temperature": 0
     },
-    "openai": {
-        "api_key": os.getenv("OPENAI_API_KEY", ""),
-        "base_url": "https://api.openai.com/v1",
-        "model": os.getenv("OPENAI_MODEL", "gpt-4o"),
+    "minimax-m2.1": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.1"),
         "temperature": 0
     },
-    "azure_openai": {
-        "api_key": os.getenv("AZURE_OPENAI_API_KEY", ""),
-        "base_url": os.getenv("AZURE_OPENAI_ENDPOINT", ""),
-        "model": os.getenv("AZURE_OPENAI_DEPLOYMENT", "gpt-4"),
-        "temperature": 0,
-        "api_version": "2024-02-01"
-    }
+    "minimax-m2.5": {
+            "api_key": os.getenv("MINIMAX_API_KEY", ""),
+            "base_url": "https://api.minimaxi.com/v1",
+            "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5-highspeed"),
+            "temperature": 0
+    },
+    # "glm-4.7": {
+    #     "api_key": "sk-sp-3e78c46552b54cc79e87686fb28a0475",
+    #     "base_url": "https://coding.dashscope.aliyuncs.com/v1",
+    #     "model": "glm-4.7",
+    #     "temperature": 0
+    # },
+    "glm-4.7": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.7-highspeed"),
+        "temperature": 0
+    },
+    "glm-5": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.7-highspeed"),
+        "temperature": 0
+    },
+    # "glm-5": {
+    #     "api_key": "sk-sp-3e78c46552b54cc79e87686fb28a0475",
+    #     "base_url": "https://coding.dashscope.aliyuncs.com/v1",
+    #     "model": "glm-5",
+    #     "temperature": 0
+    # },
+    "qwen3-coder-next": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.7-highspeed"),
+        "temperature": 0
+    },
+    "qwen3-coder-plus": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.7-highspeed"),
+        "temperature": 0
+    },
+    # "kimi-k2.5": {
+    #     "api_key": "ms-2a1c196e-a453-4e1c-90c1-cc228772cfe4",
+    #     "base_url": "https://api-inference.modelscope.cn/v1",
+    #     "model": "moonshotai/Kimi-K2.5",
+    #     "temperature": 0
+    # },
+    "kimi-k2.5": {
+        "api_key": os.getenv("MINIMAX_API_KEY", ""),
+        "base_url": "https://api.minimaxi.com/v1",
+        "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.7-highspeed"),
+        "temperature": 0
+    },
 }
 
 

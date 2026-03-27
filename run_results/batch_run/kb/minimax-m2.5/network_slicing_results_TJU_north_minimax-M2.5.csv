@@ -1,0 +1,43 @@
+User ID,Allocation Status,Slice,Ground Truth,Intent Correct,CQI,Bandwidth (MHz),Rate (Mbps),Latency (ms),Adjustments Made,eMBB Total Rate Before (Mbps),eMBB Total Rate After (Mbps),URLLC Total Rate Before (Mbps),URLLC Total Rate After (Mbps),mMTC Total Rate Before (Mbps),mMTC Total Rate After (Mbps),Avg Resource Util Before (%),Avg Resource Util After (%),Token Used,Prompt Tokens,Completion Tokens,LLM Calls,Request
+1,Success,eMBB,eMBB,Yes,8,20,172.78,40.0,No,0,172.78,0,0,0,0,0.0,15.38,15949,12592,3357,5,I want to use augmented reality navigation
+2,Success,URLLC,URLLC,Yes,5,1.0,6.19,5.0,No,172.78,172.78,0,6.19,0,0,15.38,16.15,30902,23874,7028,10,I need immediate machine shutdown capability for safety incidents
+3,Success,URLLC,URLLC,Yes,11,1.0,11.33,5.0,No,172.78,172.78,6.19,17.52,0,0,16.15,16.92,45881,35583,10298,15,I need to balance electrical load in real-time across microgrids
+4,Success,mMTC,mMTC,Yes,8,0.9,7.78,1000.0,No,172.78,172.78,17.52,17.52,0,7.78,16.92,17.62,60925,47418,13507,20,I need to check the status of city-wide smart streetlights
+5,Success,URLLC,URLLC,Yes,14,5.0,70.85,1.0,No,172.78,172.78,17.52,88.37,7.78,7.78,17.62,21.46,75840,58822,17018,25,I want to use remote surgery equipment
+6,Success,mMTC,mMTC,Yes,7,2.9,22.59,500.0,No,172.78,172.78,88.37,88.37,7.78,30.37,21.46,23.69,91507,70823,20684,30,My smart parking sensor needs to report if the spot is free
+7,Success,URLLC,URLLC,Yes,6,5.0,34.87,5.0,No,172.78,172.78,88.37,123.24,30.37,30.37,23.69,27.54,106251,82291,23960,35,I need immediate machine shutdown capability for safety incidents
+8,Success,URLLC,URLLC,Yes,8,1.0,8.64,5.0,No,172.78,172.78,123.24,131.88,30.37,30.37,27.54,28.31,120929,93700,27229,40,I need to transmit real-time patient vital signs during critical care
+9,Success,mMTC,mMTC,Yes,7,2.9,22.59,1000.0,No,172.78,172.78,131.88,131.88,30.37,52.96,28.31,30.54,136550,105870,30680,45,A fleet of delivery drones needs to send low-rate telemetry data
+10,Success,mMTC,mMTC,Yes,9,2.9,27.59,500.0,No,172.78,172.78,131.88,131.88,52.96,80.55,30.54,32.77,152127,117636,34491,50,A network of environmental sensors needs to report air quality
+11,Success,URLLC,URLLC,Yes,15,5.0,75.68,5.0,No,172.78,172.78,131.88,207.56,80.55,80.55,32.77,36.62,167482,129410,38072,55,I need to detect and isolate power grid faults instantly
+12,Success,mMTC,mMTC,Yes,7,0.9,7.01,500.0,Yes,172.78,172.78,207.56,207.56,80.55,82.81,36.62,36.92,183636,141878,41758,60,I need to check the status of my smart home sensors
+13,Success,eMBB,eMBB,Yes,8,20,172.78,40.0,No,172.78,345.56,207.56,207.56,82.81,82.81,36.92,52.31,199777,154425,45352,65,I need to check weather forecasts
+14,Success,URLLC,URLLC,Yes,9,1.0,9.51,5.0,No,345.56,345.56,207.56,217.07,82.81,82.81,52.31,53.08,213658,165285,48373,70,I need reliable communication for firefighters inside buildings
+15,Success,eMBB,eMBB,Yes,9,20,190.3,40.0,No,345.56,535.86,217.07,217.07,82.81,82.81,53.08,68.46,231025,178639,52386,75,I need to use maps for basic navigation
+16,Success,eMBB,eMBB,Yes,12,20,245.31,50.0,No,535.86,781.17,217.07,217.07,82.81,82.81,68.46,83.85,245915,190270,55645,80,I need to stream 8K video content
+17,Success,URLLC,URLLC,Yes,7,5.0,38.95,5.0,No,781.17,781.17,217.07,256.02,82.81,82.81,83.85,87.69,261962,202230,59732,85,I need instant alerts for life-threatening patient conditions
+18,Success,mMTC,mMTC,Yes,8,0.9,7.78,500.0,Yes,781.17,781.17,256.02,256.02,82.81,82.02,87.69,87.69,276692,213880,62812,90,My smart meter needs to report its reading
+19,Success,URLLC,URLLC,Yes,7,5.0,38.95,3.0,No,781.17,781.17,256.02,294.97,82.02,82.02,87.69,91.54,292824,226115,66709,95,I need to control a robotic arm in real time
+20,Success,eMBB,eMBB,Yes,11,20,226.64,50.0,Yes,781.17,885.16,294.97,294.97,82.02,82.02,91.54,99.23,309027,238896,70131,100,I want to watch 4K video
+21,Success,eMBB,eMBB,Yes,12,20,245.31,50.0,Yes,885.16,920.18,294.97,294.97,82.02,82.02,99.23,99.23,324364,251010,73354,105,I want to stream music while browsing social media
+22,Success,mMTC,mMTC,Yes,12,0.9,11.04,500.0,Yes,920.18,920.18,294.97,294.97,82.02,86.05,99.23,99.23,339355,262786,76569,110,My asset tracking device needs to send location update
+23,Success,mMTC,mMTC,Yes,15,0.9,13.62,500.0,Yes,920.18,920.18,294.97,294.97,86.05,92.66,99.23,99.23,354736,274760,79976,115,A network of environmental sensors needs to report air quality
+24,Success,URLLC,URLLC,Yes,8,1.0,8.64,5.0,No,920.18,920.18,294.97,303.61,92.66,92.66,99.23,100.0,370750,287271,83479,120,I need to deploy early warning systems for natural disasters
+25,Success,eMBB,eMBB,Yes,7,20,155.8,40.0,Yes,920.18,863.31,303.61,303.61,92.66,92.66,100.0,100.0,392925,305206,87719,126,I want to update my social media status
+26,Success,URLLC,URLLC,Yes,9,1.0,9.51,3.0,Yes,863.31,863.31,303.61,297.98,92.66,92.66,100.0,100.0,407861,317007,90854,131,I need to control precision CNC machines with zero tolerance for delay
+27,Success,URLLC,URLLC,Yes,9,1.0,9.51,5.0,Yes,863.31,863.31,297.98,293.32,92.66,92.66,100.0,100.0,423089,329039,94050,136,I need to deploy early warning systems for natural disasters
+28,Success,mMTC,mMTC,Yes,8,0.9,7.78,1000.0,Yes,863.31,863.31,293.32,293.32,92.66,93.43,100.0,100.0,438579,341220,97359,141,I need to check the status of city-wide smart streetlights
+29,Success,mMTC,mMTC,Yes,8,0.9,7.78,500.0,Yes,863.31,863.31,293.32,293.32,93.43,94.2,100.0,100.0,454396,353685,100711,146,I need to check the status of my smart home sensors
+30,Success,URLLC,URLLC,Yes,7,1.0,7.79,5.0,Yes,863.31,863.31,293.32,285.98,94.2,94.2,100.0,100.0,469183,365579,103604,151,I need to balance electrical load in real-time across microgrids
+
+SUMMARY STATISTICS
+Average Resource Utilization (%),100.00
+Final Resource Utilization (%),100.00
+Final eMBB Total Rate (Mbps),863.31
+Final URLLC Total Rate (Mbps),285.98
+Final mMTC Total Rate (Mbps),94.20
+
+INTENT UNDERSTANDING EVALUATION
+Total Evaluated Requests,30
+Correctly Identified Intents,30
+Intent Understanding Rate (%),100.00

@@ -1,0 +1,31 @@
+RX_ID,X,Y,Z,SNR_dB,RX_Power_dBm,CQI,LOS,User_Request,Request_Label
+1,-216.45,345.90,1.50,-7.83,-100.82,2,0,I need immediate machine shutdown capability for safety incidents,URLLC
+2,59.67,341.62,1.50,-4.23,-97.22,3,0,I need my autonomous vehicle to communicate in real time,URLLC
+3,61.11,17.19,1.50,31.09,-61.90,15,0,My smart agriculture sensor needs to report soil temperature,mMTC
+4,-43.37,43.87,1.50,29.97,-63.02,15,0,I need to participate in an online multiplayer game,URLLC
+5,80.52,317.43,1.50,-2.99,-95.98,3,0,A fleet of delivery drones needs to send low-rate telemetry data,mMTC
+6,-78.66,274.74,1.50,-0.19,-93.18,4,0,I want to play competitive mobile games with ultra-low latency,URLLC
+7,-72.85,2.34,1.50,27.16,-65.83,14,0,I need to participate in an online multiplayer game,URLLC
+8,-96.45,292.26,1.50,-1.77,-94.76,4,0,I want to browse websites and check email,eMBB
+9,-25.74,241.98,1.50,3.26,-89.73,6,0,I want to monitor my home security cameras remotely,eMBB
+10,79.93,294.98,1.50,-1.50,-94.49,4,0,I need to make a high-quality voice call,eMBB
+11,-259.44,196.90,1.50,-3.04,-96.03,3,0,I need to send text messages and use messaging apps,eMBB
+12,-93.13,339.04,1.50,-4.61,-97.60,3,0,I want to play competitive mobile games with ultra-low latency,URLLC
+13,-146.83,-58.26,1.50,12.29,-80.70,9,0,I need real-time traffic updates for navigation,eMBB
+14,-235.76,68.89,1.50,2.95,-90.04,6,0,My wearable device needs to upload health data periodically,mMTC
+15,85.24,-17.89,1.50,25.35,-67.63,13,0,I need to use cloud-based AI services for image processing,eMBB
+16,-35.31,138.73,1.50,14.27,-78.72,9,0,I need instant facial recognition for public security threats,URLLC
+17,-14.97,-26.84,1.50,40.71,-52.28,15,0,I need to monitor and control critical manufacturing processes in real-time,URLLC
+18,-8.90,324.63,1.50,-2.87,-95.86,3,0,I need to check the status of my smart home sensors,mMTC
+19,-249.47,274.99,1.50,-5.82,-98.81,2,0,Industrial equipment monitoring sensor data,mMTC
+20,80.93,83.29,1.50,19.06,-73.93,11,0,I want to download a big game file,eMBB
+21,-214.46,35.99,1.50,5.52,-87.47,6,0,I want to update my social media status,eMBB
+22,-216.60,307.92,1.50,-6.11,-99.10,2,0,I need to control critical infrastructure with zero downtime,URLLC
+23,-19.05,-98.30,1.50,22.10,-70.89,12,0,I want to stream a webinar with interactive features,eMBB
+24,-121.63,291.86,1.50,-2.36,-95.35,4,0,I need to use cloud-based AI services for image processing,eMBB
+25,64.57,45.01,1.50,26.87,-66.12,14,0,I need to synchronize distributed financial ledgers instantly,URLLC
+26,54.53,383.32,1.50,-6.61,-99.60,2,0,I need to control a robotic arm in real time,URLLC
+27,74.89,-27.92,1.50,27.07,-65.92,14,0,I need emergency response coordination during a disaste,URLLC
+28,95.63,211.50,1.50,4.42,-88.57,6,0,I want to use augmented reality navigation,eMBB
+29,-222.31,266.20,1.50,-4.37,-97.35,3,0,I need immediate machine shutdown capability for safety incidents,URLLC
+30,-211.44,366.93,1.50,-8.62,-101.61,1,0,My smart parking sensor needs to report if the spot is free,mMTC
