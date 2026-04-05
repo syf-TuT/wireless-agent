@@ -167,7 +167,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from llm_config import get_llm
 
-llm = get_llm("minimax-m2.1")
+llm = get_llm("minimax-m2.5")
 
 # ====================== RAG System Initialization ======================
 # Import RAG optimization module
@@ -2597,7 +2597,7 @@ def main(num_users=4, export_file="fileName.csv"):
     reset_token_stats()
 
     # Path to ray tracing results CSV
-    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv"
+    ray_tracing_csv = r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_west.csv"
 
     # Load users from CSV (limit to specified number)
     users = load_user_data_from_csv(ray_tracing_csv, num_users)
@@ -2841,4 +2841,4 @@ if __name__ == "__main__":
     print("=" * 60)
 
     # Test with 10 users by default and export results to CSV
-    main(num_users=30, export_file=r"F:\code\wirelessagent\run_results\batch_run\kb\minimax-m2.1\network_slicing_results_TJU_gym_minimax-m2.1.csv") # The number of users can be adjusted as needed
+    main(num_users=30, export_file=r"F:\code\wirelessagent\run_results\batch_run\kb\minimax-m2.5\network_slicing_results_TJU_west_minimax-m2.5.csv") # The number of users can be adjusted as needed

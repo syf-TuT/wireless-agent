@@ -23,10 +23,10 @@ kb_dir = os.path.join(project_root, "with_knowledge_base")
 sys.path.insert(0, kb_dir)
 
 # 模型名称（用于输出文件名）
-MODEL_NAME = "minimax-m2.1"
+MODEL_NAME = "minimax-m2.5"
 
 # 输出目录
-OUTPUT_DIR = r"F:\code\wirelessagent\run_results\batch_run\kb\minimax-m2.1"
+OUTPUT_DIR = r"F:\code\wirelessagent\run_results\batch_run\kb\minimax-m2.5"
 
 # 确保输出目录存在
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -45,14 +45,14 @@ SCENARIOS = {
     #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv",
     #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_east_{MODEL_NAME}.csv")
     # },
-    # "TJU_west": {
-    #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_west.csv",
-    #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_west_{MODEL_NAME}.csv")
-    # },
-    "TJU_gym": {
-        "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv",
-        "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_gym_{MODEL_NAME}.csv")
-    }
+    "TJU_west": {
+        "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_west.csv",
+        "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_west_{MODEL_NAME}.csv")
+    },
+    # "TJU_gym": {
+    #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv",
+    #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_gym_{MODEL_NAME}.csv")
+    # }
 }
 
 # 用户数量

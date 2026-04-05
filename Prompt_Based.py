@@ -19,9 +19,11 @@ TOKEN_STATS = {
     "llm_call_count": 0
 }
 
+
 def get_token_usage():
     """Get current token usage statistics"""
     return TOKEN_STATS.copy()
+
 
 def reset_token_stats():
     """Reset token statistics"""
@@ -32,6 +34,7 @@ def reset_token_stats():
         "total_tokens": 0,
         "llm_call_count": 0
     }
+
 
 def llm_with_token_tracking(llm, messages, operation_name="LLM"):
     """Wrapper for LLM invocation that tracks token usage"""
@@ -97,9 +100,11 @@ def llm_with_token_tracking(llm, messages, operation_name="LLM"):
     TOKEN_STATS["total_tokens"] += actual_total_tokens
     TOKEN_STATS["llm_call_count"] += 1
 
-    print(f"[Token] {operation_name}: prompt~{actual_prompt_tokens}, completion~{actual_completion_tokens}, total~{actual_total_tokens}")
+    print(
+        f"[Token] {operation_name}: prompt~{actual_prompt_tokens}, completion~{actual_completion_tokens}, total~{actual_total_tokens}")
 
     return response
+
 
 # LLM Configuration
 from llm_config import get_llm
@@ -110,13 +115,18 @@ MODEL_NAME = "glm-5"
 # Get LLM instance
 llm = get_llm(MODEL_NAME)
 
-def call_llm(prompt):
-    """Call the LLM API with the given prompt using configured model"""
+
+def call_llm(prompt, operation_name="Prompt_Based"):
+    """Call the LLM API with the given prompt using configured model, with token tracking"""
     try:
-        response = llm.invoke(prompt)
-        return response.content
+        # Wrap prompt in HumanMessage for token tracking
+        from langchain_core.messages import HumanMessage
+        messages = [HumanMessage(content=prompt)]
+        response = llm_with_token_tracking(llm, messages, operation_name)
+        return response.content if response else None
     except Exception as e:
         print(f"Error calling LLM API: {e}")
+        return None
         return "Error: Unable to get a response from the LLM API."
 
 
@@ -127,25 +137,25 @@ def load_user_data_from_csv(file_path, num_users=None):
     try:
         df = pd.read_csv(file_path)
         users = []
-        
+
         # Limit to specified number of users if needed
         if num_users is not None and num_users < len(df):
             df = df.head(num_users)
-        
+
         for _, row in df.iterrows():
             # Get user ID (RX_ID)
             user_id = str(row['RX_ID'])
-            
+
             # Create location string from X, Y, Z coordinates
             location = f"({row['X']}, {row['Y']}, {row['Z']})"
-            
+
             # Get request, CQI, and ground truth label
             request = row['User_Request']
             cqi = int(row['CQI'])
-            
+
             # Get ground truth label if available
             ground_truth = row.get('Request_Label', None)
-            
+
             user = {
                 "user_id": user_id,
                 "location": location,
@@ -154,7 +164,7 @@ def load_user_data_from_csv(file_path, num_users=None):
                 "ground_truth": ground_truth
             }
             users.append(user)
-        
+
         return users
     except Exception as e:
         print(f"Error loading user data from CSV: {e}")
@@ -175,6 +185,7 @@ def load_user_data_from_csv(file_path, num_users=None):
                 "ground_truth": "eMBB"
             }
         ]
+
 
 # ====================== CSV Results Export Function ======================
 
@@ -257,6 +268,7 @@ def export_results_to_csv(results, slice_stats, intent_stats, file_path="prompt_
         print(f"Error exporting results to CSV: {e}")
         return False
 
+
 # ====================== Global Network State ======================
 
 # Persistent state of network slices (global variable)
@@ -289,9 +301,11 @@ INITIAL_NETWORK_STATE = copy.deepcopy(GLOBAL_NETWORK_STATE)
 # Store network state before each allocation for comparison
 PREVIOUS_NETWORK_STATE = None
 
+
 def get_current_network_state():
     """Get a copy of the current network state"""
     return GLOBAL_NETWORK_STATE.copy()
+
 
 def update_network_state(new_state):
     """Update global network state"""
@@ -301,6 +315,7 @@ def update_network_state(new_state):
     # Update state
     GLOBAL_NETWORK_STATE = new_state
     return True
+
 
 def reset_network_state():
     """Reset network state to initial values for fresh testing"""
@@ -316,9 +331,11 @@ def reset_network_state():
 
     return True
 
+
 def calculate_utilization_rate(usage, capacity):
     """Calculate utilization rate percentage"""
     return f"{(usage / capacity * 100):.2f}%"
+
 
 def calculate_total_transmission_rates():
     """Calculate total transmission rate for each slice"""
@@ -329,6 +346,7 @@ def calculate_total_transmission_rates():
     mmtc_total_rate = sum(user["rate"] for user in current_state["mmtc_slice"]["users"])
 
     return round(embb_total_rate, 2), round(urllc_total_rate, 2), round(mmtc_total_rate, 2)
+
 
 def calculate_average_resource_utilization():
     """Calculate weighted average resource utilization across all slices"""
@@ -347,72 +365,6 @@ def calculate_average_resource_utilization():
     avg_util = (total_usage / total_capacity) * 100 if total_capacity > 0 else 0
     return round(avg_util, 2)
 
-# ====================== CQI-Related Functions ======================
-
-def calculate_rate_from_cqi(bandwidth, cqi):
-    """Calculate data rate based on CQI using Shannon's formula
-
-    bandwidth: in MHz
-    cqi: Channel Quality Indicator (1-15)
-    returns: data rate in Mbps
-    """
-    snr = 10 ** (cqi / 10)
-    rate = bandwidth * math.log10(1 + snr) * 10
-    return round(rate, 2)
-
-def apply_heuristic_bandwidth(slice_type, request, min_bandwidth, max_bandwidth):
-    """Apply heuristic rules to determine bandwidth based on request type"""
-    request_lower = request.lower()
-
-    if slice_type == "eMBB":
-        if any(keyword in request_lower for keyword in ["video", "stream", "watch", "movie", "4k", "8k"]):
-            return float(min(max_bandwidth, 15.0))
-        elif any(keyword in request_lower for keyword in ["download", "file", "upload"]):
-            return float(min(max_bandwidth, 12.0))
-        elif any(keyword in request_lower for keyword in ["conference", "meeting", "call"]):
-            return float(min(max_bandwidth, 10.0))
-        elif any(keyword in request_lower for keyword in ["message", "messaging", "chat", "text"]):
-            return float(min(max_bandwidth, 8.0))
-        else:
-            return float(min(max_bandwidth, 8.0))
-    elif slice_type == "URLLC":
-        if any(keyword in request_lower for keyword in ["surgery", "medical", "emergency"]):
-            return float(min(max_bandwidth, 5.0))
-        elif any(keyword in request_lower for keyword in ["control", "automation", "robot"]):
-            return float(min(max_bandwidth, 3.0))
-        else:
-            return float(min(max_bandwidth, 2.0))
-    else:  # mMTC
-        if any(keyword in request_lower for keyword in ["sensor", "meter", "monitor", "tracking", "iot"]):
-            return float(min(max_bandwidth, 2))
-        else:
-            return float(min(max_bandwidth, 1))
-
-def apply_heuristic_latency(slice_type, request, min_latency, max_latency):
-    """Apply heuristic rules to determine latency based on request type"""
-    request_lower = request.lower()
-
-    if slice_type == "eMBB":
-        if any(keyword in request_lower for keyword in ["video", "stream", "watch", "movie", "4k", "8k"]):
-            return float(min(max_latency, 50.0))
-        elif any(keyword in request_lower for keyword in ["download", "file", "upload"]):
-            return float(min(max_latency, 80.0))
-        elif any(keyword in request_lower for keyword in ["conference", "meeting", "call"]):
-            return float(min(max_latency, 30.0))
-        else:
-            return float(min(max_latency, 40))
-    elif slice_type == "URLLC":
-        if any(keyword in request_lower for keyword in ["surgery", "medical", "emergency"]):
-            return float(max(min_latency, 1.0))
-        elif any(keyword in request_lower for keyword in ["control", "automation", "robot"]):
-            return float(max(min_latency, 3.0))
-        else:
-            return float(max(min_latency, 5.0))
-    else:  # mMTC
-        if any(keyword in request_lower for keyword in ["sensor", "meter", "tracking"]):
-            return float(min(max_latency, 500.0))
-        else:
-            return float(min(max_latency, 1000.0))
 
 # ====================== Network State Reporting Functions ======================
 
@@ -434,8 +386,6 @@ def generate_concise_report(current_state, new_user_id=None, adjustment_result=N
 
     # Calculate total transmission rates
     embb_total_rate, urllc_total_rate, mmtc_total_rate = calculate_total_transmission_rates()
-
-    # Calculate average resource utilization
     avg_resource_util = calculate_average_resource_utilization()
 
     report = [
@@ -447,7 +397,6 @@ def generate_concise_report(current_state, new_user_id=None, adjustment_result=N
         tabulate(stats, headers="firstrow", tablefmt="simple")
     ]
 
-    # If a new user was added, show their details
     if new_user_id:
         new_user = None
         new_user_slice = None
@@ -474,6 +423,7 @@ def generate_concise_report(current_state, new_user_id=None, adjustment_result=N
 
     return "\n".join(report)
 
+
 def generate_user_allocation_table(current_state, new_user_id=None, adjusted_user_ids=None):
     """Generate a table showing all user allocations"""
     if adjusted_user_ids is None:
@@ -481,76 +431,33 @@ def generate_user_allocation_table(current_state, new_user_id=None, adjusted_use
 
     all_users = []
 
-    # Add eMBB users
     for user in current_state["embb_slice"]["users"]:
-        status = ""
-        if user["user_id"] == new_user_id:
-            status = "NEW"
-        elif user["user_id"] in adjusted_user_ids:
-            status = "ADJUSTED"
+        status = "NEW" if user["user_id"] == new_user_id else (
+            "ADJUSTED" if user["user_id"] in adjusted_user_ids else "")
+        all_users.append(
+            {"user_id": user["user_id"], "slice": "eMBB", "cqi": user["cqi"], "bandwidth": user["bandwidth"],
+             "rate": user["rate"], "latency": user["latency"], "status": status})
 
-        all_users.append({
-            "user_id": user["user_id"],
-            "slice": "eMBB",
-            "cqi": user["cqi"],
-            "bandwidth": user["bandwidth"],
-            "rate": user["rate"],
-            "latency": user["latency"],
-            "status": status
-        })
-
-    # Add URLLC users
     for user in current_state["urllc_slice"]["users"]:
-        status = ""
-        if user["user_id"] == new_user_id:
-            status = "NEW"
-        elif user["user_id"] in adjusted_user_ids:
-            status = "ADJUSTED"
+        status = "NEW" if user["user_id"] == new_user_id else (
+            "ADJUSTED" if user["user_id"] in adjusted_user_ids else "")
+        all_users.append(
+            {"user_id": user["user_id"], "slice": "URLLC", "cqi": user["cqi"], "bandwidth": user["bandwidth"],
+             "rate": user["rate"], "latency": user["latency"], "status": status})
 
-        all_users.append({
-            "user_id": user["user_id"],
-            "slice": "URLLC",
-            "cqi": user["cqi"],
-            "bandwidth": user["bandwidth"],
-            "rate": user["rate"],
-            "latency": user["latency"],
-            "status": status
-        })
-
-    # Add mMTC users
     for user in current_state["mmtc_slice"]["users"]:
-        status = ""
-        if user["user_id"] == new_user_id:
-            status = "NEW"
-        elif user["user_id"] in adjusted_user_ids:
-            status = "ADJUSTED"
+        status = "NEW" if user["user_id"] == new_user_id else (
+            "ADJUSTED" if user["user_id"] in adjusted_user_ids else "")
+        all_users.append(
+            {"user_id": user["user_id"], "slice": "mMTC", "cqi": user["cqi"], "bandwidth": user["bandwidth"],
+             "rate": user["rate"], "latency": user["latency"], "status": status})
 
-        all_users.append({
-            "user_id": user["user_id"],
-            "slice": "mMTC",
-            "cqi": user["cqi"],
-            "bandwidth": user["bandwidth"],
-            "rate": user["rate"],
-            "latency": user["latency"],
-            "status": status
-        })
-
-    # Sort by slice type and then by user_id
     all_users.sort(key=lambda x: (x["slice"], x["user_id"]))
 
-    # Format data for table
     rows = []
     for user in all_users:
-        row = [
-            user["user_id"],
-            user["slice"],
-            user["cqi"],
-            f"{user['bandwidth']:.2f}",
-            f"{user['rate']:.2f}",
-            f"{user['latency']:.2f}",
-            user["status"]
-        ]
-        rows.append(row)
+        rows.append([user["user_id"], user["slice"], user["cqi"], f"{user['bandwidth']:.2f}", f"{user['rate']:.2f}",
+                     f"{user['latency']:.2f}", user["status"]])
 
     headers = ["User ID", "Slice", "CQI", "BW (MHz)", "Rate (Mbps)", "Latency (ms)", "Status"]
     table = tabulate(rows, headers=headers, tablefmt="grid")
@@ -561,47 +468,75 @@ def generate_user_allocation_table(current_state, new_user_id=None, adjusted_use
 # ====================== Network Slicing Prompt Function ======================
 
 # System prompt for the LLM
-SYSTEM_PROMPT = """You are a 5G network slicing expert responsible for allocating users to appropriate network slices and managing resources.
+SYSTEM_PROMPT = """You are a 5G network slicing expert responsible for allocating users to appropriate network slices and managing resources. You need to perform the following sequential tasks:
 
-Current network has three types of slices:
-- eMBB (Enhanced Mobile Broadband): For high bandwidth applications like video streaming
-  * Bandwidth range: 6-20 MHz
-  * Data rate range: 100-400 Mbps
-  * Latency range: 10-100ms
-  * Total capacity: 90 MHz
+1. INTENT UNDERSTANDING: Analyze the user's request to understand their application needs.
 
-- URLLC (Ultra-Reliable Low-Latency Communications): For low latency applications like remote control
-  * Bandwidth range: 1-5 MHz
-  * Data rate range: 1-100 Mbps
-  * Latency range: 1-10ms
-  * Total capacity: 30 MHz
+2. SLICE RECOMMENDATION: Recommend the most appropriate network slice:
+   - eMBB (Enhanced Mobile Broadband): For high bandwidth applications like video streaming, AR/VR, and large file downloads.
+     * Bandwidth range: 6-20 MHz
+     * Data rate range: 100-400 Mbps
+     * Latency range: 10-100ms
+   - URLLC (Ultra-Reliable Low-Latency Communications): For low latency and high reliability applications like remote control, autonomous driving, and industrial automation.
+     * Bandwidth range: 1-5 MHz
+     * Data rate range: 1-100 Mbps
+     * Latency range: 1-10ms
+   - mMTC (massive Machine Type Communications): For massive IoT applications like smart meters, environmental sensors, and fleet tracking (low power, infrequent small data transmissions).
+     * Bandwidth range: 0.1-1 MHz
+     * Data rate range: 0.01-1 Mbps
+     * Latency range: 100-1000ms
 
-- mMTC (massive Machine-Type Communications): For large-scale IoT device connectivity
-  * Bandwidth range: 1-3 MHz
-  * Data rate range: 0.1-1 Mbps
-  * Latency range: 100-1000ms
-  * Total capacity: 10 MHz
+3. RATE ALLOCATION: Allocate bandwidth and calculate data rate based on the user's CQI (Channel Quality Indicator) and typical requirements:
+   - CQI ranges from 1-15 (higher is better signal quality)
+   - For eMBB and URLLC, a rough estimate for data rate is:
+     * Low CQI (1-5): bandwidth × 5 Mbps
+     * Medium CQI (6-10): bandwidth × 10 Mbps
+     * High CQI (11-15): bandwidth × 15 Mbps
+   - For mMTC, due to device hardware limitations, data rate is primarily determined by CQI rather than bandwidth:
+     * Low CQI (1-5): 0.05 Mbps
+     * Medium CQI (6-10): 0.1 Mbps
+     * High CQI (11-15): 0.5 Mbps
 
-KEY INDICATORS FOR SLICES:
-- Words indicating eMBB: stream, download, upload, video, HD, 4K, 8K, movie, watch, gaming, browse
-- Words indicating URLLC: control, real-time, monitor, automation, sensors, immediate, mission-critical
-- Words indicating mMTC: sensor, meter, tracking, iot, monitoring, telemetry, smart city, environment
+4. RATE ADJUSTMENT: Adjust bandwidth if needed to meet slice requirements:
+   - For eMBB: Ensure rate is between 100-400 Mbps
+   - For URLLC: Ensure rate is between 1-100 Mbps
+   - For mMTC: Ensure rate is between 0.01-1 Mbps
+   - Adjust bandwidth up or down to meet these requirements.
 
-IMPORTANT: You must strictly adhere to the resource constraints for each slice type.
+5. WORKLOAD BALANCE: If one slice is significantly more utilized than the others (>20% difference) and the user could be accommodated in multiple slices, prefer the less utilized slice.
+
+6. CAPACITY CHECK: Verify if the slice has enough capacity for the new user:
+   - eMBB total capacity: 90 MHz
+   - URLLC total capacity: 30 MHz
+   - mMTC total capacity: 20 MHz
+   - If not enough capacity, report failure.
+
+IMPORTANT: You must strictly adhere to the resource constraints:
+- eMBB: Bandwidth 6-20 MHz, Rate 100-400 Mbps, Latency 10-100ms
+- URLLC: Bandwidth 1-5 MHz, Rate 1-100 Mbps, Latency 1-10ms
+- mMTC: Bandwidth 0.1-1 MHz, Rate 0.01-1 Mbps, Latency 100-1000ms
 The system will verify these constraints after your allocation, and any violation will cause the allocation to fail.
 
 Format your response as JSON with the following fields:
 {
   "intent_analysis": "Explanation of user's needs and application type",
-  "recommended_slice": "eMBB or URLLC or mMTC",
+  "recommended_slice": "eMBB, URLLC, or mMTC",
   "slice_reason": "Explanation for slice choice",
-  "bandwidth_allocation": number value in MHz,
+  "bandwidth_allocation": float value in MHz,
   "data_rate": float value in Mbps,
-  "latency": number value in ms,
+  "latency": integer value in ms,
   "workload_balanced": boolean,
-  "can_accommodate": boolean
+  "can_accommodate": boolean,
+  "final_allocation": {
+    "user_id": "string",
+    "slice_type": "eMBB, URLLC, or mMTC",
+    "bandwidth": float in MHz,
+    "rate": float in Mbps,
+    "latency": integer in ms
+  }
 }
 """
+
 
 def process_user_with_prompt(user_id, location, request, cqi, network_state):
     """Process a user request using the prompt-based approach"""
@@ -659,36 +594,21 @@ IMPORTANT: Remember to strictly adhere to the following constraints:
 Provide your response in the JSON format specified in your instructions.
 """
 
-    # Call the LLM and get the response
     response = call_llm(prompt)
 
-    # Parse the JSON response
     try:
-        # Remove thinking tags if present
+        # Clean response
         clean_response = response
         if "<think>" in clean_response:
-            # Remove thinking content between <think> and </think>
             while "<think>" in clean_response and "</think>" in clean_response:
                 start = clean_response.find("<think>")
                 end = clean_response.find("</think>") + len("</think>")
                 clean_response = clean_response[:start] + clean_response[end:]
 
-        # Debug: print after thinking tag removal
-        print(f"\n[DEBUG] After thinking removal (first 300 chars): {clean_response[:300]}")
+        json_match = re.search(r'```(?:json)?\s*(.*?)\s*```', clean_response, re.IGNORECASE | re.DOTALL)
+        if json_match:
+            clean_response = json_match.group(1)
 
-        # Remove markdown code block markers if present
-        if "```json" in clean_response:
-            # Remove the ```json marker and any text before it
-            clean_response = clean_response.split("```json")[1]
-        if "```" in clean_response:
-            # Remove the closing ``` marker and any text after it
-            clean_response = clean_response.split("```")[0]
-
-        # Debug: print the cleaned response
-        print(f"\n[DEBUG] Clean response (first 400 chars): {clean_response[:400]}")
-
-        # Find JSON block in response
-        # Try to find the first { and last } to extract the JSON
         start_idx = clean_response.find('{')
         end_idx = clean_response.rfind('}') + 1
 
@@ -698,252 +618,161 @@ Provide your response in the JSON format specified in your instructions.
         else:
             raise ValueError("No JSON found in response")
 
-        # Validate that required keys are present
-        # The LLM may use different key names, so we map them
-        # Expected: intent_analysis, recommended_slice, bandwidth_allocation, data_rate, latency, can_accommodate
-        # Or: intent_analysis, recommended_slice, allocated_bandwidth_mhz, calculated_data_rate_mbps, latency_ms, can_accommodate
+        if not isinstance(result, dict):
+            raise ValueError("Parsed JSON is not a dictionary")
 
-        # Normalize key names - handle different possible structures
-        # Some models return flat keys, others return nested structures
+        # ======================================================================
+        #  AST-LIKE RECURSIVE JSON PARSER
+        # ======================================================================
+
+        def extract_number(val):
+            if isinstance(val, (int, float)): return float(val)
+            if isinstance(val, str):
+                # 兼容科学计数法，例如 5e6
+                m = re.findall(r"[-+]?(?:\d*\.*\d+)(?:[eE][-+]?\d+)?", val)
+                if m: return float(m[0])
+            if isinstance(val, dict):
+                for v in val.values():
+                    num = extract_number(v)
+                    if num > 0: return num
+            return 0.0
+
+        def extract_slice_type(obj):
+            """精准匹配 Key 以防止被网络状态里的 URLLC 误导"""
+            target_keys = ['recommended_slice', 'slice_type', 'selected_slice', 'slice', 'assigned_slice',
+                           'final_slice']
+
+            def search_dict(d):
+                if isinstance(d, dict):
+                    # 1. 优先查 Key
+                    for k, v in d.items():
+                        if str(k).lower() in target_keys and isinstance(v, str):
+                            v_up = v.upper()
+                            if 'EMBB' in v_up: return 'eMBB'
+                            if 'URLLC' in v_up: return 'URLLC'
+                            if 'MMTC' in v_up: return 'mMTC'
+                    # 2. 递归子字典
+                    for v in d.values():
+                        res = search_dict(v)
+                        if res: return res
+                elif isinstance(d, list):
+                    for item in d:
+                        res = search_dict(item)
+                        if res: return res
+                return None
+
+            found = search_dict(obj)
+            if found: return found
+
+            # 如果深度解析失败，使用严格的正则匹配键值对
+            raw = json.dumps(obj).upper()
+            m = re.search(r'"(?:RECOMMENDED_SLICE|SLICE_TYPE|SELECTED_SLICE|SLICE)"\s*:\s*".*?(EMBB|URLLC|MMTC).*?"',
+                          raw)
+            if m:
+                if 'EMBB' in m.group(1): return 'eMBB'
+                if 'URLLC' in m.group(1): return 'URLLC'
+                if 'MMTC' in m.group(1): return 'mMTC'
+
+            return 'eMBB'  # 安全默认值
+
+        def recursive_find_num(obj, priority_keywords, secondary_keywords):
+            if isinstance(obj, dict):
+                exclude = ['available', 'total', 'capacity', 'remaining', 'maximum', 'max_', 'min_', 'range']
+                for k, v in obj.items():
+                    k_l = str(k).lower()
+                    if not any(ex in k_l for ex in exclude) and any(pk in k_l for pk in priority_keywords):
+                        n = extract_number(v)
+                        if n > 0: return n
+                for k, v in obj.items():
+                    k_l = str(k).lower()
+                    if not any(ex in k_l for ex in exclude) and any(sk in k_l for sk in secondary_keywords):
+                        n = extract_number(v)
+                        if n > 0: return n
+                for v in obj.values():
+                    n = recursive_find_num(v, priority_keywords, secondary_keywords)
+                    if n > 0: return n
+            elif isinstance(obj, list):
+                for item in obj:
+                    n = recursive_find_num(item, priority_keywords, secondary_keywords)
+                    if n > 0: return n
+            return 0.0
+
+        def recursive_find_str(obj, keywords):
+            if isinstance(obj, dict):
+                for k, v in obj.items():
+                    if any(kw in str(k).lower() for kw in keywords):
+                        if isinstance(v, str): return v
+                        if isinstance(v, list) and len(v) > 0 and all(isinstance(x, str) for x in v): return "; ".join(
+                            v)
+                for v in obj.values():
+                    s = recursive_find_str(v, keywords)
+                    if s != "N/A": return s
+            elif isinstance(obj, list):
+                for item in obj:
+                    s = recursive_find_str(item, keywords)
+                    if s != "N/A": return s
+            return "N/A"
+
         normalized_result = {
-            'intent_analysis': result.get('analysis') or result.get('intent_analysis') or result.get('intent', 'N/A'),
-            'recommended_slice': result.get('recommended_slice') or result.get('slice_type') or result.get('slice', 'N/A'),
-            'bandwidth': 0,
-            'data_rate': 0,
-            'latency': 0,
-            'slice_reason': result.get('rationale') or result.get('reason') or result.get('slice_reason') or result.get('reasoning', ''),
-            'can_accommodate': True,
-            'workload_balanced': False
+            'bandwidth': 0.0,
+            'data_rate': 0.0,
+            'latency': 0.0,
+            'recommended_slice': "N/A",
+            'intent_analysis': "N/A",
+            'slice_reason': "N/A",
+            'workload_balanced': True,
+            'can_accommodate': True
         }
 
-        # Handle top-level slice_selection structure
-        if 'slice_selection' in result and isinstance(result['slice_selection'], dict):
-            slice_sel = result['slice_selection']
-            normalized_result['recommended_slice'] = slice_sel.get('recommended_slice') or normalized_result['recommended_slice']
-
-        # Handle top-level recommendation structure
-        if 'recommendation' in result and isinstance(result['recommendation'], dict):
-            rec = result['recommendation']
-            normalized_result['recommended_slice'] = rec.get('slice') or normalized_result['recommended_slice']
-
-        # Handle top-level allocation structure
-        if 'allocation' in result and isinstance(result['allocation'], dict):
-            alloc = result['allocation']
-
-            # Extract recommended_slice from nested structures
-            if 'slice_recommendation' in alloc and isinstance(alloc['slice_recommendation'], dict):
-                normalized_result['recommended_slice'] = alloc['slice_recommendation'].get('recommended_slice') or normalized_result['recommended_slice']
-
-            # Extract from selectedSlice (camelCase)
-            if 'selectedSlice' in alloc:
-                normalized_result['recommended_slice'] = alloc['selectedSlice'] or normalized_result['recommended_slice']
-
-            # Extract from slice field
-            if 'slice' in alloc:
-                normalized_result['recommended_slice'] = alloc['slice'] or normalized_result['recommended_slice']
-
-            # Extract intent_analysis from nested structures
-            if 'intent_analysis' in alloc:
-                normalized_result['intent_analysis'] = alloc['intent_analysis']
-
-            # Extract from final_recommendation (most accurate)
-            if 'final_recommendation' in alloc and isinstance(alloc['final_recommendation'], dict):
-                final_rec = alloc['final_recommendation']
-                normalized_result['recommended_slice'] = final_rec.get('slice') or normalized_result['recommended_slice']
-                normalized_result['bandwidth'] = final_rec.get('bandwidth_mhz') or normalized_result['bandwidth']
-                normalized_result['data_rate'] = final_rec.get('data_rate_mbps') or normalized_result['data_rate']
-                normalized_result['latency'] = final_rec.get('latency_ms') or normalized_result['latency']
-
-            # Extract from rate_adjustment if available
-            if 'rate_adjustment' in alloc and isinstance(alloc['rate_adjustment'], dict):
-                rate_adj = alloc['rate_adjustment']
-                if rate_adj.get('adjustment_required'):
-                    normalized_result['bandwidth'] = rate_adj.get('adjusted_bandwidth_mhz') or normalized_result['bandwidth']
-                    normalized_result['data_rate'] = rate_adj.get('adjusted_data_rate_mbps') or normalized_result['data_rate']
-
-            # Extract from resource_allocation
-            if 'resource_allocation' in alloc and isinstance(alloc['resource_allocation'], dict):
-                res_alloc = alloc['resource_allocation']
-                if normalized_result['bandwidth'] == 0:
-                    normalized_result['bandwidth'] = res_alloc.get('bandwidth_assigned_mhz') or res_alloc.get('allocated_bandwidth_mhz') or 0
-                if normalized_result['data_rate'] == 0:
-                    normalized_result['data_rate'] = res_alloc.get('target_data_rate_mbps') or res_alloc.get('calculated_data_rate_mbps') or 0
-                if normalized_result['latency'] == 0:
-                    normalized_result['latency'] = res_alloc.get('latency_allocated_ms') or res_alloc.get('latency_estimate_ms') or 0
-
-            # Extract from final_assignment (most accurate final values)
-            if 'final_assignment' in alloc and isinstance(alloc['final_assignment'], dict):
-                final_assign = alloc['final_assignment']
-                normalized_result['recommended_slice'] = final_assign.get('slice') or normalized_result['recommended_slice']
-                if normalized_result['bandwidth'] == 0:
-                    normalized_result['bandwidth'] = final_assign.get('bandwidth_mhz') or 0
-                if normalized_result['data_rate'] == 0:
-                    normalized_result['data_rate'] = final_assign.get('max_data_rate_mbps') or final_assign.get('data_rate_mbps') or 0
-                if normalized_result['latency'] == 0:
-                    normalized_result['latency'] = final_assign.get('latency_ms') or 0
-
-            # Extract from camelCase fields (common pattern)
-            if normalized_result['bandwidth'] == 0:
-                normalized_result['bandwidth'] = alloc.get('bandwidth_MHz') or alloc.get('bandwidthMHz') or alloc.get('allocatedBandwidthMHz') or alloc.get('allocated_bandwidth_MHz') or alloc.get('bandwidth_mhz') or alloc.get('bandwidth', 0)
-            if normalized_result['data_rate'] == 0:
-                normalized_result['data_rate'] = alloc.get('estimatedDataRateMbps') or alloc.get('estimated_data_rate_Mbps') or alloc.get('estimated_net_data_rate_Mbps') or alloc.get('estimated_gross_data_rate_Mbps') or alloc.get('data_rate_mbps') or alloc.get('data_rate', 0)
-            if normalized_result['latency'] == 0:
-                normalized_result['latency'] = alloc.get('latency_assumption_ms') or alloc.get('latencyMs') or alloc.get('latency_assigned_ms') or alloc.get('latency_ms') or alloc.get('latency', 0)
-
-        # Handle top-level resource_allocation structure
-        if 'resource_allocation' in result and isinstance(result['resource_allocation'], dict):
-            res_alloc = result['resource_allocation']
-
-            # Extract from slice_recommendation
-            if 'slice_recommendation' in res_alloc and isinstance(res_alloc['slice_recommendation'], dict):
-                normalized_result['recommended_slice'] = res_alloc['slice_recommendation'].get('recommended_slice') or normalized_result['recommended_slice']
-
-            normalized_result['recommended_slice'] = res_alloc.get('slice') or normalized_result['recommended_slice']
-
-            # Extract from final_allocation_summary (most accurate)
-            if 'final_allocation_summary' in res_alloc and isinstance(res_alloc['final_allocation_summary'], dict):
-                final_summary = res_alloc['final_allocation_summary']
-                normalized_result['recommended_slice'] = final_summary.get('slice') or normalized_result['recommended_slice']
-                if normalized_result['bandwidth'] == 0:
-                    normalized_result['bandwidth'] = final_summary.get('bandwidth_mhz') or 0
-                if normalized_result['data_rate'] == 0:
-                    normalized_result['data_rate'] = final_summary.get('guaranteed_data_rate_mbps') or final_summary.get('final_allocated_rate_mbps') or 0
-                if normalized_result['latency'] == 0:
-                    normalized_result['latency'] = final_summary.get('estimated_latency_ms') or 0
-
-            # Extract from bandwidth_allocation
-            if 'bandwidth_allocation' in res_alloc and isinstance(res_alloc['bandwidth_allocation'], dict):
-                bw_alloc = res_alloc['bandwidth_allocation']
-                if normalized_result['bandwidth'] == 0:
-                    normalized_result['bandwidth'] = bw_alloc.get('allocated_bandwidth_mhz') or 0
-
-            # Extract from data_rate_calculation
-            if 'data_rate_calculation' in res_alloc and isinstance(res_alloc['data_rate_calculation'], dict):
-                rate_calc = res_alloc['data_rate_calculation']
-                if normalized_result['data_rate'] == 0:
-                    normalized_result['data_rate'] = rate_calc.get('final_allocated_rate_mbps') or rate_calc.get('adjusted_data_rate_mbps') or rate_calc.get('calculated_data_rate_mbps') or 0
-
-            # Extract from latency_estimate
-            if 'latency_estimate' in res_alloc and isinstance(res_alloc['latency_estimate'], dict):
-                lat_est = res_alloc['latency_estimate']
-                if normalized_result['latency'] == 0:
-                    normalized_result['latency'] = lat_est.get('estimated_latency_ms') or 0
-
-            # Fallback to top-level fields
-            if normalized_result['bandwidth'] == 0:
-                normalized_result['bandwidth'] = res_alloc.get('bandwidth_MHz') or res_alloc.get('bandwidth_allocated_mhz') or res_alloc.get('bandwidth_assigned_mhz') or res_alloc.get('allocated_bandwidth_mhz') or 0
-            if normalized_result['data_rate'] == 0:
-                normalized_result['data_rate'] = res_alloc.get('estimated_data_rate_Mbps') or res_alloc.get('calculated_data_rate_mbps') or res_alloc.get('target_data_rate_mbps') or 0
-            if normalized_result['latency'] == 0:
-                normalized_result['latency'] = res_alloc.get('latency_assumption_ms') or res_alloc.get('actual_latency_ms') or res_alloc.get('target_latency_ms') or res_alloc.get('latency_ms') or res_alloc.get('latency_assigned_ms') or res_alloc.get('latency_estimate_ms') or 0
-
-        # Handle top-level final_allocation structure
-        if 'final_allocation' in result and isinstance(result['final_allocation'], dict):
-            final_alloc = result['final_allocation']
-            normalized_result['recommended_slice'] = final_alloc.get('slice_type') or normalized_result['recommended_slice']
-            if normalized_result['bandwidth'] == 0:
-                normalized_result['bandwidth'] = final_alloc.get('bandwidth_mhz') or 0
-            if normalized_result['data_rate'] == 0:
-                normalized_result['data_rate'] = final_alloc.get('guaranteed_rate_mbps') or final_alloc.get('max_rate_mbps') or final_alloc.get('data_rate_mbps') or 0
-            if normalized_result['latency'] == 0:
-                normalized_result['latency'] = final_alloc.get('latency_ms') or 0
-
-        # Handle top-level rate_adjustment structure
-        if 'rate_adjustment' in result and isinstance(result['rate_adjustment'], dict):
-            rate_adj = result['rate_adjustment']
-            if rate_adj.get('adjustment_required'):
-                if normalized_result['bandwidth'] == 0:
-                    normalized_result['bandwidth'] = rate_adj.get('adjusted_bandwidth_mhz') or normalized_result['bandwidth']
-                if normalized_result['data_rate'] == 0:
-                    normalized_result['data_rate'] = rate_adj.get('adjusted_rate_mbps') or normalized_result['data_rate']
-
-        # Extract recommended_slice from nested structures (top level)
-        if 'slice_recommendation' in result and isinstance(result['slice_recommendation'], dict):
-            normalized_result['recommended_slice'] = result['slice_recommendation'].get('selected_slice') or result['slice_recommendation'].get('recommended_slice') or normalized_result['recommended_slice']
-
-        # Extract bandwidth from nested structures
-        if 'bandwidth_allocation' in result:
-            bw_alloc = result['bandwidth_allocation']
-            if isinstance(bw_alloc, dict):
-                normalized_result['bandwidth'] = bw_alloc.get('allocated_bandwidth_mhz') or bw_alloc.get('bandwidth_mhz') or bw_alloc.get('allocated_bandwidth') or bw_alloc.get('bandwidth', 0)
-            else:
-                normalized_result['bandwidth'] = bw_alloc
-        elif 'allocation' in result and isinstance(result['allocation'], dict):
-            if normalized_result['bandwidth'] == 0:
-                normalized_result['bandwidth'] = result['allocation'].get('bandwidth_mhz') or result['allocation'].get('allocated_bandwidth_mhz', 0)
-        else:
-            if normalized_result['bandwidth'] == 0:
-                normalized_result['bandwidth'] = result.get('allocated_bandwidth_mhz') or result.get('bandwidth_allocation') or result.get('bandwidth', 0)
-
-        # Extract data_rate from nested structures
-        if 'data_rate_calculation' in result:
-            rate_calc = result['data_rate_calculation']
-            if isinstance(rate_calc, dict):
-                normalized_result['data_rate'] = rate_calc.get('adjusted_rate_mbps') or rate_calc.get('calculated_rate_mbps') or rate_calc.get('rate', 0)
-            else:
-                normalized_result['data_rate'] = rate_calc
-        elif 'allocation' in result and isinstance(result['allocation'], dict):
-            if normalized_result['data_rate'] == 0:
-                normalized_result['data_rate'] = result['allocation'].get('estimated_data_rate_mbps') or result['allocation'].get('adjusted_rate_mbps') or result['allocation'].get('calculated_rate_mbps') or result['allocation'].get('rate', 0)
-        else:
-            if normalized_result['data_rate'] == 0:
-                normalized_result['data_rate'] = result.get('allocated_rate_mbps') or result.get('calculated_data_rate_mbps') or result.get('data_rate') or result.get('rate', 0)
-
-        # Extract latency from nested structures
-        if 'latency_allocation' in result:
-            lat_alloc = result['latency_allocation']
-            if isinstance(lat_alloc, dict):
-                normalized_result['latency'] = lat_alloc.get('estimated_latency_ms') or lat_alloc.get('latency', 0)
-            else:
-                normalized_result['latency'] = lat_alloc
-        elif 'allocation' in result and isinstance(result['allocation'], dict):
-            if normalized_result['latency'] == 0:
-                normalized_result['latency'] = result['allocation'].get('latency_target_ms') or result['allocation'].get('expected_latency_ms') or result['allocation'].get('latency_estimate_ms') or result['allocation'].get('latency', 0)
-        else:
-            if normalized_result['latency'] == 0:
-                normalized_result['latency'] = result.get('latency_ms') or result.get('latency', 0)
-
-        # Convert to float if they are not already
-        try:
-            normalized_result['bandwidth'] = float(normalized_result['bandwidth'])
-        except (ValueError, TypeError):
-            normalized_result['bandwidth'] = 0
-
-        try:
-            normalized_result['data_rate'] = float(normalized_result['data_rate'])
-        except (ValueError, TypeError):
-            normalized_result['data_rate'] = 0
-
-        try:
-            normalized_result['latency'] = float(normalized_result['latency'])
-        except (ValueError, TypeError):
-            normalized_result['latency'] = 0
-
-        # Debug: print what we got
-        print(f"\n[DEBUG] Raw result: {result}")
-        print(f"\n[DEBUG] Normalized bandwidth: {normalized_result['bandwidth']}, rate: {normalized_result['data_rate']}")
-        print(f"\nIntent Analysis: {normalized_result['intent_analysis']}")
-        print(f"Recommended Slice: {normalized_result['recommended_slice']} - {normalized_result['slice_reason']}")
-        print(f"Bandwidth Allocation: {normalized_result['bandwidth']} MHz")
-        print(f"Data Rate: {normalized_result['data_rate']} Mbps")
-        print(f"Latency: {normalized_result['latency']} ms")
-        print(f"Workload Balanced: {'Yes' if normalized_result['workload_balanced'] else 'No'}")
+        # 1. 提取切片类型
+        normalized_result['recommended_slice'] = extract_slice_type(result)
 
         slice_type = normalized_result['recommended_slice']
-        bandwidth = normalized_result['bandwidth']
-        rate = normalized_result['data_rate']
-        latency = normalized_result['latency']
-
-        # Map slice type to slice key
         if slice_type == "eMBB":
             slice_key = "embb_slice"
         elif slice_type == "URLLC":
             slice_key = "urllc_slice"
-        else:  # mMTC
+        else:
             slice_key = "mmtc_slice"
 
+        # 2. 提取数字
+        normalized_result['bandwidth'] = recursive_find_num(
+            result,
+            ['bandwidth_mhz', 'allocated_bandwidth', 'bandwidth_allocation', 'assigned_bandwidth'],
+            ['bandwidth', 'bw']
+        )
+        normalized_result['data_rate'] = recursive_find_num(
+            result,
+            ['data_rate_mbps', 'calculated_data_rate', 'net_rate', 'allocated_rate', 'guaranteed_rate'],
+            ['data_rate', 'rate', 'throughput']
+        )
+        normalized_result['latency'] = recursive_find_num(
+            result,
+            ['estimated_latency', 'expected_latency', 'latency_ms', 'target_latency', 'latency_allocated'],
+            ['latency', 'delay']
+        )
+
+        # 3. 提取文本
+        normalized_result['intent_analysis'] = recursive_find_str(result, ['intent', 'analysis', 'classification',
+                                                                           'user_analysis'])
+        normalized_result['slice_reason'] = recursive_find_str(result,
+                                                               ['rationale', 'reason', 'justification', 'explanation'])
+
+        bandwidth = normalized_result['bandwidth']
+        rate = normalized_result['data_rate']
+        latency = normalized_result['latency']
+
+        # Debug print
+        print(f"\n[DEBUG] Raw result parsed successfully")
+        print(f"\n[DEBUG] Normalized bandwidth: {bandwidth}, rate: {rate}")
+        print(f"\nIntent Analysis: {normalized_result['intent_analysis']}")
+        print(f"Recommended Slice: {slice_type} - {normalized_result['slice_reason']}")
+        print(f"Bandwidth Allocation: {bandwidth} MHz")
+        print(f"Data Rate: {rate} Mbps")
+        print(f"Latency: {latency} ms")
+
         # If the LLM indicates we can accommodate the user
-        if normalized_result.get("can_accommodate", False):
+        if normalized_result.get("can_accommodate", True):
             # Check capacity availability
             available_capacity = network_state[slice_key]["total_capacity"] - network_state[slice_key]["resource_usage"]
 
@@ -986,9 +815,9 @@ Provide your response in the JSON format specified in your instructions.
 
             # Update total user count
             network_state["total_users"] = (
-                len(network_state["embb_slice"]["users"]) +
-                len(network_state["urllc_slice"]["users"]) +
-                len(network_state["mmtc_slice"]["users"])
+                    len(network_state["embb_slice"]["users"]) +
+                    len(network_state["urllc_slice"]["users"]) +
+                    len(network_state["mmtc_slice"]["users"])
             )
 
             # Update timestamp
@@ -1033,19 +862,7 @@ Provide your response in the JSON format specified in your instructions.
             error_msg = f"Error parsing LLM response: {e}"
             print(error_msg)
         except:
-            print(f"Error parsing LLM response (could not display error message due to encoding)")
-        try:
-            # Try to print a truncated version avoiding encoding issues
-            safe_response = response[:500] if len(response) > 500 else response
-            # Try to encode to handle special characters
-            try:
-                safe_response = safe_response.encode('utf-8', errors='replace').decode('utf-8')
-            except:
-                pass
-            print(f"Raw response (truncated): {safe_response}...")
-        except:
-            print("Raw response could not be printed due to encoding issues")
-
+            pass
         return {
             "user_id": user_id,
             "request": request,
@@ -1055,14 +872,12 @@ Provide your response in the JSON format specified in your instructions.
             "error": str(e)
         }
 
+
 # ====================== Main Process Function ======================
 
 def process_user_request(user_id, location, request, cqi, ground_truth=None):
     """Main function for processing user requests with prompt-based approach"""
-    # Get current network state
     network_state = get_current_network_state()
-
-    # Record initial state for comparison
     initial_embb_usage = network_state["embb_slice"]["resource_usage"]
     initial_urllc_usage = network_state["urllc_slice"]["resource_usage"]
     initial_mmtc_usage = network_state["mmtc_slice"]["resource_usage"]
@@ -1070,25 +885,18 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
     initial_urllc_util = network_state["urllc_slice"]["utilization_rate"]
     initial_mmtc_util = network_state["mmtc_slice"]["utilization_rate"]
 
-    # Calculate initial rates
     initial_embb_total_rate, initial_urllc_total_rate, initial_mmtc_total_rate = calculate_total_transmission_rates()
     initial_avg_resource_util = calculate_average_resource_utilization()
 
-    # Process user with the prompt-based approach
     result = process_user_with_prompt(user_id, location, request, cqi, network_state)
-
-    # Get updated network state
     updated_state = get_current_network_state()
 
-    # Print concise report and user allocation table
     if not result.get("allocation_failed", True):
         print("\n" + "-" * 40)
         print(f"ALLOCATION RESULT FOR USER {user_id}")
         print("-" * 40)
         concise_report = generate_concise_report(updated_state, user_id)
         print(concise_report)
-
-        # Print complete user allocation table
         user_table = generate_user_allocation_table(updated_state, user_id)
         print(user_table)
     else:
@@ -1099,7 +907,6 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
         print(f"Slice type: {result.get('slice_type', 'Unknown')}")
         print(f"Reason: {result.get('failure_reason', 'Unknown error')}")
 
-    # Add comparison data
     final_embb_usage = updated_state["embb_slice"]["resource_usage"]
     final_urllc_usage = updated_state["urllc_slice"]["resource_usage"]
     final_mmtc_usage = updated_state["mmtc_slice"]["resource_usage"]
@@ -1107,7 +914,6 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
     final_urllc_util = updated_state["urllc_slice"]["utilization_rate"]
     final_mmtc_util = updated_state["mmtc_slice"]["utilization_rate"]
 
-    # Calculate final rates
     final_embb_total_rate, final_urllc_total_rate, final_mmtc_total_rate = calculate_total_transmission_rates()
     final_avg_resource_util = calculate_average_resource_utilization()
 
@@ -1124,7 +930,6 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
     result["mmtc_util_before"] = initial_mmtc_util
     result["mmtc_util_after"] = final_mmtc_util
 
-    # Add rate tracking
     result["embb_total_rate_before"] = initial_embb_total_rate
     result["embb_total_rate_after"] = final_embb_total_rate
     result["urllc_total_rate_before"] = initial_urllc_total_rate
@@ -1134,7 +939,6 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
     result["avg_resource_util_before"] = initial_avg_resource_util
     result["avg_resource_util_after"] = final_avg_resource_util
 
-    # Check if intent understanding matches ground truth
     if ground_truth is not None and not result.get("allocation_failed", True):
         result["intent_correct"] = (result["slice_type"] == ground_truth)
     else:
@@ -1144,41 +948,27 @@ def process_user_request(user_id, location, request, cqi, ground_truth=None):
 
     return result
 
+
 # ====================== Main Function ======================
 
 def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracing_csv=None):
-    """Main program with CSV-based user testing
-
-    Parameters:
-    - num_users: Number of users to test (default: 4)
-    - export_file: Path to export results CSV file
-    - ray_tracing_csv: Path to ray tracing CSV file
-    """
     print("Starting prompt-based network slice management system...\n")
-
-    # Reset token statistics at the start
     reset_token_stats()
 
-    # Load users from CSV (limit to specified number)
     if ray_tracing_csv:
         users = load_user_data_from_csv(ray_tracing_csv, num_users)
     else:
-        # Use default fallback users if no CSV provided
-        users = load_user_data_from_csv(r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv", num_users)
+        users = load_user_data_from_csv(r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv",
+                                        num_users)
 
     print(f"Testing {len(users)} users from ray tracing results CSV")
 
-    # Initialize results tracker
     detailed_results = []
-
-    # Track slice utilization and constraint violations
     embb_utils = []
     urllc_utils = []
     mmtc_utils = []
-
     workload_balanced_count = 0
 
-    # Process each user
     for i, user in enumerate(users):
         print(f"\n{'-' * 140}")
         print(f"PROCESSING USER {user['user_id']} ({i + 1}/{len(users)})")
@@ -1188,10 +978,8 @@ def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracin
             print(f"Ground Truth Slice: {user['ground_truth']}")
         print(f"{'-' * 140}")
 
-        # Reset network state for clean testing
         reset_network_state()
 
-        # Process the user
         result = process_user_request(
             user_id=user['user_id'],
             location=user['location'],
@@ -1200,61 +988,46 @@ def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracin
             ground_truth=user.get('ground_truth')
         )
 
-        # Get token usage for this user
         current_tokens = get_token_usage()
         result["token_used"] = current_tokens["total_tokens"]
         result["prompt_tokens"] = current_tokens["total_prompt_tokens"]
         result["completion_tokens"] = current_tokens["total_completion_tokens"]
         result["llm_call_count"] = current_tokens["llm_call_count"]
 
-        # Store detailed result for CSV export
         detailed_results.append(result)
 
-        # Track workload balancing
         if result.get("workload_balanced", False):
             workload_balanced_count += 1
 
-        # Track slice utilization
         if not result.get("allocation_failed", True):
             try:
                 if "embb_util_after" in result:
                     embb_util_str = result["embb_util_after"]
-                    if isinstance(embb_util_str, str):
-                        embb_util = float(embb_util_str.replace("%", ""))
-                    else:
-                        embb_util = float(embb_util_str)
+                    embb_util = float(embb_util_str.replace("%", "")) if isinstance(embb_util_str, str) else float(
+                        embb_util_str)
                     embb_utils.append(embb_util)
 
                 if "urllc_util_after" in result:
                     urllc_util_str = result["urllc_util_after"]
-                    if isinstance(urllc_util_str, str):
-                        urllc_util = float(urllc_util_str.replace("%", ""))
-                    else:
-                        urllc_util = float(urllc_util_str)
+                    urllc_util = float(urllc_util_str.replace("%", "")) if isinstance(urllc_util_str, str) else float(
+                        urllc_util_str)
                     urllc_utils.append(urllc_util)
 
                 if "mmtc_util_after" in result:
                     mmtc_util_str = result["mmtc_util_after"]
-                    if isinstance(mmtc_util_str, str):
-                        mmtc_util = float(mmtc_util_str.replace("%", ""))
-                    else:
-                        mmtc_util = float(mmtc_util_str)
+                    mmtc_util = float(mmtc_util_str.replace("%", "")) if isinstance(mmtc_util_str, str) else float(
+                        mmtc_util_str)
                     mmtc_utils.append(mmtc_util)
             except (ValueError, AttributeError):
                 pass
 
-    # Get final total transmission rates
     final_embb_total_rate, final_urllc_total_rate, final_mmtc_total_rate = calculate_total_transmission_rates()
-
-    # Get final average resource utilization
     final_avg_resource_util = calculate_average_resource_utilization()
 
-    # Calculate average slice utilization
     avg_embb_util = sum(embb_utils) / len(embb_utils) if embb_utils else 0
     avg_urllc_util = sum(urllc_utils) / len(urllc_utils) if urllc_utils else 0
     avg_mmtc_util = sum(mmtc_utils) / len(mmtc_utils) if mmtc_utils else 0
 
-    # Calculate intent understanding rate
     correct_intents = 0
     total_evaluated = 0
 
@@ -1265,22 +1038,17 @@ def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracin
                 correct_intents += 1
 
     intent_rate = 0 if total_evaluated == 0 else (correct_intents / total_evaluated) * 100
+    workload_balanced_rate = 0 if len(detailed_results) == 0 else (workload_balanced_count / len(
+        detailed_results)) * 100
 
-    # Calculate workload balancing rate
-    workload_balanced_rate = 0 if len(detailed_results) == 0 else (workload_balanced_count / len(detailed_results)) * 100
-
-    # Print summary of all results
     print("\n" + "=" * 60)
     print("SUMMARY OF USER ALLOCATIONS")
     print("=" * 60)
 
-    # Generate summary table
     summary_rows = []
     for res in detailed_results:
         status = "Success" if not res.get("allocation_failed", True) else "Failed"
-        intent_match = ""
-        if res.get("intent_correct") is not None:
-            intent_match = "Yes" if res["intent_correct"] else "No"
+        intent_match = "Yes" if res.get("intent_correct") else "No" if res.get("intent_correct") is not None else ""
 
         summary_rows.append([
             res["user_id"],
@@ -1295,37 +1063,30 @@ def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracin
             "Yes" if res.get("adjustments_made", False) else "No"
         ])
 
-    headers = ["User ID", "Status", "Slice", "Ground Truth", "Intent Match", "CQI", "BW (MHz)", "Rate (Mbps)", "Latency (ms)", "Adjusted"]
+    headers = ["User ID", "Status", "Slice", "Ground Truth", "Intent Match", "CQI", "BW (MHz)", "Rate (Mbps)",
+               "Latency (ms)", "Adjusted"]
     summary_table = tabulate(summary_rows, headers=headers, tablefmt="grid")
     print(summary_table)
 
-    # Print statistics
     success_count = sum(1 for res in detailed_results if not res.get("allocation_failed", True))
     total_count = len(detailed_results)
-    embb_count = sum(1 for res in detailed_results if res.get("slice_type") == "eMBB")
-    urllc_count = sum(1 for res in detailed_results if res.get("slice_type") == "URLLC")
-    mmtc_count = sum(1 for res in detailed_results if res.get("slice_type") == "mMTC")
 
     print("\nStatistics:")
     print(f"Success rate: {success_count}/{total_count} ({success_count / total_count * 100:.1f}%)")
 
-    # Print intent understanding statistics
     print("\nIntent Understanding Evaluation:")
     print(f"Correctly identified intents: {correct_intents}/{total_evaluated}")
     print(f"Intent understanding rate: {intent_rate:.1f}%")
 
-    # Print workload balancing statistics
     print("\nWorkload Balancing Statistics:")
     print(f"Users with workload balancing: {workload_balanced_count}/{total_count}")
     print(f"Workload balancing rate: {workload_balanced_rate:.1f}%")
 
-    # Print slice utilization statistics
     print("\nSlice Utilization Statistics:")
     print(f"Average eMBB utilization: {avg_embb_util:.2f}%")
     print(f"Average URLLC utilization: {avg_urllc_util:.2f}%")
     print(f"Average mMTC utilization: {avg_mmtc_util:.2f}%")
 
-    # Prepare data for CSV export
     slice_stats = {
         "avg_resource_util": f"{final_avg_resource_util:.2f}",
         "final_resource_util": f"{final_avg_resource_util:.2f}",
@@ -1340,9 +1101,8 @@ def main(num_users=4, export_file="prompt_based_slicing_results.csv", ray_tracin
         "rate": f"{intent_rate:.2f}"
     }
 
-    # Export results to CSV
     export_results_to_csv(detailed_results, slice_stats, intent_stats, export_file)
 
+
 if __name__ == "__main__":
-    # Test with 1 user for verification
     main(num_users=1, export_file="prompt_based_slicing_results.csv")
