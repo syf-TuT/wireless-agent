@@ -40,18 +40,18 @@ SCENARIOS = {
         "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_south.csv",
         "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_south_{MODEL_NAME}.csv")
     },
-    # "TJU_east": {
-    #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv",
-    #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_east_{MODEL_NAME}.csv")
-    # },
-    # "TJU_west": {
-    #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_west.csv",
-    #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_west_{MODEL_NAME}.csv")
-    # },
-    # "TJU_gym": {
-    #     "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv",
-    #     "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_gym_{MODEL_NAME}.csv")
-    # }
+    "TJU_east": {
+        "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_east.csv",
+        "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_east_{MODEL_NAME}.csv")
+    },
+    "TJU_west": {
+        "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_west.csv",
+        "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_west_{MODEL_NAME}.csv")
+    },
+    "TJU_gym": {
+        "ray_tracing_csv": r"F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv",
+        "export_file": os.path.join(OUTPUT_DIR, f"network_slicing_results_TJU_gym_{MODEL_NAME}.csv")
+    }
 }
 
 # 用户数量

@@ -30,7 +30,7 @@ LLM_CONFIGS = {
     "minimax-m2.5": {
             "api_key": os.getenv("MINIMAX_API_KEY", ""),
             "base_url": "https://api.minimaxi.com/v1",
-            "model": os.getenv("MINIMAX_MODEL", "MiniMax-M2.5-highspeed"),
+            "model": "MiniMax-M2.7-highspeed",
             "temperature": 0
     },
     # "glm-4.7": {

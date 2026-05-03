@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.idea/
+*.iml
+
+# Config (local overrides)
+llm_config.py
+
+# Models
+models/
+
+# Generated
+*.png
+*.json
+run_results
+
+# Documentation
+docs/
+
+# Plots
+Figure_Plots/
+
+Agents.md
+Claude.md
+
+paper/
+
+
+
+

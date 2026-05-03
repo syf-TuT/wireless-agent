@@ -1,5 +1,5 @@
 ============================================================
-场景 4/5: TJU_gym
+场景 5/5: TJU_gym
 ============================================================
 输入: F:\code\wirelessagent\ray_tracing_results\ray_tracing_results_gym.csv
 输出: F:\code\wirelessagent\run_results\batch_run\prompt_based\minimax-m2.5\network_slicing_results_TJU_gym_minimax-m2.5.csv
@@ -14,26 +14,27 @@ Request: "A network of environmental sensors needs to report air quality"
 CQI: 3
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~348, completion~1345, total~1693
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 0.6
+[DEBUG] Normalized bandwidth: 2.0, rate: 0.3
 
-Intent Analysis: N/A
-Recommended Slice: mMTC - Environmental sensors are IoT devices requiring mass connectivity with low data rates and tolerant latency. mMTC slice is specifically designed for massive machine-type communication with the appropriate profile for sensor networks.
+Intent Analysis: Environmental sensor networks typically transmit low‑volume data (e.g., temperature, humidity, pollutant concentrations) and can tolerate higher latency. This traffic pattern aligns perfectly with the characteristics of the mMTC (massive Machine‑Type Communication) slice, which is designed for many low‑power IoT devices with relaxed latency requirements.
+Recommended Slice: mMTC - N/A
 Bandwidth Allocation: 2.0 MHz
-Data Rate: 0.6 Mbps
-Latency: 200.0 ms
+Data Rate: 0.3 Mbps
+Latency: 500.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 1
 ----------------------------------------
-Network Status @ 2026-03-31 12:18:26
+Network Status @ 2026-04-06 00:12:55
 Total Users: 1
 Average Resource Utilization: 1.54%
-eMBB Total Rate: 0.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 0.60 Mbps
+eMBB Total Rate: 0.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 0.30 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
@@ -43,13 +44,13 @@ mMTC           1  2.0/10 MHz        20.00%
 
 New User Allocation:
 User 1 → mMTC Slice
-CQI: 3, Bandwidth: 2.0 MHz, Rate: 0.60 Mbps, Latency: 200.0 ms
+CQI: 3, Bandwidth: 2.0 MHz, Rate: 0.30 Mbps, Latency: 500.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         1 | mMTC    |     3 |          2 |           0.6 |            200 | NEW      |
+|         1 | mMTC    |     3 |          2 |           0.3 |            500 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -58,44 +59,45 @@ Request: "I want to browse websites and check email"
 CQI: 11
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~348, completion~1319, total~1667
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 15.0, rate: 108.0
+[DEBUG] Normalized bandwidth: 10.0, rate: 200.0
 
-Intent Analysis: web browsing and email
-Recommended Slice: eMBB - N/A
-Bandwidth Allocation: 15.0 MHz
-Data Rate: 108.0 Mbps
-Latency: 20.0 ms
+Intent Analysis: N/A
+Recommended Slice: eMBB - The user’s activity (web browsing and email) requires moderate bandwidth and latency within the eMBB range. A 10 MHz allocation yields an estimated 200 Mbps data rate, satisfying the 100‑400 Mbps requirement while keeping latency around 30 ms, well within the 10‑100 ms eMBB window. The eMBB slice currently has sufficient idle capacity (0/90 MHz), so the allocation leaves ample resources for future users and maintains balanced load across slices.
+Bandwidth Allocation: 10.0 MHz
+Data Rate: 200.0 Mbps
+Latency: 30.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 2
 ----------------------------------------
-Network Status @ 2026-03-31 12:18:53
+Network Status @ 2026-04-06 00:13:16
 Total Users: 2
-Average Resource Utilization: 13.08%
-eMBB Total Rate: 108.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 0.60 Mbps
+Average Resource Utilization: 9.23%
+eMBB Total Rate: 200.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 0.30 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           1  15.0/90 MHz       16.67%
+eMBB           1  10.0/90 MHz       11.11%
 URLLC          0  0/30 MHz          0%
 mMTC           1  2.0/10 MHz        20.00%
 
 New User Allocation:
 User 2 → eMBB Slice
-CQI: 11, Bandwidth: 15.0 MHz, Rate: 108.00 Mbps, Latency: 20.0 ms
+CQI: 11, Bandwidth: 10.0 MHz, Rate: 200.00 Mbps, Latency: 30.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |         15 |         108   |             20 | NEW      |
+|         2 | eMBB    |    11 |         10 |         200   |             30 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |          2 |           0.6 |            200 |          |
+|         1 | mMTC    |     3 |          2 |           0.3 |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -104,46 +106,47 @@ Request: "I need to monitor water level in a reservoir"
 CQI: 13
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~2503, total~2854
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 0.8
+[DEBUG] Normalized bandwidth: 1.0, rate: 0.5
 
-Intent Analysis: Water level monitoring for a reservoir (IoT sensor data)
-Recommended Slice: mMTC - The water‑level monitoring application generates low‑volume, periodic sensor readings that are best served by the mMTC slice (bandwidth 1‑3 MHz, rate ≤1 Mbps, latency 100‑1000 ms). With a CQI of 13 the channel offers high spectral efficiency, allowing a modest 2 MHz allocation while still respecting the slice’s rate ceiling. This leaves ample headroom for additional mMTC devices and avoids over‑provisioning the high‑speed eMBB slice.
-Bandwidth Allocation: 2.0 MHz
-Data Rate: 0.8 Mbps
-Latency: 300.0 ms
+Intent Analysis: Monitor water level in a reservoir
+Recommended Slice: eMBB - N/A
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 0.5 Mbps
+Latency: 200.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 3
 ----------------------------------------
-Network Status @ 2026-03-31 12:19:34
+Network Status @ 2026-04-06 00:13:52
 Total Users: 3
-Average Resource Utilization: 14.62%
-eMBB Total Rate: 108.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.40 Mbps
+Average Resource Utilization: 10.0%
+eMBB Total Rate: 200.50 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 0.30 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           1  15.0/90 MHz       16.67%
+eMBB           2  11.0/90 MHz       12.22%
 URLLC          0  0/30 MHz          0%
-mMTC           2  4.0/10 MHz        40.00%
+mMTC           1  2.0/10 MHz        20.00%
 
 New User Allocation:
-User 3 → mMTC Slice
-CQI: 13, Bandwidth: 2.0 MHz, Rate: 0.80 Mbps, Latency: 300.0 ms
+User 3 → eMBB Slice
+CQI: 13, Bandwidth: 1.0 MHz, Rate: 0.50 Mbps, Latency: 200.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |         15 |         108   |             20 |          |
+|         2 | eMBB    |    11 |         10 |         200   |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |          2 |           0.6 |            200 |          |
+|         3 | eMBB    |    13 |          1 |           0.5 |            200 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |          2 |           0.8 |            300 | NEW      |
+|         1 | mMTC    |     3 |          2 |           0.3 |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -152,15 +155,16 @@ Request: "My wearable device needs to upload health data periodically"
 CQI: 4
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~2304, total~2655
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 0.3
+[DEBUG] Normalized bandwidth: 1.0, rate: 0.877
 
-Intent Analysis: The user's wearable device needs to upload health data periodically. This is a low‑volume, machine‑type traffic that can tolerate relatively high latency and does not require the high data rates or ultra‑low latency of eMBB or URLLC slices. Therefore, the request best matches the mMTC (massive Machine‑Type Communications) slice, which is designed for many low‑power IoT devices with modest bandwidth and data‑rate needs.
-Recommended Slice: mMTC - N/A
+Intent Analysis: The user’s request describes a typical IoT health‑monitoring wearable that periodically uploads small amounts of telemetry (e.g., heart rate, SpO2). This traffic is low‑rate, latency‑tolerant, and best served by an mMTC‑type slice rather than high‑speed eMBB or ultra‑reliable URLLC services.
+Recommended Slice: mMTC - A 1 MHz grant keeps the data rate below the 1 Mbps mMTC ceiling while providing enough capacity for periodic health‑data uploads. The latency of ≈200 ms is well within the 100‑1000 ms mMTC tolerance.
 Bandwidth Allocation: 1.0 MHz
-Data Rate: 0.3 Mbps
+Data Rate: 0.877 Mbps
 Latency: 200.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -168,32 +172,32 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 4
 ----------------------------------------
-Network Status @ 2026-03-31 12:19:56
+Network Status @ 2026-04-06 00:14:31
 Total Users: 4
-Average Resource Utilization: 15.38%
-eMBB Total Rate: 108.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.70 Mbps
+Average Resource Utilization: 10.77%
+eMBB Total Rate: 200.50 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.18 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           1  15.0/90 MHz       16.67%
+eMBB           2  11.0/90 MHz       12.22%
 URLLC          0  0/30 MHz          0%
-mMTC           3  5.0/10 MHz        50.00%
+mMTC           2  3.0/10 MHz        30.00%
 
 New User Allocation:
 User 4 → mMTC Slice
-CQI: 4, Bandwidth: 1.0 MHz, Rate: 0.30 Mbps, Latency: 200.0 ms
+CQI: 4, Bandwidth: 1.0 MHz, Rate: 0.88 Mbps, Latency: 200.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |         15 |         108   |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |          2 |           0.6 |            200 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |          2 |           0.8 |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |          1 |           0.3 |            200 | NEW      |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -202,50 +206,51 @@ Request: "I need to use cloud-based AI services for image processing"
 CQI: 8
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~6038, total~6391
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 10.0, rate: 100.0
+[DEBUG] Normalized bandwidth: 20.0, rate: 48.12
 
-Intent Analysis: N/A
-Recommended Slice: eMBB - eMBB provides the necessary high data rates (100‑400 Mbps) and latency (10‑100 ms) suitable for image processing. Current eMBB slice utilization is low (16.67 %), allowing resource allocation without congestion.
-Bandwidth Allocation: 10.0 MHz
-Data Rate: 100.0 Mbps
-Latency: 10.0 ms
+Intent Analysis: cloud‑based AI services for image processing – high data rate, moderate latency (≈30 ms)
+Recommended Slice: eMBB - eMBB provides the bandwidth (6‑20 MHz) and latency (10‑100 ms) needed for cloud‑based AI image processing. The URLLC slice targets ultra‑reliable low‑latency traffic (<10 ms) and the mMTC slice is optimised for massive machine‑type connectivity, both of which are unnecessary for this request.
+Bandwidth Allocation: 20.0 MHz
+Data Rate: 48.12 Mbps
+Latency: 100.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 5
 ----------------------------------------
-Network Status @ 2026-03-31 12:20:30
+Network Status @ 2026-04-06 00:16:02
 Total Users: 5
-Average Resource Utilization: 23.08%
-eMBB Total Rate: 208.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.70 Mbps
+Average Resource Utilization: 26.15%
+eMBB Total Rate: 248.62 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.18 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           2  25.0/90 MHz       27.78%
+eMBB           3  31.0/90 MHz       34.44%
 URLLC          0  0/30 MHz          0%
-mMTC           3  5.0/10 MHz        50.00%
+mMTC           2  3.0/10 MHz        30.00%
 
 New User Allocation:
 User 5 → eMBB Slice
-CQI: 8, Bandwidth: 10.0 MHz, Rate: 100.00 Mbps, Latency: 10.0 ms
+CQI: 8, Bandwidth: 20.0 MHz, Rate: 48.12 Mbps, Latency: 100.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |         15 |         108   |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |         10 |         100   |             10 | NEW      |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |          2 |           0.6 |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |          2 |           0.8 |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |          1 |           0.3 |            200 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -254,26 +259,54 @@ Request: "I need to stream 8K video content"
 CQI: 5
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~3006, total~3357
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 80.0, rate: 200.0
+[DEBUG] Normalized bandwidth: 12.0, rate: 120.0
 
-Intent Analysis: high_bandwidth_media_consumption
-Recommended Slice: eMBB - 8K video streaming requires high bandwidth (80-200 Mbps); CQI of 5 indicates moderate channel quality, suitable for eMBB with 16-QAM; eMBB slice designed for enhanced mobile broadband services; URLLC not required as streaming tolerates 10-100ms latency; mMTC slice inappropriate for high-bandwidth user applications
-Bandwidth Allocation: 80.0 MHz
-Data Rate: 200.0 Mbps
-Latency: 25.0 ms
+Intent Analysis: Stream 8K video content
+Recommended Slice: eMBB - CQI 5 indicates moderate channel quality; allocating the middle of the eMBB per‑user bandwidth range (12 MHz) provides the minimum required 100 Mbps for 8K streaming while preserving capacity for other eMBB users.
+Bandwidth Allocation: 12.0 MHz
+Data Rate: 120.0 Mbps
+Latency: 20.0 ms
 
-CAPACITY CHECK FAILED:
-- Required: 80.0 MHz, Available: 65.0 MHz in eMBB slice
+ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
-ALLOCATION FAILED FOR USER 6
+ALLOCATION RESULT FOR USER 6
 ----------------------------------------
-Request: I need to stream 8K video content
-Slice type: eMBB
-Reason: Insufficient capacity in eMBB slice. Required: 80.0 MHz, Available: 65.0 MHz
+Network Status @ 2026-04-06 00:16:50
+Total Users: 6
+Average Resource Utilization: 35.38%
+eMBB Total Rate: 368.62 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.18 Mbps
+
+Slice      Users  Resource Usage    Utilization
+-------  -------  ----------------  -------------
+eMBB           4  43.0/90 MHz       47.78%
+URLLC          0  0/30 MHz          0%
+mMTC           2  3.0/10 MHz        30.00%
+
+New User Allocation:
+User 6 → eMBB Slice
+CQI: 5, Bandwidth: 12.0 MHz, Rate: 120.00 Mbps, Latency: 20.0 ms
+
+Current User Allocations:
++-----------+---------+-------+------------+---------------+----------------+----------+
+|   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
++===========+=========+=======+============+===============+================+==========+
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         6 | eMBB    |     5 |         12 |        120    |             20 | NEW      |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 PROCESSING USER 7 (7/30)
@@ -281,52 +314,55 @@ Request: "I need to track the location of a shipping container"
 CQI: 6
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~352, completion~2022, total~2374
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.5, rate: 3.32
+[DEBUG] Normalized bandwidth: 1.0, rate: 0.1
 
-Intent Analysis: The user needs to track a shipping container, which is a classic IoT/asset tracking use case. This involves periodic transmission of small location data payloads (GPS coordinates, timestamps, container ID). This is NOT a high-bandwidth application like video streaming (eMBB) nor a latency-critical application like autonomous driving (URLLC). It requires low-power, wide-area connectivity for intermittent small data transmissions - typical mMTC behavior.
-Recommended Slice: mMTC - Container tracking is a massive IoT application requiring: (1) Low bandwidth for small periodic data payloads, (2) Wide coverage for tracking across large geographic areas, (3) Energy efficiency for battery-powered trackers, (4) Support for large number of devices. mMTC slice is specifically designed for such machine-type communications with appropriate bandwidth (1-3 MHz) and rate (0.1-1 Mbps) ranges.
-Bandwidth Allocation: 1.5 MHz
-Data Rate: 3.32 Mbps
-Latency: 150.0 ms
+Intent Analysis: The user requires periodic transmission of geographic position data for a shipping container. This is a low‑volume, latency‑tolerant IoT use case.
+Recommended Slice: mMTC - Tracking a shipping container generates infrequent, small packets → ideal for massive Machine‑Type Communications.; The required data rate (0.1–1 Mbps) fits the mMTC slice spec (0.1–1 Mbps).; Latency tolerance (100–1000 ms) aligns with mMTC capabilities.; Allocating to mMTC leaves eMBB resources for high‑bandwidth services and preserves URLLC for ultra‑reliable low‑latency traffic.
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 0.1 Mbps
+Latency: 500.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 7
 ----------------------------------------
-Network Status @ 2026-03-31 12:21:21
-Total Users: 6
-Average Resource Utilization: 24.23%
-eMBB Total Rate: 208.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 5.02 Mbps
+Network Status @ 2026-04-06 00:17:20
+Total Users: 7
+Average Resource Utilization: 36.15%
+eMBB Total Rate: 368.62 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.28 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           2  25.0/90 MHz       27.78%
+eMBB           4  43.0/90 MHz       47.78%
 URLLC          0  0/30 MHz          0%
-mMTC           4  6.5/10 MHz        65.00%
+mMTC           3  4.0/10 MHz        40.00%
 
 New User Allocation:
 User 7 → mMTC Slice
-CQI: 6, Bandwidth: 1.5 MHz, Rate: 3.32 Mbps, Latency: 150.0 ms
+CQI: 6, Bandwidth: 1.0 MHz, Rate: 0.10 Mbps, Latency: 500.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 | NEW      |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,54 +371,57 @@ Request: "My wearable device needs to upload health data periodically"
 CQI: 15
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~2648, total~2999
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 1.0
+[DEBUG] Normalized bandwidth: 1.0, rate: 0.5
 
-Intent Analysis: Low‑volume, periodic data transmission typical of IoT health monitors.
-Recommended Slice: mMTC - mMTC is designed for massive machine‑type communications with low‑to‑moderate data rates (0.1‑1 Mbps).; Health‑data uploads from wearables are tolerant to higher latency (100‑1000 ms) and do not require ultra‑low latency of URLLC.; The required bandwidth (≈1 MHz) fits comfortably within the mMTC slice limits (1‑3 MHz).; CQI = 15 indicates excellent channel conditions, allowing the full mMTC rate to be utilized while still respecting the slice ceiling.
+Intent Analysis: The request comes from a wearable health‑monitoring device that periodically uploads small amounts of data (e.g., heart rate, steps). The traffic is low‑rate, delay‑tolerant, and originates from an IoT‑type device, which best matches the characteristics of the mMTC slice.
+Recommended Slice: mMTC - N/A
 Bandwidth Allocation: 1.0 MHz
-Data Rate: 1.0 Mbps
-Latency: 500.0 ms
+Data Rate: 0.5 Mbps
+Latency: 200.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 8
 ----------------------------------------
-Network Status @ 2026-03-31 12:21:53
-Total Users: 7
-Average Resource Utilization: 25.0%
-eMBB Total Rate: 208.00 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 6.02 Mbps
+Network Status @ 2026-04-06 00:17:57
+Total Users: 8
+Average Resource Utilization: 36.92%
+eMBB Total Rate: 368.62 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 1.78 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           2  25.0/90 MHz       27.78%
+eMBB           4  43.0/90 MHz       47.78%
 URLLC          0  0/30 MHz          0%
-mMTC           5  7.5/10 MHz        75.00%
+mMTC           4  5.0/10 MHz        50.00%
 
 New User Allocation:
 User 8 → mMTC Slice
-CQI: 15, Bandwidth: 1.0 MHz, Rate: 1.00 Mbps, Latency: 500.0 ms
+CQI: 15, Bandwidth: 1.0 MHz, Rate: 0.50 Mbps, Latency: 200.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 | NEW      |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -391,15 +430,16 @@ Request: "I need reliable connectivity for implanted medical devices"
 CQI: 7
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~350, completion~2338, total~2688
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 5.0, rate: 5.88
+[DEBUG] Normalized bandwidth: 5.0, rate: 10.0
 
-Intent Analysis: The user requires reliable, low‑latency connectivity for implanted medical devices, which is best served by the URLLC slice due to its strict latency (1‑10 ms) and high reliability characteristics.
-Recommended Slice: eMBB - 5 MHz is the maximum allowable for URLLC and yields a comfortable margin above the 1 Mbps minimum while staying well below the 100 Mbps ceiling. The 10 % overhead reduction brings the usable rate to ≈5.3 Mbps, still within the slice’s rate range.
+Intent Analysis: The user requires highly reliable connectivity for implanted medical devices, emphasizing low latency and robust performance rather than high throughput.
+Recommended Slice: URLLC - N/A
 Bandwidth Allocation: 5.0 MHz
-Data Rate: 5.88 Mbps
+Data Rate: 10.0 Mbps
 Latency: 5.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -407,40 +447,42 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 9
 ----------------------------------------
-Network Status @ 2026-03-31 12:22:33
-Total Users: 8
-Average Resource Utilization: 28.85%
-eMBB Total Rate: 213.88 Mbps, URLLC Total Rate: 0.00 Mbps, mMTC Total Rate: 6.02 Mbps
+Network Status @ 2026-04-06 00:18:37
+Total Users: 9
+Average Resource Utilization: 40.77%
+eMBB Total Rate: 368.62 Mbps, URLLC Total Rate: 10.00 Mbps, mMTC Total Rate: 1.78 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           3  30.0/90 MHz       33.33%
-URLLC          0  0/30 MHz          0%
-mMTC           5  7.5/10 MHz        75.00%
+eMBB           4  43.0/90 MHz       47.78%
+URLLC          1  5.0/30 MHz        16.67%
+mMTC           4  5.0/10 MHz        50.00%
 
 New User Allocation:
-User 9 → eMBB Slice
-CQI: 7, Bandwidth: 5.0 MHz, Rate: 5.88 Mbps, Latency: 5.0 ms
+User 9 → URLLC Slice
+CQI: 7, Bandwidth: 5.0 MHz, Rate: 10.00 Mbps, Latency: 5.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 | NEW      |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -449,58 +491,61 @@ Request: "I need to check weather forecasts"
 CQI: 5
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~350, completion~2922, total~3272
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 2.4
+[DEBUG] Normalized bandwidth: 10.0, rate: 120.0
 
-Intent Analysis: Retrieve weather forecast data
-Recommended Slice: URLLC - N/A
-Bandwidth Allocation: 2.0 MHz
-Data Rate: 2.4 Mbps
-Latency: 5.0 ms
+Intent Analysis: Data‑centric service (weather data retrieval) with moderate latency tolerance
+Recommended Slice: eMBB - Weather‑forecast access is a broadband data service that fits the eMBB profile (typical bandwidth 6‑20 MHz, rate 100‑400 Mbps, latency 10‑100 ms).; The URLLC slice targets ultra‑reliable low‑latency traffic and would over‑provision for this request.; The mMTC slice is designed for massive machine‑type connectivity with very low data rates (0.1‑1 Mbps) and high latency (100‑1000 ms), which is insufficient for timely weather updates.
+Bandwidth Allocation: 10.0 MHz
+Data Rate: 120.0 Mbps
+Latency: 30.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 10
 ----------------------------------------
-Network Status @ 2026-03-31 12:23:31
-Total Users: 9
-Average Resource Utilization: 30.38%
-eMBB Total Rate: 213.88 Mbps, URLLC Total Rate: 2.40 Mbps, mMTC Total Rate: 6.02 Mbps
+Network Status @ 2026-04-06 00:19:22
+Total Users: 10
+Average Resource Utilization: 48.46%
+eMBB Total Rate: 488.62 Mbps, URLLC Total Rate: 10.00 Mbps, mMTC Total Rate: 1.78 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           3  30.0/90 MHz       33.33%
-URLLC          1  2.0/30 MHz        6.67%
-mMTC           5  7.5/10 MHz        75.00%
+eMBB           5  53.0/90 MHz       58.89%
+URLLC          1  5.0/30 MHz        16.67%
+mMTC           4  5.0/10 MHz        50.00%
 
 New User Allocation:
-User 10 → URLLC Slice
-CQI: 5, Bandwidth: 2.0 MHz, Rate: 2.40 Mbps, Latency: 5.0 ms
+User 10 → eMBB Slice
+CQI: 5, Bandwidth: 10.0 MHz, Rate: 120.00 Mbps, Latency: 30.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 | NEW      |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -509,60 +554,63 @@ Request: "I need to check the status of city-wide smart streetlights"
 CQI: 6
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~356, completion~1680, total~2036
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 0.5
+[DEBUG] Normalized bandwidth: 2.0, rate: 0.8
 
-Intent Analysis: N/A
-Recommended Slice: mMTC - Streetlight monitoring involves IoT/M2M communication; Low to moderate data rate requirements; Large number of distributed devices across city; Status checks are tolerant of higher latency (100-1000ms); mMTC slice is specifically designed for massive IoT deployments; Periodic small data transmissions match mMTC characteristics
-Bandwidth Allocation: 1.0 MHz
-Data Rate: 0.5 Mbps
-Latency: 150.0 ms
+Intent Analysis: IoT sensor data collection
+Recommended Slice: mMTC - The request involves monitoring city-wide smart streetlights, which are IoT devices requiring machine-to-machine communication. mMTC slice is designed for massive IoT connectivity with low-to-moderate data rates and can tolerate higher latency, making it ideal for this use case.
+Bandwidth Allocation: 2.0 MHz
+Data Rate: 0.8 Mbps
+Latency: 250.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 11
 ----------------------------------------
-Network Status @ 2026-03-31 12:23:57
-Total Users: 10
-Average Resource Utilization: 31.15%
-eMBB Total Rate: 213.88 Mbps, URLLC Total Rate: 2.40 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:19:50
+Total Users: 11
+Average Resource Utilization: 50.0%
+eMBB Total Rate: 488.62 Mbps, URLLC Total Rate: 10.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           3  30.0/90 MHz       33.33%
-URLLC          1  2.0/30 MHz        6.67%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           5  53.0/90 MHz       58.89%
+URLLC          1  5.0/30 MHz        16.67%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
 User 11 → mMTC Slice
-CQI: 6, Bandwidth: 1.0 MHz, Rate: 0.50 Mbps, Latency: 150.0 ms
+CQI: 6, Bandwidth: 2.0 MHz, Rate: 0.80 Mbps, Latency: 250.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 | NEW      |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -571,15 +619,16 @@ Request: "I need microsecond-level latency for high-frequency tradin"
 CQI: 3
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~355, completion~1798, total~2153
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 0.6016
+[DEBUG] Normalized bandwidth: 5.0, rate: 25.0
 
-Intent Analysis: The user needs ultra‑low latency (microseconds) for high‑frequency trading. Among the defined slices, URLLC provides the lowest latency (1‑10 ms) and is the best match, even though true microsecond latency is beyond the standard URLLC spec.
-Recommended Slice: URLLC - CQI 3 yields a low raw rate; we set the guaranteed rate to the minimum of the URLLC range (1 Mbps) to satisfy the slice constraints while still delivering the lowest possible latency.
-Bandwidth Allocation: 1.0 MHz
-Data Rate: 0.6016 Mbps
+Intent Analysis: critical
+Recommended Slice: URLLC - The calculated 25 Mbps (5 MHz × 5 bits/Hz) fits comfortably within the URLLC rate window (1‑100 Mbps) and provides sufficient throughput for typical high‑frequency trading payloads while keeping queuing latency minimal.
+Bandwidth Allocation: 5.0 MHz
+Data Rate: 25.0 Mbps
 Latency: 1.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -587,46 +636,48 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 12
 ----------------------------------------
-Network Status @ 2026-03-31 12:24:31
-Total Users: 11
-Average Resource Utilization: 31.92%
-eMBB Total Rate: 213.88 Mbps, URLLC Total Rate: 3.00 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:20:23
+Total Users: 12
+Average Resource Utilization: 53.85%
+eMBB Total Rate: 488.62 Mbps, URLLC Total Rate: 35.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           3  30.0/90 MHz       33.33%
-URLLC          2  3.0/30 MHz        10.00%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           5  53.0/90 MHz       58.89%
+URLLC          2  10.0/30 MHz       33.33%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
 User 12 → URLLC Slice
-CQI: 3, Bandwidth: 1.0 MHz, Rate: 0.60 Mbps, Latency: 1.0 ms
+CQI: 3, Bandwidth: 5.0 MHz, Rate: 25.00 Mbps, Latency: 1.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 | NEW      |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -635,64 +686,67 @@ Request: "I want to use holographic communication"
 CQI: 9
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~3671, total~4022
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 12.0, rate: 120.0
+[DEBUG] Normalized bandwidth: 10.0, rate: 100.0
 
-Intent Analysis: N/A
-Recommended Slice: eMBB - N/A
-Bandwidth Allocation: 12.0 MHz
-Data Rate: 120.0 Mbps
-Latency: 20.0 ms
+Intent Analysis: High‑bandwidth, real‑time holographic communication
+Recommended Slice: eMBB - eMBB provides the high throughput (100‑400 Mbps) and latency (10‑100 ms) needed for holographic communication, while CQI 9 still supports adequate modulation.
+Bandwidth Allocation: 10.0 MHz
+Data Rate: 100.0 Mbps
+Latency: 10.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 13
 ----------------------------------------
-Network Status @ 2026-03-31 12:24:59
-Total Users: 12
-Average Resource Utilization: 41.15%
-eMBB Total Rate: 333.88 Mbps, URLLC Total Rate: 3.00 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:21:23
+Total Users: 13
+Average Resource Utilization: 61.54%
+eMBB Total Rate: 588.62 Mbps, URLLC Total Rate: 35.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           4  42.0/90 MHz       46.67%
-URLLC          2  3.0/30 MHz        10.00%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           6  63.0/90 MHz       70.00%
+URLLC          2  10.0/30 MHz       33.33%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
 User 13 → eMBB Slice
-CQI: 9, Bandwidth: 12.0 MHz, Rate: 120.00 Mbps, Latency: 20.0 ms
+CQI: 9, Bandwidth: 10.0 MHz, Rate: 100.00 Mbps, Latency: 10.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 | NEW      |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -701,66 +755,69 @@ Request: "I need to control critical infrastructure with zero downtime"
 CQI: 12
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~2992, total~3345
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 5.0, rate: 27.5
+[DEBUG] Normalized bandwidth: 5.0, rate: 15.0
 
-Intent Analysis: Critical Infrastructure Control
-Recommended Slice: URLLC - The requirement for 'zero downtime' and 'critical infrastructure control' aligns perfectly with URLLC (Ultra-Reliable Low-Latency Communication) slice characteristics. URLLC provides the required reliability and low latency for mission-critical applications that cannot tolerate service interruptions.
+Intent Analysis: Requires ultra‑low latency, high reliability, and minimal interruption; best served by the URLLC slice.
+Recommended Slice: eMBB - Bandwidth set to the maximum allowed for URLLC (5 MHz) to maximise reliability. Data rate derived from CQI 12 (≈3 bits/Hz) × 5 MHz ≈ 15 Mbps, well within the URLLC 1‑100 Mbps range. Latency set to 2 ms (within 1‑10 ms constraint).
 Bandwidth Allocation: 5.0 MHz
-Data Rate: 27.5 Mbps
-Latency: 5.0 ms
+Data Rate: 15.0 Mbps
+Latency: 2.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 14
 ----------------------------------------
-Network Status @ 2026-03-31 12:25:20
-Total Users: 13
-Average Resource Utilization: 45.0%
-eMBB Total Rate: 333.88 Mbps, URLLC Total Rate: 30.50 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:22:09
+Total Users: 14
+Average Resource Utilization: 65.38%
+eMBB Total Rate: 603.62 Mbps, URLLC Total Rate: 35.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           4  42.0/90 MHz       46.67%
-URLLC          3  8.0/30 MHz        26.67%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           7  68.0/90 MHz       75.56%
+URLLC          2  10.0/30 MHz       33.33%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
-User 14 → URLLC Slice
-CQI: 12, Bandwidth: 5.0 MHz, Rate: 27.50 Mbps, Latency: 5.0 ms
+User 14 → eMBB Slice
+CQI: 12, Bandwidth: 5.0 MHz, Rate: 15.00 Mbps, Latency: 2.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 | NEW      |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -769,68 +826,71 @@ Request: "I need real-time fraud detection for financial transactions"
 CQI: 7
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~1878, total~2231
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 5.0, rate: 9.57
+[DEBUG] Normalized bandwidth: 5.0, rate: 15.0
 
-Intent Analysis: The user requires real‑time fraud detection for financial transactions. This service demands very low latency (sub‑10 ms) to process each transaction promptly and a moderate data rate to handle transaction records. These characteristics match the URLLC slice profile rather than the higher‑throughput but higher‑latency eMBB slice or the low‑rate, high‑latency mMTC slice.
-Recommended Slice: eMBB - The calculated rate (≈9.6 Mbps) lies comfortably within the URLLC allowed range of 1‑100 Mbps, and the latency target of 5 ms satisfies the 1‑10 ms URLLC requirement. No reduction is needed.
+Intent Analysis: Low‑latency, high‑reliability processing of streaming transaction data for fraud detection
+Recommended Slice: eMBB - URLLC slice provides ultra‑low latency (1‑10 ms) and can support the required data rate, whereas eMBB targets higher rates with higher latency and mMTC targets massive IoT with much higher latency.
 Bandwidth Allocation: 5.0 MHz
-Data Rate: 9.57 Mbps
-Latency: 5.0 ms
+Data Rate: 15.0 Mbps
+Latency: 10.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 15
 ----------------------------------------
-Network Status @ 2026-03-31 12:25:56
-Total Users: 14
-Average Resource Utilization: 48.85%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 30.50 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:22:47
+Total Users: 15
+Average Resource Utilization: 69.23%
+eMBB Total Rate: 618.62 Mbps, URLLC Total Rate: 35.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          3  8.0/30 MHz        26.67%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           8  73.0/90 MHz       81.11%
+URLLC          2  10.0/30 MHz       33.33%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
 User 15 → eMBB Slice
-CQI: 7, Bandwidth: 5.0 MHz, Rate: 9.57 Mbps, Latency: 5.0 ms
+CQI: 7, Bandwidth: 5.0 MHz, Rate: 15.00 Mbps, Latency: 10.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 | NEW      |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -839,70 +899,73 @@ Request: "I need instant facial recognition for public security threats"
 CQI: 10
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~1683, total~2036
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 5.0, rate: 50.0
+[DEBUG] Normalized bandwidth: 10.0, rate: 50.0
 
 Intent Analysis: N/A
-Recommended Slice: URLLC - N/A
-Bandwidth Allocation: 5.0 MHz
+Recommended Slice: URLLC - Security applications require ultra-low latency for real-time threat response. Facial recognition involves video capture, transmission, processing, and matching - all needing minimal delay to be effective in threat scenarios.
+Bandwidth Allocation: 10.0 MHz
 Data Rate: 50.0 Mbps
-Latency: 5.0 ms
+Latency: 10.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 16
 ----------------------------------------
-Network Status @ 2026-03-31 12:26:20
-Total Users: 15
-Average Resource Utilization: 52.69%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 80.50 Mbps, mMTC Total Rate: 6.52 Mbps
+Network Status @ 2026-04-06 00:23:13
+Total Users: 16
+Average Resource Utilization: 76.92%
+eMBB Total Rate: 618.62 Mbps, URLLC Total Rate: 85.00 Mbps, mMTC Total Rate: 2.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          4  13.0/30 MHz       43.33%
-mMTC           6  8.5/10 MHz        85.00%
+eMBB           8  73.0/90 MHz       81.11%
+URLLC          3  20.0/30 MHz       66.67%
+mMTC           5  7.0/10 MHz        70.00%
 
 New User Allocation:
 User 16 → URLLC Slice
-CQI: 10, Bandwidth: 5.0 MHz, Rate: 50.00 Mbps, Latency: 5.0 ms
+CQI: 10, Bandwidth: 10.0 MHz, Rate: 50.00 Mbps, Latency: 10.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 | NEW      |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -911,15 +974,16 @@ Request: "My smart trash can needs to signal that it's full"
 CQI: 13
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~355, completion~2020, total~2375
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.5, rate: 1.5
+[DEBUG] Normalized bandwidth: 1.0, rate: 3.0
 
-Intent Analysis: Status notification - bin full alert
-Recommended Slice: mMTC - Smart trash can is an IoT device sending low-bandwidth status updates. This aligns with mMTC (massive Machine Type Communication) characteristics: small data packets, tolerance for higher latency, and massive device connectivity.
-Bandwidth Allocation: 1.5 MHz
-Data Rate: 1.5 Mbps
+Intent Analysis: The request comes from a smart trash can that periodically needs to transmit a tiny status message (e.g., 'full'). This is a low‑throughput, delay‑tolerant IoT use case that fits best with massive Machine‑Type Communications (mMTC).
+Recommended Slice: mMTC - N/A
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 3.0 Mbps
 Latency: 500.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -927,56 +991,58 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 17
 ----------------------------------------
-Network Status @ 2026-03-31 12:26:42
-Total Users: 16
-Average Resource Utilization: 53.85%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 80.50 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:23:51
+Total Users: 17
+Average Resource Utilization: 77.69%
+eMBB Total Rate: 618.62 Mbps, URLLC Total Rate: 85.00 Mbps, mMTC Total Rate: 5.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          4  13.0/30 MHz       43.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB           8  73.0/90 MHz       81.11%
+URLLC          3  20.0/30 MHz       66.67%
+mMTC           6  8.0/10 MHz        80.00%
 
 New User Allocation:
 User 17 → mMTC Slice
-CQI: 13, Bandwidth: 1.5 MHz, Rate: 1.50 Mbps, Latency: 500.0 ms
+CQI: 13, Bandwidth: 1.0 MHz, Rate: 3.00 Mbps, Latency: 500.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 | NEW      |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -985,15 +1051,16 @@ Request: "I need reliable communication for firefighters inside buildings"
 CQI: 3
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~352, completion~1690, total~2042
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 3.0, rate: 1.13
+[DEBUG] Normalized bandwidth: 2.0, rate: 1.2
 
-Intent Analysis: N/A
-Recommended Slice: URLLC - N/A
-Bandwidth Allocation: 3.0 MHz
-Data Rate: 1.13 Mbps
+Intent Analysis: The request originates from a firefighter operating inside a building. Such mission‑critical communications require ultra‑reliable, low‑latency connectivity to guarantee safety and coordination. This aligns with the characteristics of a URLLC (Ultra‑Reliable Low‑Latency Communications) slice rather than eMBB (high‑throughput) or mMTC (massive machine‑type).
+Recommended Slice: URLLC - CQI = 3 denotes a poor radio channel. Using a narrower bandwidth (2 MHz) reduces scheduling complexity and improves reliability while still delivering a data rate above the minimum URLLC requirement (1 Mbps). The chosen latency (5 ms) stays comfortably within the 1‑10 ms URLLC window.
+Bandwidth Allocation: 2.0 MHz
+Data Rate: 1.2 Mbps
 Latency: 5.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -1001,58 +1068,60 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 18
 ----------------------------------------
-Network Status @ 2026-03-31 12:27:18
-Total Users: 17
-Average Resource Utilization: 56.15%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 81.63 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:24:19
+Total Users: 18
+Average Resource Utilization: 79.23%
+eMBB Total Rate: 618.62 Mbps, URLLC Total Rate: 86.20 Mbps, mMTC Total Rate: 5.58 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          5  16.0/30 MHz       53.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB           8  73.0/90 MHz       81.11%
+URLLC          4  22.0/30 MHz       73.33%
+mMTC           6  8.0/10 MHz        80.00%
 
 New User Allocation:
 User 18 → URLLC Slice
-CQI: 3, Bandwidth: 3.0 MHz, Rate: 1.13 Mbps, Latency: 5.0 ms
+CQI: 3, Bandwidth: 2.0 MHz, Rate: 1.20 Mbps, Latency: 5.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |          1.2  |              5 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 | NEW      |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1061,76 +1130,79 @@ Request: "I need to monitor water level in a reservoir"
 CQI: 3
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~2014, total~2367
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 1.16
+[DEBUG] Normalized bandwidth: 1.0, rate: 0.33
 
-Intent Analysis: The user wants to monitor water level in a reservoir. This is a typical IoT telemetry use‑case that requires a modest, periodic data transfer with moderate latency tolerance and high reliability. The traffic volume is low, but continuous connectivity is essential.
-Recommended Slice: URLLC - URLLC provides the low‑latency (1‑10 ms) needed for reliable monitoring while offering a data rate above the 1 Mbps minimum. Allocating 2 MHz yields a rate of ~1.16 Mbps, satisfying both the slice constraints and the user’s low‑rate requirement.
-Bandwidth Allocation: 2.0 MHz
-Data Rate: 1.16 Mbps
-Latency: 5.0 ms
+Intent Analysis: User requires remote monitoring of a reservoir water level. This is a typical IoT sensor application that transmits small, periodic measurement packets and does not need high throughput or ultra‑low latency.
+Recommended Slice: mMTC - N/A
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 0.33 Mbps
+Latency: 200.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 19
 ----------------------------------------
-Network Status @ 2026-03-31 12:28:04
-Total Users: 18
-Average Resource Utilization: 57.69%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 82.79 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:24:52
+Total Users: 19
+Average Resource Utilization: 80.0%
+eMBB Total Rate: 618.62 Mbps, URLLC Total Rate: 86.20 Mbps, mMTC Total Rate: 5.91 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          6  18.0/30 MHz       60.00%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB           8  73.0/90 MHz       81.11%
+URLLC          4  22.0/30 MHz       73.33%
+mMTC           7  9.0/10 MHz        90.00%
 
 New User Allocation:
-User 19 → URLLC Slice
-CQI: 3, Bandwidth: 2.0 MHz, Rate: 1.16 Mbps, Latency: 5.0 ms
+User 19 → mMTC Slice
+CQI: 3, Bandwidth: 1.0 MHz, Rate: 0.33 Mbps, Latency: 200.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |          1.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 | NEW      |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        19 | mMTC    |     3 |          1 |          0.33 |            200 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1139,78 +1211,81 @@ Request: "I need to make a high-quality voice call"
 CQI: 10
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~2461, total~2814
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 256.0
+[DEBUG] Normalized bandwidth: 2.0, rate: 7.2
 
-Intent Analysis: real‑time voice communication
-Recommended Slice: URLLC - Voice call demands low latency (≤10 ms) and moderate bandwidth; eMBB slice imposes higher bandwidth and rate ranges unnecessary for voice; mMTC slice is saturated and unsuitable.
-Bandwidth Allocation: 1.0 MHz
-Data Rate: 256.0 Mbps
-Latency: 50.0 ms
+Intent Analysis: high-quality voice call
+Recommended Slice: eMBB - N/A
+Bandwidth Allocation: 2.0 MHz
+Data Rate: 7.2 Mbps
+Latency: 5.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 20
 ----------------------------------------
-Network Status @ 2026-03-31 12:28:49
-Total Users: 19
-Average Resource Utilization: 58.46%
-eMBB Total Rate: 343.45 Mbps, URLLC Total Rate: 338.79 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:25:33
+Total Users: 20
+Average Resource Utilization: 81.54%
+eMBB Total Rate: 625.82 Mbps, URLLC Total Rate: 86.20 Mbps, mMTC Total Rate: 5.91 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           5  47.0/90 MHz       52.22%
-URLLC          7  19.0/30 MHz       63.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB           9  75.0/90 MHz       83.33%
+URLLC          4  22.0/30 MHz       73.33%
+mMTC           7  9.0/10 MHz        90.00%
 
 New User Allocation:
-User 20 → URLLC Slice
-CQI: 10, Bandwidth: 1.0 MHz, Rate: 256.00 Mbps, Latency: 50.0 ms
+User 20 → eMBB Slice
+CQI: 10, Bandwidth: 2.0 MHz, Rate: 7.20 Mbps, Latency: 5.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |          1.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 | NEW      |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |          7.2  |              5 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        19 | mMTC    |     3 |          1 |          0.33 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1219,80 +1294,83 @@ Request: "I want to use holographic communication"
 CQI: 12
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~1258, total~1609
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 20.0, rate: 100.0
+[DEBUG] Normalized bandwidth: 10.0, rate: 45.0
 
-Intent Analysis: User requests holographic communication, which demands high data rates, substantial bandwidth, and moderate latency. These characteristics best align with the eMBB slice capabilities (6‑20 MHz bandwidth, 100‑400 Mbps data rate, 10‑100 ms latency).
-Recommended Slice: eMBB - Bandwidth within the eMBB‑allowed range (6‑20 MHz) and data rate satisfies the minimum 100 Mbps requirement while staying within the 100‑400 Mbps per‑user limit. Latency (20 ms) falls within the eMBB latency window (10‑100 ms).
-Bandwidth Allocation: 20.0 MHz
-Data Rate: 100.0 Mbps
-Latency: 20.0 ms
+Intent Analysis: N/A
+Recommended Slice: eMBB - Holographic communication requires real-time transmission of 3D visual data with high throughput for immersive experience
+Bandwidth Allocation: 10.0 MHz
+Data Rate: 45.0 Mbps
+Latency: 15.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 21
 ----------------------------------------
-Network Status @ 2026-03-31 12:29:36
-Total Users: 20
-Average Resource Utilization: 73.85%
-eMBB Total Rate: 443.45 Mbps, URLLC Total Rate: 338.79 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:25:54
+Total Users: 21
+Average Resource Utilization: 89.23%
+eMBB Total Rate: 670.82 Mbps, URLLC Total Rate: 86.20 Mbps, mMTC Total Rate: 5.91 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           6  67.0/90 MHz       74.44%
-URLLC          7  19.0/30 MHz       63.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          10  85.0/90 MHz       94.44%
+URLLC          4  22.0/30 MHz       73.33%
+mMTC           7  9.0/10 MHz        90.00%
 
 New User Allocation:
 User 21 → eMBB Slice
-CQI: 12, Bandwidth: 20.0 MHz, Rate: 100.00 Mbps, Latency: 20.0 ms
+CQI: 12, Bandwidth: 10.0 MHz, Rate: 45.00 Mbps, Latency: 15.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |          1.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |          7.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 | NEW      |
+|        21 | eMBB    |    12 |         10 |         45    |             15 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        19 | mMTC    |     3 |          1 |          0.33 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1301,82 +1379,85 @@ Request: "I need to check the status of my smart home sensors"
 CQI: 11
 Ground Truth Slice: mMTC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~355, completion~6671, total~7026
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 1.0, rate: 0.1
+[DEBUG] Normalized bandwidth: 1.0, rate: 2.902
 
 Intent Analysis: Check status of smart home sensors
-Recommended Slice: URLLC - The request is low‑rate and latency‑tolerant, best served by mMTC.; mMTC slice is fully saturated (10/10 MHz, 100 % utilization) → no free resources.; URLLC slice has spare capacity (19/30 MHz used) and can accommodate the low‑rate request while meeting latency requirements.; eMBB slice could host the traffic but would be an overkill and would consume scarce high‑throughput resources.
+Recommended Slice: mMTC - N/A
 Bandwidth Allocation: 1.0 MHz
-Data Rate: 0.1 Mbps
-Latency: 100.0 ms
+Data Rate: 2.902 Mbps
+Latency: 150.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 22
 ----------------------------------------
-Network Status @ 2026-03-31 12:30:22
-Total Users: 21
-Average Resource Utilization: 74.62%
-eMBB Total Rate: 443.45 Mbps, URLLC Total Rate: 338.89 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:27:41
+Total Users: 22
+Average Resource Utilization: 90.0%
+eMBB Total Rate: 670.82 Mbps, URLLC Total Rate: 86.20 Mbps, mMTC Total Rate: 8.81 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           6  67.0/90 MHz       74.44%
-URLLC          8  20.0/30 MHz       66.67%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          10  85.0/90 MHz       94.44%
+URLLC          4  22.0/30 MHz       73.33%
+mMTC           8  10.0/10 MHz       100.00%
 
 New User Allocation:
-User 22 → URLLC Slice
-CQI: 11, Bandwidth: 1.0 MHz, Rate: 0.10 Mbps, Latency: 100.0 ms
+User 22 → mMTC Slice
+CQI: 11, Bandwidth: 1.0 MHz, Rate: 2.90 Mbps, Latency: 150.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |         25    |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |         50    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |          1.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|         9 | URLLC   |     7 |          5 |         10    |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        10 | eMBB    |     5 |         10 |        120    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|        13 | eMBB    |     9 |         10 |        100    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|        14 | eMBB    |    12 |          5 |         15    |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 | NEW      |
+|        15 | eMBB    |     7 |          5 |         15    |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|         2 | eMBB    |    11 |         10 |        200    |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|        20 | eMBB    |    10 |          2 |          7.2  |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        21 | eMBB    |    12 |         10 |         45    |             15 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
+|         3 | eMBB    |    13 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         5 | eMBB    |     8 |         20 |         48.12 |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         6 | eMBB    |     5 |         12 |        120    |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         1 | mMTC    |     3 |          2 |          0.3  |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|        11 | mMTC    |     6 |          2 |          0.8  |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        17 | mMTC    |    13 |          1 |          3    |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        19 | mMTC    |     3 |          1 |          0.33 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        22 | mMTC    |    11 |          1 |          2.9  |            150 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |          0.88 |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |          0.1  |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |          0.5  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1385,15 +1466,16 @@ Request: "I need to detect and isolate power grid faults instantly"
 CQI: 1
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~354, completion~1227, total~1581
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 2.0
+[DEBUG] Normalized bandwidth: 4.0, rate: 4000000.0
 
 Intent Analysis: N/A
-Recommended Slice: eMBB - Instant fault detection and isolation require ultra‑reliable low‑latency communication. URLLC supports the 1‑10 ms latency window needed for real‑time grid protection. With CQI = 1 the channel offers very limited spectral efficiency, therefore a modest bandwidth (2 MHz) and a conservative data‑rate target (2 Mbps) are allocated to maximize reliability while staying within slice limits.
-Bandwidth Allocation: 2.0 MHz
-Data Rate: 2.0 Mbps
+Recommended Slice: URLLC - Selected 4 MHz to compensate for low CQI=1, ensuring reliable transmission within URLLC constraints
+Bandwidth Allocation: 4.0 MHz
+Data Rate: 4000000.0 Mbps
 Latency: 5.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -1401,68 +1483,70 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 23
 ----------------------------------------
-Network Status @ 2026-03-31 12:30:44
-Total Users: 22
-Average Resource Utilization: 76.15%
-eMBB Total Rate: 445.45 Mbps, URLLC Total Rate: 338.89 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:28:01
+Total Users: 23
+Average Resource Utilization: 93.08%
+eMBB Total Rate: 670.82 Mbps, URLLC Total Rate: 4000086.20 Mbps, mMTC Total Rate: 8.81 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           7  69.0/90 MHz       76.67%
-URLLC          8  20.0/30 MHz       66.67%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          10  85.0/90 MHz       94.44%
+URLLC          5  26.0/30 MHz       86.67%
+mMTC           8  10.0/10 MHz       100.00%
 
 New User Allocation:
-User 23 → eMBB Slice
-CQI: 1, Bandwidth: 2.0 MHz, Rate: 2.00 Mbps, Latency: 5.0 ms
+User 23 → URLLC Slice
+CQI: 1, Bandwidth: 4.0 MHz, Rate: 4000000.00 Mbps, Latency: 5.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |        25     |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |        50     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |         1.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|        23 | URLLC   |     1 |          4 |         4e+06 |              5 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|         9 | URLLC   |     7 |          5 |        10     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|        10 | eMBB    |     5 |         10 |       120     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|        13 | eMBB    |     9 |         10 |       100     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
+|        14 | eMBB    |    12 |          5 |        15     |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |        15     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |       200     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |         7.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
+|        21 | eMBB    |    12 |         10 |        45     |             15 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 | NEW      |
+|         3 | eMBB    |    13 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         5 | eMBB    |     8 |         20 |        48.12  |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         6 | eMBB    |     5 |         12 |       120     |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         1 | mMTC    |     3 |          2 |         0.3   |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|        11 | mMTC    |     6 |          2 |         0.8   |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        17 | mMTC    |    13 |          1 |         3     |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        19 | mMTC    |     3 |          1 |         0.33  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        22 | mMTC    |    11 |          1 |         2.9   |            150 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |         0.88  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |         0.1   |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1471,15 +1555,16 @@ Request: "I want to use remote surgery equipment"
 CQI: 5
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~351, completion~2057, total~2408
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 5.0, rate: 15.0
+[DEBUG] Normalized bandwidth: 3.0, rate: 6.996
 
-Intent Analysis: The request involves mission‑critical, real‑time control of surgical tools and high‑definition video feedback. This demands ultra‑reliable low‑latency communication with moderate to high data rates, best served by the URLLC slice.
+Intent Analysis: User request is for remote surgery equipment, which demands ultra‑reliable, low‑latency communication with sufficient bandwidth for control and high‑definition video/telemetry. This matches the characteristics of the URLLC slice.
 Recommended Slice: URLLC - N/A
-Bandwidth Allocation: 5.0 MHz
-Data Rate: 15.0 Mbps
+Bandwidth Allocation: 3.0 MHz
+Data Rate: 6.996 Mbps
 Latency: 5.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
@@ -1487,70 +1572,72 @@ ALLOCATION SUCCESSFUL: All constraints satisfied
 ----------------------------------------
 ALLOCATION RESULT FOR USER 24
 ----------------------------------------
-Network Status @ 2026-03-31 12:31:11
-Total Users: 23
-Average Resource Utilization: 80.0%
-eMBB Total Rate: 445.45 Mbps, URLLC Total Rate: 353.89 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:28:33
+Total Users: 24
+Average Resource Utilization: 95.38%
+eMBB Total Rate: 670.82 Mbps, URLLC Total Rate: 4000093.20 Mbps, mMTC Total Rate: 8.81 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           7  69.0/90 MHz       76.67%
-URLLC          9  25.0/30 MHz       83.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          10  85.0/90 MHz       94.44%
+URLLC          6  29.0/30 MHz       96.67%
+mMTC           8  10.0/10 MHz       100.00%
 
 New User Allocation:
 User 24 → URLLC Slice
-CQI: 5, Bandwidth: 5.0 MHz, Rate: 15.00 Mbps, Latency: 5.0 ms
+CQI: 5, Bandwidth: 3.0 MHz, Rate: 7.00 Mbps, Latency: 5.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |        25     |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |        50     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |         1.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|        23 | URLLC   |     1 |          4 |         4e+06 |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        24 | URLLC   |     5 |          3 |         7     |              5 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|         9 | URLLC   |     7 |          5 |        10     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|        10 | eMBB    |     5 |         10 |       120     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
+|        13 | eMBB    |     9 |         10 |       100     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        24 | URLLC   |     5 |        5   |         15    |              5 | NEW      |
+|        14 | eMBB    |    12 |          5 |        15     |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |        15     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |       200     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |         7.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
+|        21 | eMBB    |    12 |         10 |        45     |             15 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 |          |
+|         3 | eMBB    |    13 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         5 | eMBB    |     8 |         20 |        48.12  |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         6 | eMBB    |     5 |         12 |       120     |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         1 | mMTC    |     3 |          2 |         0.3   |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|        11 | mMTC    |     6 |          2 |         0.8   |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        17 | mMTC    |    13 |          1 |         3     |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        19 | mMTC    |     3 |          1 |         0.33  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        22 | mMTC    |    11 |          1 |         2.9   |            150 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |         0.88  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |         0.1   |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1559,88 +1646,91 @@ Request: "I want to stream music while browsing social media"
 CQI: 2
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~3010, total~3363
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 6.0, rate: 3.0
+[DEBUG] Normalized bandwidth: 5.0, rate: 3.3
 
-Intent Analysis: Streaming music while browsing social media
-Recommended Slice: eMBB - User traffic requires higher data rates than URLLC or mMTC can provide, and its latency tolerance fits eMBB
-Bandwidth Allocation: 6.0 MHz
-Data Rate: 3.0 Mbps
-Latency: 30.0 ms
+Intent Analysis: The user is requesting activities that require moderate to high data rates and low latency, specifically streaming audio content and loading interactive web pages. This classifies the traffic as high-throughput data, aligning with the eMBB slice profile.
+Recommended Slice: eMBB - N/A
+Bandwidth Allocation: 5.0 MHz
+Data Rate: 3.3 Mbps
+Latency: 50.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 25
 ----------------------------------------
-Network Status @ 2026-03-31 12:32:05
-Total Users: 24
-Average Resource Utilization: 84.62%
-eMBB Total Rate: 448.45 Mbps, URLLC Total Rate: 353.89 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:29:25
+Total Users: 25
+Average Resource Utilization: 99.23%
+eMBB Total Rate: 674.12 Mbps, URLLC Total Rate: 4000093.20 Mbps, mMTC Total Rate: 8.81 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           8  75.0/90 MHz       83.33%
-URLLC          9  25.0/30 MHz       83.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          11  90.0/90 MHz       100.00%
+URLLC          6  29.0/30 MHz       96.67%
+mMTC           8  10.0/10 MHz       100.00%
 
 New User Allocation:
 User 25 → eMBB Slice
-CQI: 2, Bandwidth: 6.0 MHz, Rate: 3.00 Mbps, Latency: 30.0 ms
+CQI: 2, Bandwidth: 5.0 MHz, Rate: 3.30 Mbps, Latency: 50.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |        25     |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |        50     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |         1.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|        23 | URLLC   |     1 |          4 |         4e+06 |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        24 | URLLC   |     5 |          3 |         7     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|         9 | URLLC   |     7 |          5 |        10     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|        10 | eMBB    |     5 |         10 |       120     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
+|        13 | eMBB    |     9 |         10 |       100     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        24 | URLLC   |     5 |        5   |         15    |              5 |          |
+|        14 | eMBB    |    12 |          5 |        15     |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |        15     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |       200     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |         7.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
+|        21 | eMBB    |    12 |         10 |        45     |             15 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 |          |
+|        25 | eMBB    |     2 |          5 |         3.3   |             50 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        25 | eMBB    |     2 |        6   |          3    |             30 | NEW      |
+|         3 | eMBB    |    13 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         5 | eMBB    |     8 |         20 |        48.12  |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         6 | eMBB    |     5 |         12 |       120     |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         1 | mMTC    |     3 |          2 |         0.3   |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|        11 | mMTC    |     6 |          2 |         0.8   |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        17 | mMTC    |    13 |          1 |         3     |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        19 | mMTC    |     3 |          1 |         0.33  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        22 | mMTC    |    11 |          1 |         2.9   |            150 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |         0.88  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |         0.1   |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1649,90 +1739,93 @@ Request: "I need to balance electrical load in real-time across microgrids"
 CQI: 6
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~357, completion~4915, total~5272
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 3.0, rate: 7.5
+[DEBUG] Normalized bandwidth: 1.0, rate: 1.76
 
-Intent Analysis: Real‑time balancing of electrical load across microgrids
-Recommended Slice: URLLC - The request demands low‑latency, reliable communication for control‑level telemetry. URLLC supports the required 1‑10 ms latency and can provide the necessary data rate (well within the 1‑100 Mbps range). A 3 MHz allocation leaves a 2 MHz safety margin for other URLLC users.
-Bandwidth Allocation: 3.0 MHz
-Data Rate: 7.5 Mbps
-Latency: 5.0 ms
+Intent Analysis: Real‑time control of distributed electrical microgrids
+Recommended Slice: URLLC - The request demands sub‑10 ms latency and high reliability, which fits URLLC’s 1‑10 ms latency budget. The moderate bandwidth (≈1 MHz) is also within URLLC’s 1‑5 MHz allocation window.
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 1.76 Mbps
+Latency: 10.0 ms
 
 ALLOCATION SUCCESSFUL: All constraints satisfied
 
 ----------------------------------------
 ALLOCATION RESULT FOR USER 26
 ----------------------------------------
-Network Status @ 2026-03-31 12:32:42
-Total Users: 25
-Average Resource Utilization: 86.92%
-eMBB Total Rate: 448.45 Mbps, URLLC Total Rate: 361.39 Mbps, mMTC Total Rate: 8.02 Mbps
+Network Status @ 2026-04-06 00:30:40
+Total Users: 26
+Average Resource Utilization: 100.0%
+eMBB Total Rate: 674.12 Mbps, URLLC Total Rate: 4000094.96 Mbps, mMTC Total Rate: 8.81 Mbps
 
 Slice      Users  Resource Usage    Utilization
 -------  -------  ----------------  -------------
-eMBB           8  75.0/90 MHz       83.33%
-URLLC         10  28.0/30 MHz       93.33%
-mMTC           7  10.0/10 MHz       100.00%
+eMBB          11  90.0/90 MHz       100.00%
+URLLC          7  30.0/30 MHz       100.00%
+mMTC           8  10.0/10 MHz       100.00%
 
 New User Allocation:
 User 26 → URLLC Slice
-CQI: 6, Bandwidth: 3.0 MHz, Rate: 7.50 Mbps, Latency: 5.0 ms
+CQI: 6, Bandwidth: 1.0 MHz, Rate: 1.76 Mbps, Latency: 10.0 ms
 
 Current User Allocations:
 +-----------+---------+-------+------------+---------------+----------------+----------+
 |   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
 +===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
+|        12 | URLLC   |     3 |          5 |        25     |              1 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
+|        16 | URLLC   |    10 |         10 |        50     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
+|        18 | URLLC   |     3 |          2 |         1.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
+|        23 | URLLC   |     1 |          4 |         4e+06 |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
+|        24 | URLLC   |     5 |          3 |         7     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
+|        26 | URLLC   |     6 |          1 |         1.76  |             10 | NEW      |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
+|         9 | URLLC   |     7 |          5 |        10     |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
+|        10 | eMBB    |     5 |         10 |       120     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        24 | URLLC   |     5 |        5   |         15    |              5 |          |
+|        13 | eMBB    |     9 |         10 |       100     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        26 | URLLC   |     6 |        3   |          7.5  |              5 | NEW      |
+|        14 | eMBB    |    12 |          5 |        15     |              2 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
+|        15 | eMBB    |     7 |          5 |        15     |             10 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
+|         2 | eMBB    |    11 |         10 |       200     |             30 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
+|        20 | eMBB    |    10 |          2 |         7.2   |              5 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
+|        21 | eMBB    |    12 |         10 |        45     |             15 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 |          |
+|        25 | eMBB    |     2 |          5 |         3.3   |             50 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        25 | eMBB    |     2 |        6   |          3    |             30 |          |
+|         3 | eMBB    |    13 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
+|         5 | eMBB    |     8 |         20 |        48.12  |            100 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
+|         6 | eMBB    |     5 |         12 |       120     |             20 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
+|         1 | mMTC    |     3 |          2 |         0.3   |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
+|        11 | mMTC    |     6 |          2 |         0.8   |            250 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
+|        17 | mMTC    |    13 |          1 |         3     |            500 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
+|        19 | mMTC    |     3 |          1 |         0.33  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
+|        22 | mMTC    |    11 |          1 |         2.9   |            150 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
+|         4 | mMTC    |     4 |          1 |         0.88  |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
+|         7 | mMTC    |     6 |          1 |         0.1   |            500 |          |
++-----------+---------+-------+------------+---------------+----------------+----------+
+|         8 | mMTC    |    15 |          1 |         0.5   |            200 |          |
 +-----------+---------+-------+------------+---------------+----------------+----------+
 
 --------------------------------------------------------------------------------------------------------------------------------------------
@@ -1741,93 +1834,27 @@ Request: "I need to transmit real-time patient vital signs during critical care"
 CQI: 3
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~356, completion~2441, total~2797
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 2.0, rate: 1.2
+[DEBUG] Normalized bandwidth: 3.0, rate: 1.2
 
 Intent Analysis: N/A
-Recommended Slice: URLLC - Latency requirement (≤10 ms) matches the URLLC slice (1‑10 ms); Data‑rate requirement (≈1 Mbps) fits the URLLC rate envelope (1‑100 Mbps); CQI = 3 indicates a modest channel quality; allocating a wider bandwidth in the URLLC slice compensates the lower spectral efficiency
-Bandwidth Allocation: 2.0 MHz
+Recommended Slice: URLLC - 3 MHz compensates for the low CQI (≈0.38 bits/s/Hz) while staying within URLLC limits. The resulting ~1.2 Mbps meets the vital‑signs payload requirement, and the latency is well below the 10 ms URLLC ceiling.
+Bandwidth Allocation: 3.0 MHz
 Data Rate: 1.2 Mbps
-Latency: 5.0 ms
+Latency: 3.0 ms
 
-ALLOCATION SUCCESSFUL: All constraints satisfied
+CAPACITY CHECK FAILED:
+- Required: 3.0 MHz, Available: 0.0 MHz in URLLC slice
 
 ----------------------------------------
-ALLOCATION RESULT FOR USER 27
+ALLOCATION FAILED FOR USER 27
 ----------------------------------------
-Network Status @ 2026-03-31 12:33:35
-Total Users: 26
-Average Resource Utilization: 88.46%
-eMBB Total Rate: 448.45 Mbps, URLLC Total Rate: 362.59 Mbps, mMTC Total Rate: 8.02 Mbps
-
-Slice      Users  Resource Usage    Utilization
--------  -------  ----------------  -------------
-eMBB           8  75.0/90 MHz       83.33%
-URLLC         11  30.0/30 MHz       100.00%
-mMTC           7  10.0/10 MHz       100.00%
-
-New User Allocation:
-User 27 → URLLC Slice
-CQI: 3, Bandwidth: 2.0 MHz, Rate: 1.20 Mbps, Latency: 5.0 ms
-
-Current User Allocations:
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
-+===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        24 | URLLC   |     5 |        5   |         15    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        26 | URLLC   |     6 |        3   |          7.5  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        27 | URLLC   |     3 |        2   |          1.2  |              5 | NEW      |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        25 | eMBB    |     2 |        6   |          3    |             30 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
+Request: I need to transmit real-time patient vital signs during critical care
+Slice type: URLLC
+Reason: Insufficient capacity in URLLC slice. Required: 3.0 MHz, Available: 0.0 MHz
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 PROCESSING USER 28 (28/30)
@@ -1835,26 +1862,27 @@ Request: "I need reliable communication for firefighters inside buildings"
 CQI: 4
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~352, completion~3567, total~3919
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 3.0, rate: 1.8
+[DEBUG] Normalized bandwidth: 1.0, rate: 1.0
 
-Intent Analysis: The request is for mission‑critical, real‑time communication that demands very low latency (1‑10 ms) and high reliability. This matches the characteristics of the URLLC slice rather than eMBB (latency 10‑100 ms) or mMTC (latency 100‑1000 ms). Therefore the user should be attached to the URLLC slice.
-Recommended Slice: URLLC - CQI 4 indicates moderate channel quality, so a conservative spectral efficiency of 0.6 bits/s/Hz is used to ensure robustness. The chosen bandwidth (3 MHz) falls within the URLLC per‑user range (1‑5 MHz), the resulting rate (1.8 Mbps) satisfies the URLLC rate window (1‑100 Mbps), and the latency (5 ms) meets the URLLC latency requirement (1‑10 ms).
-Bandwidth Allocation: 3.0 MHz
-Data Rate: 1.8 Mbps
-Latency: 5.0 ms
+Intent Analysis: N/A
+Recommended Slice: URLLC - N/A
+Bandwidth Allocation: 1.0 MHz
+Data Rate: 1.0 Mbps
+Latency: 1.0 ms
 
 CAPACITY CHECK FAILED:
-- Required: 3.0 MHz, Available: 0.0 MHz in URLLC slice
+- Required: 1.0 MHz, Available: 0.0 MHz in URLLC slice
 
 ----------------------------------------
 ALLOCATION FAILED FOR USER 28
 ----------------------------------------
 Request: I need reliable communication for firefighters inside buildings
 Slice type: URLLC
-Reason: Insufficient capacity in URLLC slice. Required: 3.0 MHz, Available: 0.0 MHz
+Reason: Insufficient capacity in URLLC slice. Required: 1.0 MHz, Available: 0.0 MHz
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 PROCESSING USER 29 (29/30)
@@ -1862,95 +1890,27 @@ Request: "I need to participate in an online multiplayer game"
 CQI: 15
 Ground Truth Slice: URLLC
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~353, completion~3709, total~4062
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 15.0, rate: 10.0
+[DEBUG] Normalized bandwidth: 10.0, rate: 57.0
 
-Intent Analysis: Low‑latency, interactive data exchange typical of multiplayer games.
-Recommended Slice: eMBB - eMBB is the only slice with free resources (15 MHz remaining).; Bandwidth falls within the eMBB range (6‑20 MHz).; Latency can be met by high‑priority scheduling (eMBB supports ≤ 100 ms).; The resulting rate (≈ 82.5 Mbps) is lower than the typical eMBB lower bound (100 Mbps) but is the maximum possible under current load.
-Bandwidth Allocation: 15.0 MHz
-Data Rate: 10.0 Mbps
-Latency: 50.0 ms
+Intent Analysis: The user wants to join an online multiplayer game. This activity requires moderate to high data rates (typically 5‑20 Mbps) and low latency (ideally <50 ms). These requirements align best with the eMBB slice, which offers higher bandwidth and latency in the 10‑100 ms range.
+Recommended Slice: eMBB - Free 10 MHz for User 29 while keeping total eMBB usage at the 90 MHz limit
+Bandwidth Allocation: 10.0 MHz
+Data Rate: 57.0 Mbps
+Latency: 20.0 ms
 
-ALLOCATION SUCCESSFUL: All constraints satisfied
+CAPACITY CHECK FAILED:
+- Required: 10.0 MHz, Available: 0.0 MHz in eMBB slice
 
 ----------------------------------------
-ALLOCATION RESULT FOR USER 29
+ALLOCATION FAILED FOR USER 29
 ----------------------------------------
-Network Status @ 2026-03-31 12:35:39
-Total Users: 27
-Average Resource Utilization: 100.0%
-eMBB Total Rate: 458.45 Mbps, URLLC Total Rate: 362.59 Mbps, mMTC Total Rate: 8.02 Mbps
-
-Slice      Users  Resource Usage    Utilization
--------  -------  ----------------  -------------
-eMBB           9  90.0/90 MHz       100.00%
-URLLC         11  30.0/30 MHz       100.00%
-mMTC           7  10.0/10 MHz       100.00%
-
-New User Allocation:
-User 29 → eMBB Slice
-CQI: 15, Bandwidth: 15.0 MHz, Rate: 10.00 Mbps, Latency: 50.0 ms
-
-Current User Allocations:
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|   User ID | Slice   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Status   |
-+===========+=========+=======+============+===============+================+==========+
-|        10 | URLLC   |     5 |        2   |          2.4  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        12 | URLLC   |     3 |        1   |          0.6  |              1 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        14 | URLLC   |    12 |        5   |         27.5  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        16 | URLLC   |    10 |        5   |         50    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        18 | URLLC   |     3 |        3   |          1.13 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        19 | URLLC   |     3 |        2   |          1.16 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        20 | URLLC   |    10 |        1   |        256    |             50 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        22 | URLLC   |    11 |        1   |          0.1  |            100 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        24 | URLLC   |     5 |        5   |         15    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        26 | URLLC   |     6 |        3   |          7.5  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        27 | URLLC   |     3 |        2   |          1.2  |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        13 | eMBB    |     9 |       12   |        120    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        15 | eMBB    |     7 |        5   |          9.57 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         2 | eMBB    |    11 |       15   |        108    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        21 | eMBB    |    12 |       20   |        100    |             20 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        23 | eMBB    |     1 |        2   |          2    |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        25 | eMBB    |     2 |        6   |          3    |             30 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        29 | eMBB    |    15 |       15   |         10    |             50 | NEW      |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         5 | eMBB    |     8 |       10   |        100    |             10 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         9 | eMBB    |     7 |        5   |          5.88 |              5 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         1 | mMTC    |     3 |        2   |          0.6  |            200 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        11 | mMTC    |     6 |        1   |          0.5  |            150 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|        17 | mMTC    |    13 |        1.5 |          1.5  |            500 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         3 | mMTC    |    13 |        2   |          0.8  |            300 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         4 | mMTC    |     4 |        1   |          0.3  |            200 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         7 | mMTC    |     6 |        1.5 |          3.32 |            150 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
-|         8 | mMTC    |    15 |        1   |          1    |            500 |          |
-+-----------+---------+-------+------------+---------------+----------------+----------+
+Request: I need to participate in an online multiplayer game
+Slice type: eMBB
+Reason: Insufficient capacity in eMBB slice. Required: 10.0 MHz, Available: 0.0 MHz
 
 --------------------------------------------------------------------------------------------------------------------------------------------
 PROCESSING USER 30 (30/30)
@@ -1958,26 +1918,27 @@ Request: "I want to browse websites and check email"
 CQI: 8
 Ground Truth Slice: eMBB
 --------------------------------------------------------------------------------------------------------------------------------------------
+[Token] Prompt_Based: prompt~352, completion~3918, total~4270
 
 [DEBUG] Raw result parsed successfully
 
-[DEBUG] Normalized bandwidth: 12.0, rate: 103.7
+[DEBUG] Normalized bandwidth: 6.0, rate: 10.2
 
-Intent Analysis: The user needs a moderate‑speed connection with acceptable latency (typical web browsing/email traffic). This profile best matches the eMBB slice.
-Recommended Slice: eMBB - A 6 MHz allocation would yield ≈ 52 Mbps, below the eMBB minimum of 100 Mbps. To satisfy the slice’s rate requirement, 12 MHz is allocated, achieving ≈ 104 Mbps.
-Bandwidth Allocation: 12.0 MHz
-Data Rate: 103.7 Mbps
-Latency: 15.0 ms
+Intent Analysis: The user requires moderate‑speed internet access for browsing and e‑mail. This is a typical eMBB (enhanced Mobile Broadband) workload, not latency‑critical and not massive‑machine type.
+Recommended Slice: eMBB - N/A
+Bandwidth Allocation: 6.0 MHz
+Data Rate: 10.2 Mbps
+Latency: 50.0 ms
 
 CAPACITY CHECK FAILED:
-- Required: 12.0 MHz, Available: 0.0 MHz in eMBB slice
+- Required: 6.0 MHz, Available: 0.0 MHz in eMBB slice
 
 ----------------------------------------
 ALLOCATION FAILED FOR USER 30
 ----------------------------------------
 Request: I want to browse websites and check email
 Slice type: eMBB
-Reason: Insufficient capacity in eMBB slice. Required: 12.0 MHz, Available: 0.0 MHz
+Reason: Insufficient capacity in eMBB slice. Required: 6.0 MHz, Available: 0.0 MHz
 
 ============================================================
 SUMMARY OF USER ALLOCATIONS
@@ -1985,82 +1946,82 @@ SUMMARY OF USER ALLOCATIONS
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
 |   User ID | Status   | Slice   | Ground Truth   | Intent Match   |   CQI |   BW (MHz) |   Rate (Mbps) |   Latency (ms) | Adjusted   |
 +===========+==========+=========+================+================+=======+============+===============+================+============+
-|         1 | Success  | mMTC    | mMTC           | Yes            |     3 |        2   |        0.6    |            200 | No         |
+|         1 | Success  | mMTC    | mMTC           | Yes            |     3 |          2 |         0.3   |            500 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         2 | Success  | eMBB    | eMBB           | Yes            |    11 |       15   |      108      |             20 | No         |
+|         2 | Success  | eMBB    | eMBB           | Yes            |    11 |         10 |       200     |             30 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         3 | Success  | mMTC    | mMTC           | Yes            |    13 |        2   |        0.8    |            300 | No         |
+|         3 | Success  | eMBB    | mMTC           | No             |    13 |          1 |         0.5   |            200 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         4 | Success  | mMTC    | mMTC           | Yes            |     4 |        1   |        0.3    |            200 | No         |
+|         4 | Success  | mMTC    | mMTC           | Yes            |     4 |          1 |         0.877 |            200 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         5 | Success  | eMBB    | eMBB           | Yes            |     8 |       10   |      100      |             10 | No         |
+|         5 | Success  | eMBB    | eMBB           | Yes            |     8 |         20 |        48.12  |            100 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         6 | Failed   | eMBB    | eMBB           |                |     5 |       80   |      200      |             25 | No         |
+|         6 | Success  | eMBB    | eMBB           | Yes            |     5 |         12 |       120     |             20 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         7 | Success  | mMTC    | mMTC           | Yes            |     6 |        1.5 |        3.32   |            150 | No         |
+|         7 | Success  | mMTC    | mMTC           | Yes            |     6 |          1 |         0.1   |            500 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         8 | Success  | mMTC    | mMTC           | Yes            |    15 |        1   |        1      |            500 | No         |
+|         8 | Success  | mMTC    | mMTC           | Yes            |    15 |          1 |         0.5   |            200 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|         9 | Success  | eMBB    | URLLC          | No             |     7 |        5   |        5.88   |              5 | No         |
+|         9 | Success  | URLLC   | URLLC          | Yes            |     7 |          5 |        10     |              5 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        10 | Success  | URLLC   | eMBB           | No             |     5 |        2   |        2.4    |              5 | No         |
+|        10 | Success  | eMBB    | eMBB           | Yes            |     5 |         10 |       120     |             30 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        11 | Success  | mMTC    | mMTC           | Yes            |     6 |        1   |        0.5    |            150 | No         |
+|        11 | Success  | mMTC    | mMTC           | Yes            |     6 |          2 |         0.8   |            250 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        12 | Success  | URLLC   | URLLC          | Yes            |     3 |        1   |        0.6016 |              1 | No         |
+|        12 | Success  | URLLC   | URLLC          | Yes            |     3 |          5 |        25     |              1 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        13 | Success  | eMBB    | eMBB           | Yes            |     9 |       12   |      120      |             20 | No         |
+|        13 | Success  | eMBB    | eMBB           | Yes            |     9 |         10 |       100     |             10 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        14 | Success  | URLLC   | URLLC          | Yes            |    12 |        5   |       27.5    |              5 | No         |
+|        14 | Success  | eMBB    | URLLC          | No             |    12 |          5 |        15     |              2 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        15 | Success  | eMBB    | URLLC          | No             |     7 |        5   |        9.57   |              5 | No         |
+|        15 | Success  | eMBB    | URLLC          | No             |     7 |          5 |        15     |             10 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        16 | Success  | URLLC   | URLLC          | Yes            |    10 |        5   |       50      |              5 | No         |
+|        16 | Success  | URLLC   | URLLC          | Yes            |    10 |         10 |        50     |             10 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        17 | Success  | mMTC    | mMTC           | Yes            |    13 |        1.5 |        1.5    |            500 | No         |
+|        17 | Success  | mMTC    | mMTC           | Yes            |    13 |          1 |         3     |            500 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        18 | Success  | URLLC   | URLLC          | Yes            |     3 |        3   |        1.13   |              5 | No         |
+|        18 | Success  | URLLC   | URLLC          | Yes            |     3 |          2 |         1.2   |              5 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        19 | Success  | URLLC   | mMTC           | No             |     3 |        2   |        1.16   |              5 | No         |
+|        19 | Success  | mMTC    | mMTC           | Yes            |     3 |          1 |         0.33  |            200 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        20 | Success  | URLLC   | eMBB           | No             |    10 |        1   |      256      |             50 | No         |
+|        20 | Success  | eMBB    | eMBB           | Yes            |    10 |          2 |         7.2   |              5 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        21 | Success  | eMBB    | eMBB           | Yes            |    12 |       20   |      100      |             20 | No         |
+|        21 | Success  | eMBB    | eMBB           | Yes            |    12 |         10 |        45     |             15 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        22 | Success  | URLLC   | mMTC           | No             |    11 |        1   |        0.1    |            100 | No         |
+|        22 | Success  | mMTC    | mMTC           | Yes            |    11 |          1 |         2.902 |            150 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        23 | Success  | eMBB    | URLLC          | No             |     1 |        2   |        2      |              5 | No         |
+|        23 | Success  | URLLC   | URLLC          | Yes            |     1 |          4 |         4e+06 |              5 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        24 | Success  | URLLC   | URLLC          | Yes            |     5 |        5   |       15      |              5 | No         |
+|        24 | Success  | URLLC   | URLLC          | Yes            |     5 |          3 |         6.996 |              5 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        25 | Success  | eMBB    | eMBB           | Yes            |     2 |        6   |        3      |             30 | No         |
+|        25 | Success  | eMBB    | eMBB           | Yes            |     2 |          5 |         3.3   |             50 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        26 | Success  | URLLC   | URLLC          | Yes            |     6 |        3   |        7.5    |              5 | No         |
+|        26 | Success  | URLLC   | URLLC          | Yes            |     6 |          1 |         1.76  |             10 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        27 | Success  | URLLC   | URLLC          | Yes            |     3 |        2   |        1.2    |              5 | No         |
+|        27 | Failed   | URLLC   | URLLC          |                |     3 |          3 |         1.2   |              3 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        28 | Failed   | URLLC   | URLLC          |                |     4 |        3   |        1.8    |              5 | No         |
+|        28 | Failed   | URLLC   | URLLC          |                |     4 |          1 |         1     |              1 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        29 | Success  | eMBB    | URLLC          | No             |    15 |       15   |       10      |             50 | No         |
+|        29 | Failed   | eMBB    | URLLC          |                |    15 |         10 |        57     |             20 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
-|        30 | Failed   | eMBB    | eMBB           |                |     8 |       12   |      103.7    |             15 | No         |
+|        30 | Failed   | eMBB    | eMBB           |                |     8 |          6 |        10.2   |             50 | No         |
 +-----------+----------+---------+----------------+----------------+-------+------------+---------------+----------------+------------+
 
 Statistics:
-Success rate: 27/30 (90.0%)
+Success rate: 26/30 (86.7%)
 
 Intent Understanding Evaluation:
-Correctly identified intents: 19/27
-Intent understanding rate: 70.4%
+Correctly identified intents: 23/26
+Intent understanding rate: 88.5%
 
 Workload Balancing Statistics:
-Users with workload balancing: 27/30
-Workload balancing rate: 90.0%
+Users with workload balancing: 26/30
+Workload balancing rate: 86.7%
 
 Slice Utilization Statistics:
-Average eMBB utilization: 49.09%
-Average URLLC utilization: 37.28%
-Average mMTC utilization: 80.74%
+Average eMBB utilization: 63.46%
+Average URLLC utilization: 40.90%
+Average mMTC utilization: 65.00%
 
 Results exported to F:\code\wirelessagent\run_results\batch_run\prompt_based\minimax-m2.5\network_slicing_results_TJU_gym_minimax-m2.5.csv
 
