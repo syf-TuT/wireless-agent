@@ -1,4 +1,4 @@
-
+﻿
 
 ## Requirements:
     python3.11
@@ -16,11 +16,11 @@ Step 4: Run the agent (choose one version):
 
     # Without Knowledge Base
     cd no_knowledge_base
-    python WA_DS_V3_NKB.py
+    python WA_NKB.py
 
     # With Knowledge Base + RAG
     cd with_knowledge_base
-    python WA_DS_V3_KB.py
+    python WA_KB.py
 
 Step 5: Configure LLM (optional, defaults to DeepSeek):
 
@@ -37,4 +37,5 @@ Step 5: Configure LLM (optional, defaults to DeepSeek):
 Supported LLM providers: deepseek, minimax, openai, azure_openai
 
 Step 6: Output the network slicing results.
+
 
