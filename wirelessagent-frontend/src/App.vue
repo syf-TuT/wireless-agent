@@ -74,6 +74,7 @@ import SliceResourcePool from './components/SliceResourcePool.vue'
 import SystemOverview from './components/SystemOverview.vue'
 import VersionTag from './components/VersionTag.vue'
 import apiService from './services/api'
+import type { StreamEvent } from './services/api'
 
 interface LogEntry {
   type: 'info' | 'success' | 'warning' | 'error'
@@ -134,59 +135,13 @@ const handleFileProcess = async (file: File) => {
     pipelineFailed.value = false
     pipelineStage.value = 1
     uploadProgress.value = 0
+    results.value = []
     processingMessage.value = '正在上传并校验 CSV 文件...'
     addLog('info', `开始处理文件：${file.name}`)
     addLog('info', `文件大小：${(file.size / 1024).toFixed(2)} KB`)
     addLog('info', `当前模式：${useKnowledgeBase.value ? '知识库增强' : '基础模式'}`)
 
-    const response = await apiService.processCSV(file, useKnowledgeBase.value, (progress) => {
-      uploadProgress.value = progress
-      if (progress >= 100) {
-        pipelineStage.value = 2
-      }
-    })
-
-    addLog('success', 'CSV 文件上传完成')
-    pipelineStage.value = 3
-    processingMessage.value = '正在解析用户请求...'
-    addLog('info', '后端开始解析用户请求与信道数据')
-
-    await wait(300)
-    pipelineStage.value = 4
-    processingMessage.value = '正在进行意图识别...'
-    addLog('info', '调用 LLM 完成业务意图识别')
-
-    await wait(300)
-    pipelineStage.value = 5
-    processingMessage.value = '正在读取 CQI 并计算资源需求...'
-    addLog('info', '读取 CQI 指标并计算切片带宽')
-
-    await wait(300)
-    pipelineStage.value = 6
-    processingMessage.value = '正在分配网络切片资源...'
-    addLog('info', '开始执行切片资源分配')
-
-    if (response?.results) {
-      results.value = response.results
-      for (const result of response.results) {
-        if (result.allocation_failed) {
-          addLog('error', `用户 ${result.user_id} 分配失败：${result.slice_type}`)
-        } else {
-          addLog('success', `用户 ${result.user_id} 分配到 ${result.slice_type}，带宽 ${result.bandwidth} MHz`)
-        }
-      }
-
-      pipelineStage.value = 7
-      processingMessage.value = '正在生成结果...'
-      await wait(300)
-      addLog('success', `处理完成，共 ${response.results.length} 条用户记录`)
-      addLog('info', `成功分配：${results.value.filter(r => !r.allocation_failed).length} 条`)
-      addLog('info', `分配失败：${results.value.filter(r => r.allocation_failed).length} 条`)
-      ElMessage.success('处理完成')
-    } else {
-      addLog('warning', '后端未返回有效结果数据')
-      ElMessage.warning('未收到有效结果数据')
-    }
+    await apiService.processCSVStream(file, useKnowledgeBase.value, handleStreamEvent)
   } catch (error: any) {
     console.error('Process error:', error)
     pipelineFailed.value = true
@@ -204,7 +159,53 @@ const handleFileProcess = async (file: File) => {
   }
 }
 
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+const handleStreamEvent = (event: StreamEvent) => {
+  if (event.type === 'log') {
+    logs.value.push(event.log)
+    return
+  }
+
+  if (event.type === 'result') {
+    results.value = [...results.value, normalizeAllocationResult(event.result)]
+    return
+  }
+
+  if (event.type === 'progress') {
+    pipelineStage.value = event.stage || pipelineStage.value
+    uploadProgress.value = event.total > 0 ? Math.round((event.processed / event.total) * 100) : 0
+    processingMessage.value = event.message || `已处理 ${event.processed}/${event.total} 个用户`
+    return
+  }
+
+  if (event.type === 'complete') {
+    pipelineStage.value = 7
+    uploadProgress.value = 100
+    processingMessage.value = '处理完成'
+    addLog('success', `处理完成，共 ${event.total} 条用户记录`)
+    addLog('info', `成功分配：${event.success} 条`)
+    addLog('info', `分配失败：${event.failed} 条`)
+    ElMessage.success('处理完成')
+    return
+  }
+
+  if (event.type === 'error') {
+    pipelineFailed.value = true
+    processingMessage.value = '处理失败'
+    addLog('error', event.message)
+  }
+}
+
+const normalizeAllocationResult = (result: Partial<AllocationResult>): AllocationResult => ({
+  user_id: String(result.user_id ?? ''),
+  request: String(result.request ?? ''),
+  cqi: Number(result.cqi ?? 0),
+  slice_type: String(result.slice_type ?? 'Failed'),
+  bandwidth: Number(result.bandwidth ?? 0),
+  rate: Number(result.rate ?? 0),
+  latency: Number(result.latency ?? 0),
+  allocation_failed: Boolean(result.allocation_failed),
+  adjustments_made: Boolean(result.adjustments_made)
+})
 
 const handleFileClear = () => {
   pipelineStage.value = 0

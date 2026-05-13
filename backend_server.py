@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import sys
 import io
 import os
@@ -9,6 +9,7 @@ from contextlib import redirect_stdout, redirect_stderr
 import pandas as pd
 from typing import List, Dict, Any
 import json
+import tempfile
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -126,6 +127,152 @@ async def process_csv(file: UploadFile = File(...)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+def encode_stream_event(event: Dict[str, Any]) -> str:
+    """Encode a stream event as one NDJSON line."""
+    return json.dumps(event, ensure_ascii=False, default=str) + "\n"
+
+
+def make_log_event(log_type: str, message: str) -> Dict[str, Any]:
+    log_capture = LogCapture()
+    log_capture.add_log(log_type, message)
+    return {
+        "type": "log",
+        "log": log_capture.get_logs()[0],
+    }
+
+
+def add_token_usage(result: Dict[str, Any], wirelessagent: Any) -> Dict[str, Any]:
+    if hasattr(wirelessagent, "get_token_usage"):
+        token_stats = wirelessagent.get_token_usage()
+        result["token_used"] = token_stats.get("total_tokens", 0)
+        result["prompt_tokens"] = token_stats.get("total_prompt_tokens", 0)
+        result["completion_tokens"] = token_stats.get("total_completion_tokens", 0)
+        result["llm_call_count"] = token_stats.get("llm_call_count", 0)
+    return result
+
+
+def iter_process_user_events(csv_path: str):
+    """Yield processing events as users are allocated network slices."""
+    wirelessagent = get_wirelessagent_module()
+
+    users = wirelessagent.load_user_data_from_csv(csv_path)
+    wirelessagent.reset_network_state()
+    if hasattr(wirelessagent, "reset_token_stats"):
+        wirelessagent.reset_token_stats()
+
+    total_users = len(users)
+    yield make_log_event("info", f"CSV文件解析成功，共 {total_users} 条记录")
+    yield {"type": "progress", "processed": 0, "total": total_users, "stage": 2}
+
+    results = []
+    for index, user in enumerate(users, start=1):
+        user_id = str(user["user_id"])
+        location = user["location"]
+        request = user["request"]
+        cqi = int(user["cqi"])
+        ground_truth = user.get("ground_truth")
+
+        yield make_log_event(
+            "info",
+            f"正在处理用户 {user_id} ({index}/{total_users}): {str(request)[:50]}...",
+        )
+        yield {
+            "type": "progress",
+            "processed": index - 1,
+            "total": total_users,
+            "stage": 4,
+            "message": f"正在进行用户 {user_id} 的意图识别与切片分配",
+        }
+
+        try:
+            result = wirelessagent.process_user_request(
+                user_id=user_id,
+                location=location,
+                request=request,
+                cqi=cqi,
+                ground_truth=ground_truth,
+            )
+            result = add_token_usage(result, wirelessagent)
+
+            if result.get("allocation_failed", True):
+                yield make_log_event(
+                    "error",
+                    f"用户 {user_id} 分配失败: {result.get('slice_type', 'Unknown')}",
+                )
+            else:
+                yield make_log_event(
+                    "success",
+                    (
+                        f"用户 {user_id} 分配成功: {result.get('slice_type', 'Unknown')} 切片, "
+                        f"带宽 {result.get('bandwidth', 0)} MHz, "
+                        f"速率 {result.get('rate', 0):.2f} Mbps"
+                    ),
+                )
+        except Exception as e:
+            yield make_log_event("error", f"用户 {user_id} 处理出错: {str(e)}")
+            result = {
+                "user_id": user_id,
+                "request": request,
+                "cqi": cqi,
+                "slice_type": "Failed",
+                "allocation_failed": True,
+                "adjustments_made": False,
+                "error": str(e),
+            }
+
+        results.append(result)
+        yield {"type": "result", "result": result}
+        yield {
+            "type": "progress",
+            "processed": index,
+            "total": total_users,
+            "stage": 6 if index < total_users else 7,
+            "message": f"已完成 {index}/{total_users} 个用户的切片分配",
+        }
+
+    success_count = sum(1 for result in results if not result.get("allocation_failed", True))
+    failed_count = sum(1 for result in results if result.get("allocation_failed", True))
+    yield make_log_event(
+        "success",
+        f"所有用户处理完成。成功: {success_count}, 失败: {failed_count}",
+    )
+    yield {
+        "type": "complete",
+        "total": total_users,
+        "success": success_count,
+        "failed": failed_count,
+    }
+
+
+@app.post("/process-csv-stream")
+async def process_csv_stream(file: UploadFile = File(...)):
+    temp_file_path = None
+    try:
+        contents = await asyncio.wait_for(file.read(), timeout=300)
+        suffix = f"_{file.filename}" if file.filename else ".csv"
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as temp_file:
+            temp_file.write(contents)
+            temp_file_path = temp_file.name
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Request timeout: Operation took too long to complete")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    async def event_stream():
+        try:
+            yield encode_stream_event(make_log_event("info", f"开始处理文件: {file.filename}"))
+            for event in iter_process_user_events(temp_file_path):
+                yield encode_stream_event(event)
+                await asyncio.sleep(0)
+        except Exception as e:
+            yield encode_stream_event({"type": "error", "message": str(e)})
+        finally:
+            if temp_file_path and os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
+
+    return StreamingResponse(event_stream(), media_type="application/x-ndjson")
 
 
 async def process_users_async(df: pd.DataFrame, log_capture: LogCapture, csv_path: str):

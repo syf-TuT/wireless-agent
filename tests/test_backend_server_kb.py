@@ -1,4 +1,5 @@
 import asyncio
+import json
 import sys
 import types
 import unittest
@@ -40,6 +41,7 @@ sys.modules.setdefault("fastapi.middleware.cors", cors_stub)
 
 responses_stub = types.ModuleType("fastapi.responses")
 responses_stub.JSONResponse = object
+responses_stub.StreamingResponse = object
 sys.modules.setdefault("fastapi.responses", responses_stub)
 
 pandas_stub = types.ModuleType("pandas")
@@ -104,6 +106,52 @@ class BackendServerKnowledgeBaseTests(unittest.TestCase):
         self.assertEqual(calls[1], ("reset", None))
         self.assertEqual(calls[2][0], "process")
         self.assertEqual(calls[2][1]["ground_truth"], "eMBB")
+
+    def test_stream_process_users_emits_live_events(self):
+        fake_wirelessagent = types.SimpleNamespace()
+
+        fake_wirelessagent.load_user_data_from_csv = lambda csv_path: [
+            {
+                "user_id": "rx-1",
+                "location": "(1.0, 2.0, 1.5)",
+                "request": "I need to stream 4K video",
+                "cqi": 12,
+                "ground_truth": "eMBB",
+            }
+        ]
+        fake_wirelessagent.reset_network_state = lambda: None
+        fake_wirelessagent.process_user_request = lambda **kwargs: {
+            "user_id": kwargs["user_id"],
+            "request": kwargs["request"],
+            "cqi": kwargs["cqi"],
+            "slice_type": "eMBB",
+            "bandwidth": 72.0,
+            "rate": 100.0,
+            "latency": 40.0,
+            "allocation_failed": False,
+            "adjustments_made": False,
+        }
+
+        original_loader = backend_server.get_wirelessagent_module
+        backend_server.get_wirelessagent_module = lambda: fake_wirelessagent
+        try:
+            events = list(backend_server.iter_process_user_events("uploaded.csv"))
+        finally:
+            backend_server.get_wirelessagent_module = original_loader
+
+        event_types = [event["type"] for event in events]
+        self.assertIn("log", event_types)
+        self.assertIn("result", event_types)
+        self.assertIn("progress", event_types)
+        self.assertEqual(events[-1]["type"], "complete")
+
+        result_event = next(event for event in events if event["type"] == "result")
+        self.assertEqual(result_event["result"]["slice_type"], "eMBB")
+
+    def test_encode_stream_event_uses_ndjson(self):
+        encoded = backend_server.encode_stream_event({"type": "complete", "total": 1})
+        self.assertTrue(encoded.endswith("\n"))
+        self.assertEqual(json.loads(encoded), {"type": "complete", "total": 1})
 
 
 if __name__ == "__main__":

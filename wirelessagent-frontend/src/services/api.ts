@@ -3,6 +3,13 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
 const API_BASE_URL = 'http://localhost:8000'
 
+export type StreamEvent =
+  | { type: 'log'; log: { type: 'info' | 'success' | 'warning' | 'error'; message: string; time: string } }
+  | { type: 'result'; result: any }
+  | { type: 'progress'; processed: number; total: number; stage?: number; message?: string }
+  | { type: 'complete'; total: number; success: number; failed: number }
+  | { type: 'error'; message: string }
+
 class ApiService {
   private client: AxiosInstance
 
@@ -89,6 +96,55 @@ class ApiService {
     } catch (error) {
       console.error('CSV processing failed:', error)
       throw error
+    }
+  }
+
+  async processCSVStream(
+    file: File,
+    useKnowledgeBase: boolean = false,
+    onEvent: (event: StreamEvent) => void
+  ): Promise<void> {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('use_knowledge_base', useKnowledgeBase.toString())
+
+    const response = await fetch(`${API_BASE_URL}/process-csv-stream`, {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(errorText || `CSV streaming failed with status ${response.status}`)
+    }
+
+    if (!response.body) {
+      throw new Error('当前浏览器不支持流式响应读取')
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder('utf-8')
+    let buffer = ''
+
+    while (true) {
+      const { value, done } = await reader.read()
+      if (done) break
+
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop() || ''
+
+      for (const line of lines) {
+        const trimmed = line.trim()
+        if (!trimmed) continue
+        onEvent(JSON.parse(trimmed) as StreamEvent)
+      }
+    }
+
+    buffer += decoder.decode()
+    const trimmed = buffer.trim()
+    if (trimmed) {
+      onEvent(JSON.parse(trimmed) as StreamEvent)
     }
   }
 
