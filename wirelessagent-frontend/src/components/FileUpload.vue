@@ -1,34 +1,40 @@
 <template>
   <div class="upload-container">
-    <el-upload ref="uploadRef" class="upload-area" drag :auto-upload="false" :on-change="handleFileChange" :limit="1"
-      accept=".csv" :file-list="fileList">
-      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-      <div class="el-upload__text">
-        拖拽CSV文件到此处或<em>点击上传</em>
-      </div>
+    <el-upload
+      ref="uploadRef"
+      class="upload-area"
+      drag
+      :auto-upload="false"
+      :on-change="handleFileChange"
+      :limit="1"
+      accept=".csv"
+      :file-list="fileList"
+    >
+      <el-icon class="upload-icon"><upload-filled /></el-icon>
+      <div class="el-upload__text">拖拽 CSV 文件到此处，或 <em>点击选择</em></div>
       <template #tip>
-        <div class="el-upload__tip">
-          支持格式：.csv，文件应包含用户请求和CQI信息
-        </div>
+        <div class="el-upload__tip">用于接入用户请求、CQI 与射线追踪结果，启动后端切片分配流程。</div>
       </template>
     </el-upload>
 
     <div v-if="selectedFile" class="file-info">
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="文件名">{{ selectedFile.name }}</el-descriptions-item>
-        <el-descriptions-item label="文件大小">{{ formatFileSize(selectedFile.size) }}</el-descriptions-item>
-      </el-descriptions>
+      <div>
+        <span>文件名</span>
+        <strong>{{ selectedFile.name }}</strong>
+      </div>
+      <div>
+        <span>文件大小</span>
+        <strong>{{ formatFileSize(selectedFile.size) }}</strong>
+      </div>
     </div>
 
-    <div v-if="selectedFile" class="action-buttons">
-      <el-button type="primary" size="large" :loading="processing" :disabled="processing" @click="handleProcess" class="process-btn" :class="{ 'is-processing': processing }">
+    <div class="action-buttons">
+      <el-button type="primary" size="large" :loading="processing" :disabled="!selectedFile || processing" @click="handleProcess">
         <el-icon v-if="!processing"><video-play /></el-icon>
-        {{ processing ? '处理中...' : '开始处理' }}
+        {{ processing ? '处理中' : '启动处理' }}
       </el-button>
-      <el-button size="large" :disabled="processing" @click="handleClear" class="clear-btn">
-        <el-icon>
-          <delete />
-        </el-icon>
+      <el-button size="large" :disabled="processing || !selectedFile" @click="handleClear">
+        <el-icon><delete /></el-icon>
         清除文件
       </el-button>
     </div>
@@ -37,7 +43,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { UploadFilled, VideoPlay, Delete } from '@element-plus/icons-vue'
+import { Delete, UploadFilled, VideoPlay } from '@element-plus/icons-vue'
 import type { UploadFile, UploadUserFile } from 'element-plus'
 
 const emit = defineEmits<{
@@ -56,10 +62,9 @@ const handleFileChange = (file: UploadFile) => {
 }
 
 const handleProcess = () => {
-  if (selectedFile.value) {
-    processing.value = true
-    emit('process', selectedFile.value)
-  }
+  if (!selectedFile.value) return
+  processing.value = true
+  emit('process', selectedFile.value)
 }
 
 const handleClear = () => {
@@ -74,7 +79,7 @@ const formatFileSize = (bytes: number): string => {
   const k = 1024
   const sizes = ['B', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+  return `${Math.round((bytes / Math.pow(k, i)) * 100) / 100} ${sizes[i]}`
 }
 
 defineExpose({
@@ -86,190 +91,118 @@ defineExpose({
 
 <style scoped>
 .upload-container {
-  padding: 16px;
-  height: 100%;
+  min-height: 300px;
+  padding: 14px 18px 18px;
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
 
 .upload-area {
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
+  min-height: 190px;
 }
 
-:deep(.el-upload) {
-  flex: 1;
+:deep(.el-upload),
+:deep(.el-upload-dragger) {
+  width: 100%;
+  height: 100%;
+}
+
+:deep(.el-upload-dragger) {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border-color: #b6c6d8;
+  background: #f8fafc;
 }
 
 :deep(.el-upload-list) {
   display: none;
 }
 
-:deep(.el-upload-dragger) {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 48px 32px;
-  background: linear-gradient(135deg, rgba(196, 181, 253, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-  border: 2px dashed rgba(196, 181, 253, 0.4);
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 180px;
-  width: 100%;
-  position: relative;
-  cursor: pointer;
-}
-
-:deep(.el-upload-dragger:hover) {
-  border-color: rgba(196, 181, 253, 0.8);
-  background: linear-gradient(135deg, rgba(196, 181, 253, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(196, 181, 253, 0.2);
-}
-
-:deep(.el-upload-dragger.is-dragover) {
-  border-color: rgba(196, 181, 253, 1);
-  background: linear-gradient(135deg, rgba(196, 181, 253, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%);
-  transform: scale(1.02);
-}
-
-:deep(.el-icon--upload) {
-  font-size: 64px;
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 20px;
-  filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
-  transition: all 0.3s ease;
-}
-
-:deep(.el-upload-dragger:hover .el-icon--upload) {
-  transform: scale(1.1);
-  filter: drop-shadow(0 6px 16px rgba(99, 102, 241, 0.4));
+.upload-icon {
+  margin-bottom: 12px;
+  color: #0f766e;
+  font-size: 50px;
 }
 
 :deep(.el-upload__text) {
-  color: #1e293b;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 1.6;
+  color: #172033;
+  font-size: 15px;
 }
 
 :deep(.el-upload__text em) {
-  color: #a855f7;
+  color: #0f766e;
   font-style: normal;
   font-weight: 700;
-  text-decoration: underline;
-  text-decoration-color: rgba(196, 181, 253, 0.3);
-  text-underline-offset: 4px;
 }
 
 :deep(.el-upload__tip) {
+  margin-top: 10px;
   color: #64748b;
-  font-size: 13px;
-  margin-top: 16px;
-  padding: 0 20px;
-  text-align: center;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .file-info {
-  margin-top: 20px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
-:deep(.el-descriptions) {
-  --el-text-color-regular: #475569;
-  --el-descriptions-border-color: rgba(0, 0, 0, 0.08);
-  --el-descriptions-table-border-color: rgba(0, 0, 0, 0.08);
-  --el-fill-color-light: #f8fafc;
-}
-
-:deep(.el-descriptions__label) {
-  font-weight: 600;
-  color: #64748b;
-}
-
-:deep(.el-descriptions__body .el-descriptions__table .el-descriptions__cell.is-bordered-label) {
+.file-info div {
+  padding: 10px 12px;
   background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
 }
 
-:deep(.el-descriptions__content) {
-  color: #1e293b;
-  font-weight: 500;
+.file-info span,
+.file-info strong {
+  display: block;
+}
+
+.file-info span {
+  margin-bottom: 4px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.file-info strong {
+  overflow: hidden;
+  color: #172033;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .action-buttons {
-  margin-top: 20px;
   display: flex;
-  gap: 12px;
-  justify-content: center;
+  gap: 10px;
 }
 
-.process-btn,
-.clear-btn {
-  min-width: 140px;
-  font-weight: 600;
-  border-radius: 10px;
-  padding: 12px 24px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+.action-buttons .el-button {
+  flex: 1;
 }
 
-.process-btn {
-  background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%);
-  border: none;
-  box-shadow: 0 4px 16px rgba(196, 181, 253, 0.3);
-}
+@media (max-width: 760px) {
+  .upload-container {
+    min-height: 0;
+  }
 
-.process-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(196, 181, 253, 0.4);
-}
+  .upload-area {
+    min-height: 230px;
+  }
 
-.process-btn:active {
-  transform: translateY(0);
-}
+  .file-info {
+    grid-template-columns: 1fr;
+  }
 
-.process-btn.is-processing {
-  background: linear-gradient(135deg, #ddd6fe 0%, #c4b5fd 100%);
-  cursor: not-allowed;
-}
-
-.process-btn.is-processing:hover {
-  transform: none;
-  box-shadow: 0 4px 16px rgba(196, 181, 253, 0.3);
-}
-
-.clear-btn {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #1e293b;
-}
-
-.clear-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.clear-btn:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: rgba(196, 181, 253, 0.3);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.clear-btn:active {
-  transform: translateY(0);
+  .action-buttons {
+    flex-direction: column;
+  }
 }
 </style>

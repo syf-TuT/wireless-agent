@@ -1,88 +1,78 @@
 <template>
-  <div class="app-container">
-    <svg width="0" height="0" style="position: absolute;">
-      <defs>
-        <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-          <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
-        </linearGradient>
-      </defs>
-    </svg>
-    <div class="app-header">
-      <div class="header-background">
-        <div class="grid-pattern"></div>
-        <div class="gradient-overlay"></div>
-        <div class="particles">
-          <div class="particle" v-for="i in 20" :key="i" :style="getParticleStyle(i)"></div>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <el-icon><connection /></el-icon>
+        </div>
+        <div>
+          <h1>无线智能体框架实验仿真</h1>
         </div>
       </div>
-      <div class="header-content">
-        <div class="logo-section">
-          <div class="logo-wrapper">
-            <el-icon class="logo-icon">
-              <connection />
-            </el-icon>
-            <div class="logo-glow"></div>
+      <VersionTag :backend-online="backendOnline" @update:useKnowledgeBase="handleVersionUpdate" />
+    </header>
+
+    <main class="app-main">
+      <SystemOverview
+        :results="results"
+        :processing="processing"
+        :use-knowledge-base="useKnowledgeBase"
+        :backend-online="backendOnline"
+      />
+
+      <SliceResourcePool :results="results" />
+
+      <section class="workflow-grid">
+        <div class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">数据接入</span>
+              <h2>CSV 批量任务</h2>
+            </div>
           </div>
-          <div class="title-group">
-            <h1 class="app-title">5G网络切片资源分配系统</h1>
-            <p class="app-subtitle">Network Slice Resource Allocation System</p>
-          </div>
+          <FileUpload ref="fileUploadRef" @process="handleFileProcess" @clear="handleFileClear" />
         </div>
-        <div class="header-info">
-          <VersionTag @update:useKnowledgeBase="handleVersionUpdate" />
+
+        <div class="panel pipeline-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">工程流程</span>
+              <h2>处理流水线</h2>
+            </div>
+          </div>
+          <ProcessingPipeline :current-stage="pipelineStage" :failed="pipelineFailed" />
         </div>
-      </div>
-    </div>
 
-    <div class="app-main">
-      <el-row :gutter="20" class="top-row">
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="panel-container">
-            <FileUpload ref="fileUploadRef" @process="handleFileProcess" @clear="handleFileClear" />
-          </div>
-        </el-col>
-
-        <el-col :xs="24" :sm="24" :md="12" :lg="12" :xl="12">
-          <div class="panel-container">
-            <ProcessLog :logs="logs" @clear="clearLogs" />
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="bottom-row">
-        <el-col :span="24">
-          <div class="panel-container results-panel">
-            <ResultsDisplay :results="results" @export="exportResults" @clear="clearResults" />
-          </div>
-        </el-col>
-      </el-row>
-    </div>
-
-    <div v-if="processing" class="processing-overlay" role="dialog" aria-modal="true"
-      aria-labelledby="processing-title">
-      <div class="processing-content">
-        <div class="loading-icon-wrapper">
-          <svg class="loading-spinner" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-            <circle class="spinner-track" cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
-            <circle class="spinner-path" cx="25" cy="25" r="20" fill="none" stroke-width="4" stroke-linecap="round">
-            </circle>
-          </svg>
-          <div class="loading-pulse"></div>
+        <div class="panel log-panel">
+          <ProcessLog :logs="logs" @clear="clearLogs" />
         </div>
+      </section>
+
+      <section class="panel results-panel">
+        <ResultsDisplay :results="results" @export="exportResults" @clear="clearResults" />
+      </section>
+    </main>
+
+    <div v-if="processing" class="processing-overlay" role="dialog" aria-modal="true" aria-labelledby="processing-title">
+      <div class="processing-card">
+        <div class="spinner"></div>
         <h3 id="processing-title">{{ processingMessage }}</h3>
+        <p>系统正在执行切片分配流程，请稍候。</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Connection } from '@element-plus/icons-vue'
 import FileUpload from './components/FileUpload.vue'
 import ProcessLog from './components/ProcessLog.vue'
+import ProcessingPipeline from './components/ProcessingPipeline.vue'
 import ResultsDisplay from './components/ResultsDisplay.vue'
+import SliceResourcePool from './components/SliceResourcePool.vue'
+import SystemOverview from './components/SystemOverview.vue'
 import VersionTag from './components/VersionTag.vue'
 import apiService from './services/api'
 
@@ -109,92 +99,118 @@ const logs = ref<LogEntry[]>([])
 const results = ref<AllocationResult[]>([])
 const processing = ref(false)
 const uploadProgress = ref(0)
-const useKnowledgeBase = ref(false)
-const processingMessage = ref('正在处理中...')
+const useKnowledgeBase = ref(true)
+const processingMessage = ref('正在处理文件...')
+const pipelineStage = ref(0)
+const pipelineFailed = ref(false)
+const backendOnline = ref(false)
 
-const addLog = (type: 'info' | 'success' | 'warning' | 'error', message: string) => {
+const addLog = (type: LogEntry['type'], message: string) => {
   const now = new Date()
   const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
   logs.value.push({ type, message, time })
 }
 
+const checkBackend = async () => {
+  try {
+    await apiService.getHealth()
+    backendOnline.value = true
+  } catch {
+    backendOnline.value = false
+  }
+}
+
+onMounted(() => {
+  checkBackend()
+})
+
 const handleVersionUpdate = (value: boolean) => {
   useKnowledgeBase.value = value
-  addLog('info', `切换到${value ? '有知识库' : '无知识库'}版本`)
+  addLog('info', `已切换到${value ? '知识库增强' : '基础'}处理模式`)
 }
 
 const handleFileProcess = async (file: File) => {
   try {
     processing.value = true
+    pipelineFailed.value = false
+    pipelineStage.value = 1
     uploadProgress.value = 0
-    processingMessage.value = '正在处理文件...'
-    addLog('info', `开始处理文件: ${file.name}`)
-    addLog('info', `文件大小: ${(file.size / 1024).toFixed(2)} KB`)
-    addLog('info', `使用${useKnowledgeBase.value ? '有知识库' : '无知识库'}版本`)
+    processingMessage.value = '正在上传并校验 CSV 文件...'
+    addLog('info', `开始处理文件：${file.name}`)
+    addLog('info', `文件大小：${(file.size / 1024).toFixed(2)} KB`)
+    addLog('info', `当前模式：${useKnowledgeBase.value ? '知识库增强' : '基础模式'}`)
 
     const response = await apiService.processCSV(file, useKnowledgeBase.value, (progress) => {
       uploadProgress.value = progress
-      if (progress % 20 === 0) {
-        addLog('info', `上传进度: ${progress}%`)
+      if (progress >= 100) {
+        pipelineStage.value = 2
       }
     })
 
-    addLog('success', '文件上传成功')
-    processingMessage.value = '正在解析CSV文件...'
-    addLog('info', '开始解析CSV文件...')
+    addLog('success', 'CSV 文件上传完成')
+    pipelineStage.value = 3
+    processingMessage.value = '正在解析用户请求...'
+    addLog('info', '后端开始解析用户请求与信道数据')
 
-    await new Promise(resolve => setTimeout(resolve, 500))
-    addLog('success', 'CSV文件解析成功')
+    await wait(300)
+    pipelineStage.value = 4
+    processingMessage.value = '正在进行意图识别...'
+    addLog('info', '调用 LLM 完成业务意图识别')
 
-    if (response && response.results) {
+    await wait(300)
+    pipelineStage.value = 5
+    processingMessage.value = '正在读取 CQI 并计算资源需求...'
+    addLog('info', '读取 CQI 指标并计算切片带宽')
+
+    await wait(300)
+    pipelineStage.value = 6
+    processingMessage.value = '正在分配网络切片资源...'
+    addLog('info', '开始执行切片资源分配')
+
+    if (response?.results) {
       results.value = response.results
-      processingMessage.value = '正在分配网络切片资源...'
-      addLog('success', `成功解析 ${response.results.length} 条用户记录`)
-      addLog('info', '开始网络切片资源分配...')
-
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      for (let i = 0; i < response.results.length; i++) {
-        const result = response.results[i]
-        const progress = Math.round(((i + 1) / response.results.length) * 100)
-        uploadProgress.value = progress
-
-        addLog('info', `正在处理用户 ${result.user_id}: ${result.request.substring(0, 50)}...`)
-
-        await new Promise(resolve => setTimeout(resolve, 300))
-
+      for (const result of response.results) {
         if (result.allocation_failed) {
-          addLog('error', `用户 ${result.user_id} 分配失败: ${result.slice_type}`)
+          addLog('error', `用户 ${result.user_id} 分配失败：${result.slice_type}`)
         } else {
-          addLog('success', `用户 ${result.user_id} 分配成功: ${result.slice_type} 切片, 带宽 ${result.bandwidth} MHz, 速率 ${result.rate} Mbps`)
+          addLog('success', `用户 ${result.user_id} 分配到 ${result.slice_type}，带宽 ${result.bandwidth} MHz`)
         }
       }
 
-      processingMessage.value = '处理完成！'
-      addLog('success', '所有用户处理完成')
-      addLog('info', `成功分配: ${results.value.filter(r => !r.allocation_failed).length} 条`)
-      addLog('info', `分配失败: ${results.value.filter(r => r.allocation_failed).length} 条`)
-      ElMessage.success('处理完成！')
+      pipelineStage.value = 7
+      processingMessage.value = '正在生成结果...'
+      await wait(300)
+      addLog('success', `处理完成，共 ${response.results.length} 条用户记录`)
+      addLog('info', `成功分配：${results.value.filter(r => !r.allocation_failed).length} 条`)
+      addLog('info', `分配失败：${results.value.filter(r => r.allocation_failed).length} 条`)
+      ElMessage.success('处理完成')
     } else {
-      addLog('warning', '未收到有效结果数据')
+      addLog('warning', '后端未返回有效结果数据')
+      ElMessage.warning('未收到有效结果数据')
     }
   } catch (error: any) {
     console.error('Process error:', error)
+    pipelineFailed.value = true
     processingMessage.value = '处理失败'
-    addLog('error', `处理失败: ${error.message || '未知错误'}`)
-    ElMessage.error('处理失败，请检查文件格式')
+    addLog('error', `处理失败：${error?.message || '未知错误'}`)
+    ElMessage.error('处理失败，请检查后端服务与 CSV 文件格式')
   } finally {
     processing.value = false
     uploadProgress.value = 0
-    processingMessage.value = '正在处理中...'
+    processingMessage.value = '正在处理文件...'
     if (fileUploadRef.value) {
       fileUploadRef.value.setProcessing(false)
     }
+    checkBackend()
   }
 }
 
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 const handleFileClear = () => {
-  addLog('info', '已清除上传文件')
+  pipelineStage.value = 0
+  pipelineFailed.value = false
+  addLog('info', '已清除待上传文件')
 }
 
 const clearLogs = () => {
@@ -204,675 +220,206 @@ const clearLogs = () => {
 
 const clearResults = () => {
   results.value = []
+  pipelineStage.value = 0
+  pipelineFailed.value = false
   addLog('info', '结果已清空')
 }
 
 const exportResults = () => {
   addLog('success', '结果已导出')
 }
-
-const getParticleStyle = (_index: number) => {
-  const size = Math.random() * 4 + 2
-  const left = Math.random() * 100
-  const top = Math.random() * 100
-  const delay = Math.random() * 5
-  const duration = Math.random() * 3 + 2
-  return {
-    width: `${size}px`,
-    height: `${size}px`,
-    left: `${left}%`,
-    top: `${top}%`,
-    animationDelay: `${delay}s`,
-    animationDuration: `${duration}s`
-  }
-}
 </script>
 
 <style>
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #f8fafc 100%);
+  margin: 0;
   min-height: 100vh;
+  background: #f4f7fb;
+  color: #172033;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 #app {
   min-height: 100vh;
 }
 
-.app-container {
+.app-shell {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 50%, #f8fafc 100%);
 }
 
 .app-header {
   position: relative;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  padding: 20px 32px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.08);
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.header-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #e9d5ff 0%, #ddd6fe 50%, #c4b5fd 100%);
-  z-index: 0;
-}
-
-.gradient-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(196, 181, 253, 0.35) 0%, transparent 50%),
-    radial-gradient(circle at 80% 50%, rgba(167, 139, 250, 0.35) 0%, transparent 50%);
-  animation: gradientPulse 8s ease-in-out infinite;
-}
-
-@keyframes gradientPulse {
-
-  0%,
-  100% {
-    opacity: 0.6;
-  }
-
-  50% {
-    opacity: 1;
-  }
-}
-
-.grid-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 30px 30px;
-  animation: gridMove 20s linear infinite;
-}
-
-@keyframes gridMove {
-  0% {
-    transform: translate(0, 0);
-  }
-
-  100% {
-    transform: translate(30px, 30px);
-  }
-}
-
-.particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-}
-
-.particle {
-  position: absolute;
-  background: rgba(196, 181, 253, 0.7);
-  border-radius: 50%;
-  animation: particleFloat linear infinite;
-  box-shadow: 0 0 10px rgba(196, 181, 253, 0.9);
-}
-
-@keyframes particleFloat {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-
-  10% {
-    opacity: 1;
-  }
-
-  90% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(-100vh) translateX(20px);
-    opacity: 0;
-  }
-}
-
-.header-content {
-  max-width: 1800px;
-  margin: 0 auto;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  z-index: 1;
+  gap: 24px;
+  padding: 18px 32px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #dbe4ef;
+  backdrop-filter: blur(14px);
 }
 
-.logo-section {
+.brand {
   display: flex;
   align-items: center;
-  gap: 20px;
-  cursor: pointer;
-  padding: 12px 20px;
-  border-radius: 16px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 14px;
 }
 
-.logo-section:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.25);
+.brand-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 25px;
 }
 
-.logo-section:active {
-  transform: translateY(-1px) scale(1.01);
-}
-
-.logo-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-icon {
-  font-size: 42px;
-  background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.4));
-  transition: all 0.4s ease;
-  position: relative;
-  z-index: 2;
-}
-
-.logo-glow {
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  animation: glowPulse 3s ease-in-out infinite;
-  z-index: 1;
-}
-
-@keyframes glowPulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
-  }
-
-  50% {
-    transform: scale(1.3);
-    opacity: 0.8;
-  }
-}
-
-.logo-section:hover .logo-icon {
-  transform: scale(1.15) rotate(5deg);
-  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.6));
-}
-
-.title-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.app-title {
-  font-size: 26px;
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.25;
   font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 0.8px;
-  transition: all 0.3s ease;
-  line-height: 1.2;
 }
 
-.app-subtitle {
-  font-size: 12px;
-  font-weight: 500;
+.brand p {
+  margin: 4px 0 0;
   color: #64748b;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  transition: all 0.3s ease;
-}
-
-.logo-section:hover .app-title {
-  transform: translateX(3px);
-}
-
-.logo-section:hover .app-subtitle {
-  color: #475569;
-  transform: translateX(3px);
-}
-
-.header-info {
-  display: flex;
-  gap: 20px;
-  align-items: center;
+  font-size: 13px;
 }
 
 .app-main {
-  flex: 1;
-  padding: 28px 32px;
-  max-width: 1800px;
-  width: 100%;
+  width: min(1680px, 100%);
   margin: 0 auto;
+  padding: 24px 32px 40px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
-.top-row {
-  flex-shrink: 0;
+.workflow-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(320px, 1fr) minmax(320px, 1fr);
+  gap: 18px;
+  align-items: stretch;
 }
 
-.bottom-row {
-  flex: 1;
-  min-height: 0;
-}
-
-.panel-container {
+.panel {
   background: #ffffff;
-  border-radius: 20px;
-  border: 1px solid rgba(233, 213, 255, 0.4);
-  box-shadow: 0 2px 12px rgba(233, 213, 255, 0.25);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
 }
 
-.top-row .panel-container {
-  height: 420px;
-  min-height: 420px;
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 18px 0;
+}
+
+.panel-heading h2 {
+  margin: 4px 0 0;
+  font-size: 17px;
+}
+
+.eyebrow {
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.upload-panel,
+.pipeline-panel,
+.log-panel {
+  min-height: 360px;
 }
 
 .results-panel {
-  height: calc(100vh - 540px);
-  min-height: 520px;
-}
-
-.panel-container:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(233, 213, 255, 0.4);
-  border-color: rgba(233, 213, 255, 0.7);
+  overflow: hidden;
 }
 
 .processing-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.95);
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: rgba(248, 250, 252, 0.84);
   backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.3s ease;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .processing-overlay {
-    animation: none;
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-.processing-content {
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  padding: 56px 64px;
-  border-radius: 24px;
+.processing-card {
+  width: min(360px, calc(100vw - 40px));
+  padding: 32px;
   text-align: center;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
-  animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .processing-content {
-    animation: none;
-  }
-}
-
-.processing-content::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
-  animation: rotateBackground 20s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .processing-content::before {
-    animation: none;
-  }
-}
-
-@keyframes rotateBackground {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    transform: scale(0.85);
-    opacity: 0;
-  }
-
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.loading-icon-wrapper {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  margin: 0 auto 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.loading-spinner {
-  width: 140px;
-  height: 140px;
-  animation: rotateSpinner 1.5s linear infinite;
-  will-change: transform;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loading-spinner {
-    animation: none;
-  }
-}
-
-@keyframes rotateSpinner {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.spinner-track {
-  stroke: rgba(168, 85, 247, 0.1);
-}
-
-.spinner-path {
-  stroke: url(#spinnerGradient);
-  stroke-dasharray: 100;
-  stroke-dashoffset: 75;
-  animation: spinnerDash 1.5s ease-in-out infinite;
-  will-change: stroke-dashoffset;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .spinner-path {
-    animation: none;
-    stroke-dashoffset: 50;
-  }
-}
-
-@keyframes spinnerDash {
-  0% {
-    stroke-dashoffset: 75;
-  }
-
-  50% {
-    stroke-dashoffset: 25;
-  }
-
-  100% {
-    stroke-dashoffset: 75;
-  }
-}
-
-.loading-pulse {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+.spinner {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 18px;
+  border: 5px solid #dbe4ef;
+  border-top-color: #0f766e;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
-  animation: pulseEffect 2s ease-in-out infinite;
-  will-change: transform, opacity;
+  animation: spin 0.9s linear infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .loading-pulse {
-    animation: none;
+.processing-card h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.processing-card p {
+  margin: 8px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-@keyframes pulseEffect {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.5;
+@media (max-width: 1180px) {
+  .workflow-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  50% {
-    transform: scale(1.2);
-    opacity: 0.8;
+  .log-panel {
+    grid-column: 1 / -1;
   }
 }
 
-.processing-content h3 {
-  margin: 24px 0 0;
-  font-size: 20px;
-  color: #1e293b;
-  font-weight: 600;
-  position: relative;
-  z-index: 1;
-}
-
-@media (max-width: 1600px) {
-  .app-main {
-    padding: 24px 28px;
-  }
-
+@media (max-width: 760px) {
   .app-header {
-    padding: 18px 28px;
-  }
-
-  .logo-section {
-    padding: 10px 16px;
-    gap: 16px;
-  }
-
-  .logo-icon {
-    font-size: 38px;
-  }
-
-  .app-title {
-    font-size: 24px;
-  }
-
-  .app-subtitle {
-    font-size: 11px;
-  }
-}
-
-@media (max-width: 1400px) {
-  .app-main {
-    padding: 20px 24px;
-  }
-
-  .app-header {
-    padding: 16px 24px;
-  }
-
-  .logo-section {
-    padding: 8px 14px;
-    gap: 14px;
-  }
-
-  .logo-icon {
-    font-size: 36px;
-  }
-
-  .app-title {
-    font-size: 22px;
-  }
-
-  .app-subtitle {
-    font-size: 10px;
-  }
-
-  .top-row .panel-container {
-    height: 380px;
-    min-height: 380px;
-  }
-
-  .results-panel {
-    height: calc(100vh - 500px);
-    min-height: 480px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .app-header {
-    padding: 14px 20px;
-  }
-
-  .logo-section {
-    padding: 6px 12px;
-    gap: 12px;
-  }
-
-  .logo-icon {
-    font-size: 32px;
-  }
-
-  .app-title {
-    font-size: 20px;
-  }
-
-  .app-subtitle {
-    display: none;
-  }
-
-  .app-main {
-    padding: 18px 20px;
-    gap: 16px;
-  }
-
-  .top-row .panel-container {
-    height: 360px;
-    min-height: 360px;
-  }
-
-  .results-panel {
-    height: calc(100vh - 460px);
-    min-height: 440px;
-  }
-}
-
-@media (max-width: 992px) {
-  .app-main {
-    gap: 14px;
-  }
-
-  .top-row .panel-container {
-    height: 340px;
-    min-height: 340px;
-  }
-
-  .results-panel {
-    height: auto;
-    min-height: 420px;
-  }
-}
-
-@media (max-width: 768px) {
-  .app-header {
-    padding: 12px 16px;
-  }
-
-  .logo-section {
-    padding: 8px 12px;
-    gap: 10px;
-  }
-
-  .logo-icon {
-    font-size: 28px;
-  }
-
-  .app-title {
-    font-size: 18px;
-  }
-
-  .app-subtitle {
-    display: none;
-  }
-
-  .header-info {
-    gap: 8px;
-  }
-
-  .app-main {
-    padding: 14px 16px;
-  }
-
-  .top-row .panel-container {
-    height: 320px;
-    min-height: 320px;
-  }
-
-  .panel-container {
+    align-items: flex-start;
+    flex-direction: column;
     padding: 16px;
+  }
+
+  .app-main {
+    padding: 16px;
+  }
+
+  .workflow-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand h1 {
+    font-size: 18px;
   }
 }
 </style>

@@ -1,70 +1,50 @@
 <template>
-  <div class="process-log-container">
+  <div class="log-container">
     <div class="log-header">
-      <div class="header-left">
-        <el-icon class="header-icon">
-          <document />
-        </el-icon>
-        <h3>处理日志</h3>
-        <el-badge :value="logCount" class="log-count" />
+      <div>
+        <span class="eyebrow">审计记录</span>
+        <h2>处理日志</h2>
       </div>
+      <el-badge :value="logs.length" class="log-count" />
     </div>
 
-    <div class="log-filter">
-      <div class="filter-buttons">
-        <el-button v-for="filter in filterOptions" :key="filter.value" size="small"
-          :type="activeFilter === filter.value ? 'primary' : ''" @click="activeFilter = filter.value"
-          :class="['filter-btn', `filter-${filter.value}`]">
-          <el-icon>
-            <component :is="filter.icon" />
-          </el-icon>
-          {{ filter.label }}
-        </el-button>
-      </div>
+    <div class="filter-row">
+      <button
+        v-for="filter in filterOptions"
+        :key="filter.value"
+        type="button"
+        :class="{ active: activeFilter === filter.value }"
+        @click="activeFilter = filter.value"
+      >
+        {{ filter.label }}
+      </button>
     </div>
 
-    <div class="log-content" ref="logContentRef">
-      <transition-group name="log-item">
-        <div v-for="(log, index) in filteredLogs" :key="index" :class="['log-item', `log-${log.type}`]">
-          <el-icon class="log-icon">
-            <component :is="getLogIcon(log.type)" />
-          </el-icon>
-          <span class="log-time">{{ log.time }}</span>
-          <span class="log-message">{{ log.message }}</span>
-        </div>
-      </transition-group>
-
-      <div v-if="filteredLogs.length === 0" class="empty-log">
-        <el-empty description="暂无日志" :image-size="100">
-          <template #image>
-            <el-icon :size="40" color="#64748b">
-              <document />
-            </el-icon>
-          </template>
-        </el-empty>
+    <div ref="logContentRef" class="log-list">
+      <div v-if="filteredLogs.length === 0" class="empty-log">暂无日志</div>
+      <div v-for="(log, index) in filteredLogs" :key="`${log.time}-${index}`" :class="['log-item', log.type]">
+        <span class="log-time">{{ log.time }}</span>
+        <span class="log-type">{{ logTypeLabel(log.type) }}</span>
+        <span class="log-message">{{ log.message }}</span>
       </div>
     </div>
 
     <div class="log-footer">
-      <el-button size="small" @click="clearLogs" class="footer-btn">
-        <el-icon>
-          <delete />
-        </el-icon>
-        清空日志
+      <el-button size="small" @click="clearLogs">
+        <el-icon><delete /></el-icon>
+        清空
       </el-button>
-      <el-button size="small" @click="exportLogs" class="footer-btn primary">
-        <el-icon>
-          <download />
-        </el-icon>
-        导出日志
+      <el-button size="small" @click="exportLogs">
+        <el-icon><download /></el-icon>
+        导出
       </el-button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import { Document, Delete, Download, SuccessFilled, Warning, InfoFilled, CircleCloseFilled } from '@element-plus/icons-vue'
+import { computed, nextTick, ref, watch } from 'vue'
+import { Delete, Download } from '@element-plus/icons-vue'
 
 interface LogEntry {
   type: 'info' | 'success' | 'warning' | 'error'
@@ -80,30 +60,20 @@ const emit = defineEmits<{
   clear: []
 }>()
 
+type FilterType = 'all' | LogEntry['type']
+
+const activeFilter = ref<FilterType>('all')
 const logContentRef = ref<HTMLElement>()
-const logCount = computed(() => props.logs.length)
-const activeFilter = ref<'all' | 'info' | 'success' | 'warning' | 'error'>('all')
-
-type FilterType = 'all' | 'info' | 'success' | 'warning' | 'error'
-
-interface FilterOption {
-  value: FilterType
-  label: string
-  icon: any
-}
-
-const filterOptions: FilterOption[] = [
-  { value: 'all', label: '全部', icon: Document },
-  { value: 'info', label: '信息', icon: InfoFilled },
-  { value: 'success', label: '成功', icon: SuccessFilled },
-  { value: 'warning', label: '警告', icon: Warning },
-  { value: 'error', label: '错误', icon: CircleCloseFilled }
+const filterOptions: Array<{ value: FilterType; label: string }> = [
+  { value: 'all', label: '全部' },
+  { value: 'info', label: '信息' },
+  { value: 'success', label: '成功' },
+  { value: 'warning', label: '警告' },
+  { value: 'error', label: '错误' }
 ]
 
 const filteredLogs = computed(() => {
-  if (activeFilter.value === 'all') {
-    return props.logs
-  }
+  if (activeFilter.value === 'all') return props.logs
   return props.logs.filter(log => log.type === activeFilter.value)
 })
 
@@ -114,14 +84,14 @@ watch(() => filteredLogs.value.length, async () => {
   }
 })
 
-const getLogIcon = (type: 'info' | 'success' | 'warning' | 'error') => {
-  const iconMap: Record<string, any> = {
-    info: InfoFilled,
-    success: SuccessFilled,
-    warning: Warning,
-    error: CircleCloseFilled
+const logTypeLabel = (type: LogEntry['type']) => {
+  const map = {
+    info: '信息',
+    success: '成功',
+    warning: '警告',
+    error: '错误'
   }
-  return iconMap[type] || InfoFilled
+  return map[type]
 }
 
 const clearLogs = () => {
@@ -130,281 +100,124 @@ const clearLogs = () => {
 
 const exportLogs = () => {
   const logText = props.logs
-    .map(log => `[${log.time}] [${log.type.toUpperCase()}] ${log.message}`)
+    .map(log => `[${log.time}] [${logTypeLabel(log.type)}] ${log.message}`)
     .join('\n')
 
-  const blob = new Blob([logText], { type: 'text/plain' })
+  const blob = new Blob([logText], { type: 'text/plain;charset=utf-8' })
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
-  a.download = `process_log_${new Date().getTime()}.txt`
+  a.download = `process_log_${Date.now()}.txt`
   a.click()
   URL.revokeObjectURL(url)
 }
 </script>
 
 <style scoped>
-.process-log-container {
-  background: transparent;
-  border-radius: 16px;
-  overflow: hidden;
+.log-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .log-header {
-  background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-  color: #1e293b;
-  padding: 16px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  padding: 18px 18px 0;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-icon {
-  font-size: 20px;
-}
-
-.log-header h3 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.log-count {
-  margin-left: 4px;
-}
-
-:deep(.el-badge__content) {
-  background: rgba(251, 191, 36, 0.9);
-  color: #1e293b;
-  font-weight: 700;
-  border: 1px solid rgba(251, 191, 36, 0.3);
-  backdrop-filter: blur(8px);
-}
-
-.log-filter {
-  padding: 12px 16px;
-  background: #f8fafc;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.filter-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  border-radius: 20px;
-  padding: 6px 14px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: #ffffff;
-  color: #64748b;
-}
-
-.filter-btn:hover {
-  border-color: rgba(196, 181, 253, 0.3);
-  color: #1e293b;
-  transform: translateY(-1px);
-}
-
-.filter-all {
-  --filter-color: #6366f1;
-}
-
-.filter-info {
-  --filter-color: #3b82f6;
-}
-
-.filter-success {
-  --filter-color: #22c55e;
-}
-
-.filter-warning {
-  --filter-color: #f59e0b;
-}
-
-.filter-error {
-  --filter-color: #ef4444;
-}
-
-.filter-btn[class*="el-button--primary"] {
-  background: linear-gradient(135deg, var(--filter-color) 0%, var(--filter-color) 100%);
-  border-color: var(--filter-color);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.log-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 14px 16px;
-  background: #ffffff;
-  max-height: none;
-}
-
-.log-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.log-content::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.log-content::-webkit-scrollbar-thumb {
-  background: rgba(196, 181, 253, 0.2);
-  border-radius: 3px;
-}
-
-.log-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(196, 181, 253, 0.4);
-}
-
-.log-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  margin-bottom: 8px;
-  border-radius: 10px;
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  animation: slideIn 0.3s ease;
-  transition: all 0.2s ease;
-}
-
-.log-item:hover {
-  background: #f8fafc;
-  border-color: rgba(196, 181, 253, 0.2);
-  transform: translateX(2px);
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.log-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.log-info .log-icon {
-  color: #3b82f6;
-}
-
-.log-success .log-icon {
-  color: #22c55e;
-}
-
-.log-warning .log-icon {
-  color: #f59e0b;
-}
-
-.log-error .log-icon {
-  color: #ef4444;
-}
-
-.log-time {
-  color: #64748b;
+.eyebrow {
+  color: #0f766e;
   font-size: 12px;
-  font-family: 'SF Mono', 'Consolas', 'Courier New', monospace;
-  flex-shrink: 0;
-  min-width: 75px;
+  font-weight: 700;
 }
 
-.log-message {
+h2 {
+  margin: 4px 0 0;
+  font-size: 17px;
+}
+
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 18px 10px;
+}
+
+.filter-row button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  color: #475569;
+  background: #ffffff;
+  cursor: pointer;
+}
+
+.filter-row button.active {
+  color: #ffffff;
+  border-color: #0f766e;
+  background: #0f766e;
+}
+
+.log-list {
   flex: 1;
-  color: #1e293b;
-  font-size: 14px;
-  line-height: 1.5;
-  word-break: break-all;
-}
-
-.log-item.log-success {
-  border-left: 3px solid #22c55e;
-}
-
-.log-item.log-warning {
-  border-left: 3px solid #f59e0b;
-}
-
-.log-item.log-error {
-  border-left: 3px solid #ef4444;
-}
-
-.log-item.log-info {
-  border-left: 3px solid #3b82f6;
+  min-height: 0;
+  margin: 0 18px;
+  padding: 10px;
+  overflow: auto;
+  background: #0f172a;
+  border-radius: 8px;
 }
 
 .empty-log {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 180px;
-  color: #64748b;
+  padding: 28px 0;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
 }
 
-:deep(.el-empty__description) {
-  color: #64748b;
+.log-item {
+  display: grid;
+  grid-template-columns: 64px 44px 1fr;
+  gap: 8px;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  color: #cbd5e1;
+  font-family: "SF Mono", Consolas, monospace;
+  font-size: 12px;
+}
+
+.log-time {
+  color: #94a3b8;
+}
+
+.log-type {
+  font-weight: 700;
+}
+
+.log-item.success .log-type {
+  color: #86efac;
+}
+
+.log-item.warning .log-type {
+  color: #fbbf24;
+}
+
+.log-item.error .log-type {
+  color: #fb7185;
+}
+
+.log-item.info .log-type {
+  color: #93c5fd;
 }
 
 .log-footer {
-  padding: 12px 16px;
-  background: #f8fafc;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
   display: flex;
-  gap: 10px;
   justify-content: flex-end;
-}
-
-.footer-btn {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.footer-btn:hover {
-  transform: translateY(-1px);
-}
-
-.footer-btn.primary {
-  background: linear-gradient(135deg, #c084fc 0%, #a78bfa 100%);
-  border: none;
-  color: #fff;
-}
-
-.log-item-enter-active,
-.log-item-leave-active {
-  transition: all 0.3s ease;
-}
-
-.log-item-enter-from {
-  opacity: 0;
-  transform: translateX(-10px);
-}
-
-.log-item-leave-to {
-  opacity: 0;
-  transform: translateX(10px);
+  gap: 8px;
+  padding: 12px 18px 18px;
 }
 </style>

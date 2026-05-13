@@ -101,6 +101,20 @@ class ApiService {
       throw error
     }
   }
+
+  async getHealth(): Promise<any> {
+    try {
+      const response: AxiosResponse = await this.client.get('/health', {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      return response.data
+    } catch (error) {
+      console.error('Health check failed:', error)
+      throw error
+    }
+  }
 }
 
 export default new ApiService()
