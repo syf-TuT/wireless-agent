@@ -2,19 +2,22 @@
 # Supports multiple LLM providers: DeepSeek, MiniMax, OpenAI, etc.
 
 import os
+from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
 
+load_dotenv()
+
 # Default to DeepSeek if not specified
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "glm-5").lower()
+LLM_PROVIDER = os.getenv("LLM_PROVIDER", "deepseek").lower()
 
 # LLM Model Configurations
 LLM_CONFIGS = {
-    # "deepseek": {
-    #     "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
-    #     "base_url": "https://api.deepseek.com",
-    #     "model": "deepseek-chat",
-    #     "temperature": 0
-    # },
+    "deepseek": {
+        "api_key": os.getenv("DEEPSEEK_API_KEY", ""),
+        "base_url": "https://api.deepseek.com",
+        "model": "deepseek-chat",
+        "temperature": 0
+    },
     "minimax-m2": {
         "api_key": os.getenv("MINIMAX_API_KEY", ""),
         "base_url": "https://api.minimaxi.com/v1",

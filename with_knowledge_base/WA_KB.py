@@ -18,6 +18,66 @@ TOKEN_STATS = {
     "llm_call_count": 0
 }
 
+
+class FallbackLLMResponse:
+    """Minimal response object used when the configured LLM is unavailable."""
+
+    def __init__(self, content: str):
+        self.content = content
+
+
+def build_fallback_llm_content(messages, operation_name="LLM"):
+    """Build deterministic fallback text for workflow nodes that expect LLM content."""
+    joined_messages = "\n".join(
+        str(getattr(message, "content", message)) for message in messages
+    )
+
+    if operation_name == "Bandwidth_Analysis":
+        return "10"
+
+    if operation_name == "Slice_Type_Determination":
+        slice_type = infer_slice_type_from_text(joined_messages)
+        return (
+            f"I recommend using {slice_type} slice, because the LLM service is unavailable "
+            "and the local knowledge-base keyword rules were used as a fallback."
+        )
+
+    if operation_name in {"Intent_Analysis", "Intent_Override"}:
+        slice_type = infer_slice_type_from_text(joined_messages)
+        return (
+            f"LLM unavailable. Local knowledge-base fallback indicates this request maps "
+            f"most closely to the {slice_type} slice."
+        )
+
+    if "Workload_Balance" in operation_name:
+        return "LLM unavailable. Keep the current knowledge-base slice decision unless local capacity checks require adjustment."
+
+    if operation_name in {"Allocate_Resources", "Network_Evaluation", "Failure_Evaluation"}:
+        return "LLM unavailable. Resource allocation was evaluated using local CQI, capacity, and knowledge-base rules."
+
+    return "LLM unavailable. Local deterministic fallback was used."
+
+
+def infer_slice_type_from_text(text: str) -> str:
+    """Infer a slice type from local keywords when the LLM cannot respond."""
+    text_lower = text.lower()
+
+    if any(k in text_lower for k in [
+        "control", "autonomous", "remote", "surgery", "vehicle", "drone",
+        "industrial", "real-time", "latency", "safety", "critical",
+        "emergency", "fraud", "trading", "precision", "sync"
+    ]):
+        return "URLLC"
+
+    if any(k in text_lower for k in [
+        "sensor", "meter", "iot", "monitor", "smart", "wearable",
+        "tracking", "telemetry", "environmental", "parking", "agriculture",
+        "inventory", "fleet"
+    ]):
+        return "mMTC"
+
+    return "eMBB"
+
 def get_token_usage():
     """Get current token usage statistics"""
     return TOKEN_STATS.copy()
@@ -73,7 +133,7 @@ def llm_with_token_tracking(llm, messages, operation_name="LLM"):
         response = llm.invoke(messages)
     except Exception as e:
         print(f"[LLM Error] {operation_name}: {e}")
-        return None
+        return FallbackLLMResponse(build_fallback_llm_content(messages, operation_name))
 
     # Try to get actual token usage from response
     completion_tokens = 0
@@ -167,7 +227,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from llm_config import get_llm
 
-llm = get_llm("minimax-m2.5")
+llm = get_llm()
 
 # ====================== RAG System Initialization ======================
 # Import RAG optimization module
