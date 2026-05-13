@@ -40,7 +40,13 @@
               <h2>处理流水线</h2>
             </div>
           </div>
-          <ProcessingPipeline :current-stage="pipelineStage" :failed="pipelineFailed" />
+          <ProcessingPipeline
+            :current-stage="pipelineStage"
+            :failed="pipelineFailed"
+            :processing="processing"
+            :message="processingMessage"
+            :upload-progress="uploadProgress"
+          />
         </div>
 
         <div class="panel log-panel">
@@ -53,13 +59,6 @@
       </section>
     </main>
 
-    <div v-if="processing" class="processing-overlay" role="dialog" aria-modal="true" aria-labelledby="processing-title">
-      <div class="processing-card">
-        <div class="spinner"></div>
-        <h3 id="processing-title">{{ processingMessage }}</h3>
-        <p>系统正在执行切片分配流程，请稍候。</p>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -344,53 +343,6 @@ body {
 
 .results-panel {
   overflow: hidden;
-}
-
-.processing-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: grid;
-  place-items: center;
-  background: rgba(248, 250, 252, 0.84);
-  backdrop-filter: blur(10px);
-}
-
-.processing-card {
-  width: min(360px, calc(100vw - 40px));
-  padding: 32px;
-  text-align: center;
-  background: #ffffff;
-  border: 1px solid #dbe4ef;
-  border-radius: 8px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
-}
-
-.spinner {
-  width: 54px;
-  height: 54px;
-  margin: 0 auto 18px;
-  border: 5px solid #dbe4ef;
-  border-top-color: #0f766e;
-  border-radius: 50%;
-  animation: spin 0.9s linear infinite;
-}
-
-.processing-card h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.processing-card p {
-  margin: 8px 0 0;
-  color: #64748b;
-  font-size: 13px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 1180px) {

@@ -1,25 +1,47 @@
 <template>
-  <ol class="pipeline">
-    <li v-for="(stage, index) in stages" :key="stage" :class="stageClass(index + 1)">
-      <span class="stage-index">
-        <el-icon v-if="failed && currentStage === index + 1"><circle-close /></el-icon>
-        <el-icon v-else-if="currentStage > index + 1"><circle-check /></el-icon>
-        <span v-else>{{ index + 1 }}</span>
-      </span>
-      <div>
-        <strong>{{ stage }}</strong>
-        <p>{{ stageDescription(index + 1) }}</p>
+  <div class="pipeline-shell">
+    <div v-if="processing || failed" class="processing-status" :class="{ failed }">
+      <div class="status-copy">
+        <span class="status-dot" aria-hidden="true"></span>
+        <div>
+          <strong>{{ statusTitle }}</strong>
+          <p>{{ message }}</p>
+        </div>
       </div>
-    </li>
-  </ol>
+      <el-progress
+        v-if="processing"
+        :percentage="visibleProgress"
+        :show-text="false"
+        :stroke-width="8"
+      />
+    </div>
+
+    <ol class="pipeline">
+      <li v-for="(stage, index) in stages" :key="stage" :class="stageClass(index + 1)">
+        <span class="stage-index">
+          <el-icon v-if="failed && currentStage === index + 1"><circle-close /></el-icon>
+          <el-icon v-else-if="currentStage > index + 1"><circle-check /></el-icon>
+          <span v-else>{{ index + 1 }}</span>
+        </span>
+        <div>
+          <strong>{{ stage }}</strong>
+          <p>{{ stageDescription(index + 1) }}</p>
+        </div>
+      </li>
+    </ol>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { CircleCheck, CircleClose } from '@element-plus/icons-vue'
 
 const props = defineProps<{
   currentStage: number
   failed: boolean
+  processing: boolean
+  message: string
+  uploadProgress: number
 }>()
 
 const stages = ['CSV 上传', '数据校验', '请求解析', '意图识别', 'CQI 读取', '切片分配', '结果生成']
@@ -43,13 +65,78 @@ const stageClass = (stageNumber: number) => ({
 })
 
 const stageDescription = (stageNumber: number) => descriptions[stageNumber - 1]
+
+const statusTitle = computed(() => (props.failed ? '处理失败' : '正在处理'))
+
+const visibleProgress = computed(() => {
+  if (props.uploadProgress > 0 && props.uploadProgress < 100) {
+    return props.uploadProgress
+  }
+
+  if (props.currentStage <= 0) return 0
+  return Math.min(100, Math.round((props.currentStage / stages.length) * 100))
+})
 </script>
 
 <style scoped>
-.pipeline {
+.pipeline-shell {
   height: calc(100% - 56px);
-  margin: 0;
   padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.processing-status {
+  padding: 12px;
+  border: 1px solid #99f6e4;
+  border-radius: 8px;
+  background: #f0fdfa;
+}
+
+.processing-status.failed {
+  border-color: #fecdd3;
+  background: #fff1f2;
+}
+
+.status-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #0f766e;
+  box-shadow: 0 0 0 5px rgba(15, 118, 110, 0.12);
+}
+
+.processing-status.failed .status-dot {
+  background: #e11d48;
+  box-shadow: 0 0 0 5px rgba(225, 29, 72, 0.12);
+}
+
+.status-copy strong {
+  display: block;
+  color: #172033;
+  font-size: 14px;
+}
+
+.status-copy p {
+  margin: 3px 0 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.pipeline {
+  margin: 0;
+  padding: 0;
   list-style: none;
   display: flex;
   flex-direction: column;
